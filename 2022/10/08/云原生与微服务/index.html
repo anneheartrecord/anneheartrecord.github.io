@@ -31,9 +31,8 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/%E4%BA%91%E5%8E%9F%E7%94%9F%E4%B8%8E%E5%BE%AE%E6%9C%8D%E5%8A%A1.assets/Image.png">
 <meta property="og:image" content="http://example.com/%E4%BA%91%E5%8E%9F%E7%94%9F%E4%B8%8E%E5%BE%AE%E6%9C%8D%E5%8A%A1.assets/image-20221007161458337.png">
-<meta property="og:image" content="http://example.com/%E4%BA%91%E5%8E%9F%E7%94%9F%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5.assets/image-20221008193144657.png">
 <meta property="article:published_time" content="2022-10-08T12:45:31.000Z">
-<meta property="article:modified_time" content="2022-10-08T12:46:25.532Z">
+<meta property="article:modified_time" content="2022-10-09T08:27:27.313Z">
 <meta property="article:author" content="安妮的心动录">
 <meta property="article:tag" content="云原生">
 <meta property="article:tag" content="微服务">
@@ -201,10 +200,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-10-08 20:45:31 / 修改时间：20:46:25" itemprop="dateCreated datePublished" datetime="2022-10-08T20:45:31+08:00">2022-10-08</time>
+              <time title="创建时间：2022-10-08 20:45:31" itemprop="dateCreated datePublished" datetime="2022-10-08T20:45:31+08:00">2022-10-08</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-10-09 16:27:27" itemprop="dateModified" datetime="2022-10-09T16:27:27+08:00">2022-10-09</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -228,14 +233,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>5k</span>
+              <span>4.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
+              <span>4 分钟</span>
             </span>
 
         </div>
@@ -259,8 +264,7 @@
 <h5 id="单体应用"><a href="#单体应用" class="headerlink" title="单体应用"></a>单体应用</h5><p>单体应用通常是一个庞大的文件，部署在一台机器上，高耦合，对功能修改通常需要牵一发而动全身，想要增强单体应用的性能一般只能堆机子，不断增加服务器的数量</p>
 <h5 id="分层架构"><a href="#分层架构" class="headerlink" title="分层架构"></a>分层架构</h5><p>最典型的就是MVC和MSC架构，分别是 model view controller和model service controller的缩写，随着时代的发展，人们发现单体应用很难抗住大流量，于是分层架构诞生了。分层架构就是将单体应用进行垂直分层，耦合依旧大，项目之间的接口大多数为数据同步，是一种很简单的架构。开发快速，经过垂直拆分之后项目不至于太大，每一层可以使用不同的技术。</p>
 <h5 id="SOA面向服务架构"><a href="#SOA面向服务架构" class="headerlink" title="SOA面向服务架构"></a>SOA面向服务架构</h5><p>当垂直架构的应用越来越多，就会出现多个应用都依赖的业务组件，比如数据库，而且各个应用交互越来越频繁，此时就需要把部分通用的组件拆分独立处理，于是SOA面向服务架构诞生了，它带来了模块化开发、分布式拓展部署和服务接口定义等概念。SOA需要建立企业服务总线，外部应用通过总线调用服务，有以下特征：可从企业外部访问、随时可用、标准化的服务接口等。一般是大型企业才考虑使用SOA架构</p>
-<p><img src="/%E4%BA%91%E5%8E%9F%E7%94%9F%E4%B8%8E%E5%BE%AE%E6%9C%8D%E5%8A%A1.assets/image-20221007161458337.png" alt="image-20221007161458337"></p>
-<p>其实SOA已经具备微服务的思想了，将重复使用的功能模块抽离出来，减少耦合，提高开率效率。但是SOA也有着比较显著的缺点，它不适合一般的业务场景，每个服务的注册、定义和调用都需要繁琐的配置。并且高度依赖Enterprise Service Bus（业务总线），当业务总线崩掉，所有的服务都会挂掉。可以说业务总线的吞吐量决定着整个系统的上限。</p>
+<p><img src="/%E4%BA%91%E5%8E%9F%E7%94%9F%E4%B8%8E%E5%BE%AE%E6%9C%8D%E5%8A%A1.assets/image-20221007161458337.png" alt="image-20221007161458337">，当业务总线崩掉，所有的服务都会挂掉。可以说业务总线的吞吐量决定着整个系统的上限。</p>
 <h5 id="微服务架构"><a href="#微服务架构" class="headerlink" title="微服务架构"></a>微服务架构</h5><p>在吸取了SOA的思想之后，微服务诞生了，它具有以下特点</p>
 <ol>
 <li>服务层完全独立 并将服务层抽离为一个个的微服务</li>
@@ -269,7 +273,6 @@
 <li>一般使用容器技术进行部署 运行在自己的独立进程中</li>
 </ol>
 <p>架构如图：</p>
-<p><img src="/%E4%BA%91%E5%8E%9F%E7%94%9F%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5.assets/image-20221008193144657.png" alt="image-20221008193144657"></p>
 <p>在微服务架构下服务的拆分粒度更细小，有利于资源的重复利用，提高开发效率，采用去中心化思想，更加轻量级</p>
 <p>缺点：如果服务实例过多，那么治理成本就会很大，不利于维护；且服务之间相互依赖，可能形成复杂的依赖链条，往往单个服务异常，其他的服务也会受到影响</p>
 <p>在实际开发中一般通过DDD的思想对微服务进行拆分，既不能让服务实例太多（不好治理、部署成本大、调用关系复杂），也不能让服务实例太少（每个服务量级都很大，高度耦合），一般是通过各个服务的作用域进行划分。</p>
