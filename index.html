@@ -169,6 +169,125 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/13/JSON%E7%9A%84%E5%87%A0%E7%A7%8D%E6%A0%87%E5%87%86%E6%A0%BC%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/10/13/JSON%E7%9A%84%E5%87%A0%E7%A7%8D%E6%A0%87%E5%87%86%E6%A0%BC%E5%BC%8F/" class="post-title-link" itemprop="url">JSON的几种标准格式</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-10-13 21:23:20 / 修改时间：21:24:03" itemprop="dateCreated datePublished" datetime="2022-10-13T21:23:20+08:00">2022-10-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%90%8E%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">后端</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>754</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="JSON的几种标准格式"><a href="#JSON的几种标准格式" class="headerlink" title="JSON的几种标准格式"></a>JSON的几种标准格式</h1><p>  今天在使用mongoimport导入json格式的时候发现出问题了，需要我去了解一下json的标准格式，在这之前我一直以为json是用{}括起来的键值对，且最后一个键值对不能有逗号。（弱者的自嘲）</p>
+<h2 id="什么是JSON"><a href="#什么是JSON" class="headerlink" title="什么是JSON"></a>什么是JSON</h2><ul>
+<li>json是JavaScript Object Notation（JavaScript对象表示法）</li>
+<li>json是轻量级的文本数据交换格式</li>
+<li>json独立于语言</li>
+<li>json具有自我描述性，更衣理解</li>
+<li>json使用js语法来描述数据对象，但是json仍然独立于语言和平台，json解析器和json库支持许多不同的变成语言</li>
+</ul>
+<p>json是一种轻量级的数据交换格式，易于人阅读和编写，同时也易于机器解析和生成，之所以json这么流行，是因为json的结构和多级结构体刚好能对应上，而前后端交互的时候后端通常会返回给前端一个多级的结构体，于是json慢慢开始流行了，且json是跨语言和跨平台的，自身也足够轻量级。</p>
+<p>json的标准格式</p>
+<h5 id="json数值"><a href="#json数值" class="headerlink" title="json数值"></a>json数值</h5><p><code>//每个key对应的是一个value</code> </p>
+<p><code>&#123;</code></p>
+<p>​	<code>“k1&quot;: 1,</code></p>
+<p>​	<code>&quot;k2&quot;: 2</code> &#x2F;&#x2F;注意结尾的这个不能有逗号</p>
+<p><code>&#125;</code></p>
+<h5 id="json字符串"><a href="#json字符串" class="headerlink" title="json字符串"></a>json字符串</h5><p><code>&#123;</code></p>
+<p>​	<code>&quot;k1&quot;: &quot;1&quot;,</code></p>
+<p>​	<code>&quot;k2&quot;: &quot;2&quot;</code></p>
+<p><code>&#125;</code></p>
+<h5 id="json数组"><a href="#json数组" class="headerlink" title="json数组"></a>json数组</h5><p>{</p>
+<p>​	“k1”:  [1,2],</p>
+<p>​	“k2”: [3,4]</p>
+<p>}</p>
+<h5 id="json对象"><a href="#json对象" class="headerlink" title="json对象"></a>json对象</h5><p>{</p>
+<p>​	“k1”: {“1”: “haihai”},</p>
+<p>​	“k2”: {“2”:”haihahai”}</p>
+<p>}</p>
+<h5 id="json对象数组"><a href="#json对象数组" class="headerlink" title="json对象数组"></a>json对象数组</h5><p>{</p>
+<p>​	“k1”: [</p>
+<p>​		{“k11”: “hellohello”},</p>
+<p>​		{“k12”: “badbad”}</p>
+<p>]</p>
+<p>}</p>
+<h5 id="json数组对象"><a href="#json数组对象" class="headerlink" title="json数组对象"></a>json数组对象</h5><p>{</p>
+<p>​	“k2”: {</p>
+<p>​	         “hello”: [1,2,3]</p>
+<p>}</p>
+<p>}</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/12/netrpc%E5%88%9D%E8%AF%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1128,14 +1247,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -1193,7 +1312,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">11 分钟</span>
+    <span title="站点阅读时长">12 分钟</span>
 </div>
 
 
