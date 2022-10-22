@@ -22,17 +22,21 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="永远不要高估自己">
-<meta property="og:type" content="website">
-<meta property="og:title" content="安妮的心动录的园子">
-<meta property="og:url" content="http://example.com/tags/%E5%AE%B9%E5%99%A8/index.html">
+  <meta name="description" content="RSA详解1.RSA思想  RSA公开密钥密码体制是一种使用不同的加密密钥和解密密钥，由“已知加密密钥推导出解密密钥在计算上是不可行的”密码体制。   在这种体制中，加密秘钥（公钥）PK是公开信息，而解密密钥（私钥）SK是需要保密的，加密算法E和解密算法D也都是公开的，这样的话虽然SK是由PK决定的，但是不能通过PK计算出SK。 ​	基于这种思想，在1978年出现了著名的RSA算法。  通常是先生">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RSA详解">
+<meta property="og:url" content="http://example.com/2022/10/22/RSA%E8%AF%A6%E8%A7%A3/index.html">
 <meta property="og:site_name" content="安妮的心动录的园子">
-<meta property="og:description" content="永远不要高估自己">
+<meta property="og:description" content="RSA详解1.RSA思想  RSA公开密钥密码体制是一种使用不同的加密密钥和解密密钥，由“已知加密密钥推导出解密密钥在计算上是不可行的”密码体制。   在这种体制中，加密秘钥（公钥）PK是公开信息，而解密密钥（私钥）SK是需要保密的，加密算法E和解密算法D也都是公开的，这样的话虽然SK是由PK决定的，但是不能通过PK计算出SK。 ​	基于这种思想，在1978年出现了著名的RSA算法。  通常是先生">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-10-22T03:07:45.000Z">
+<meta property="article:modified_time" content="2022-10-22T03:11:34.024Z">
 <meta property="article:author" content="安妮的心动录">
+<meta property="article:tag" content="密码学">
+<meta property="article:tag" content="安全">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/tags/%E5%AE%B9%E5%99%A8/">
+<link rel="canonical" href="http://example.com/2022/10/22/RSA%E8%AF%A6%E8%A7%A3/">
 
 
 <script id="page-configurations">
@@ -40,12 +44,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>标签: 容器 | 安妮的心动录的园子</title>
+  <title>RSA详解 | 安妮的心动录的园子</title>
   
 
 
@@ -163,57 +167,163 @@
         <div class="content-wrap">
           
 
-          <div class="content tag">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">容器
-          <small>标签</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/22/RSA%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RSA详解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-10-22 11:07:45 / 修改时间：11:11:34" itemprop="dateCreated datePublished" datetime="2022-10-22T11:07:45+08:00">2022-10-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">密码学</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2022</span>
+        <h1 id="RSA详解"><a href="#RSA详解" class="headerlink" title="RSA详解"></a>RSA详解</h1><h2 id="1-RSA思想"><a href="#1-RSA思想" class="headerlink" title="1.RSA思想"></a>1.RSA思想</h2><p>  RSA公开密钥密码体制是一种使用不同的加密密钥和解密密钥，由“已知加密密钥推导出解密密钥在计算上是不可行的”密码体制。</p>
+<p>  在这种体制中，加密秘钥（公钥）PK是公开信息，而解密密钥（私钥）SK是需要保密的，加密算法E和解密算法D也都是公开的，这样的话虽然SK是由PK决定的，但是不能通过PK计算出SK。</p>
+<p>​	基于这种思想，在1978年出现了著名的RSA算法。</p>
+<ol>
+<li>通常是先生成一对RSA密钥</li>
+<li>其中的一个是私钥，用户保存，另一个是公钥，可对外公开，甚至可以在网络服务器中注册</li>
+<li>为了提高保密强度，密钥至少为500位，一般推荐1024位</li>
+<li>为了减少计算量，传送信息的时候通常采用传统加密与公开密钥加密结合的方式</li>
+</ol>
+<p>算法原理：根据数论的理论，找两个大素数比较简单，对他们的乘积进行因式分解却很困难，因此可以将乘积公开作为加密秘钥</p>
+<h2 id="2-算法描述"><a href="#2-算法描述" class="headerlink" title="2.算法描述"></a>2.算法描述</h2><ol>
+<li>任意选两个不同的大素数p和q计算乘积n&#x3D;pq，欧拉函数n&#x3D;p-1 * q-1 </li>
+<li>任意选一个大整数e，满足 gcd (e,欧拉n)&#x3D;1，整数e用作加密钥</li>
+<li>确定的解密要d 满足(de) mod 欧拉n &#x3D;1 很容易计算出d </li>
+<li>公开n和e 保存d</li>
+<li>将明文m(m&lt;n)加密成c 加密算法为 c&#x3D;m^e mod n </li>
+<li>将密文c解密为明文m  解密算法为 m&#x3D;c^d mod n</li>
+</ol>
+<p>通俗易懂的解释：</p>
+<p>1.第一步 随机选择两个不相同的质数 p 和 q  比如61和53，在实际应用中，这两个质数越大，就越难破解</p>
+<p>2.第二步 计算p和q的乘积n  上面的栗子 n&#x3D;61*53&#x3D;3233</p>
+<p>这个n就是密钥，写成二进制位110010100001，一共12位，那么这个密钥长度就是12位，在实际应用中,RSA密钥长度要到1024位，才具有足够的保密性</p>
+<p>3.第三步，计算n的φ(n)</p>
+<p>欧拉n&#x3D;p-1* q-1 上面的栗子为3120</p>
+<p>4.第四步 随机选择一个整数e 条件为1&lt;e&lt;φ(n)，且e与欧拉n互质，实际应用中常用65537，我们这边随便选个17</p>
+<p>5.计算e对于φ(n)的模反元素d </p>
+<p>所谓模反元素就是指有一个整数d 可以让ed 被 φ(n) 除的余数为1</p>
+<p>可以通过扩展欧几里得算法求解 </p>
+<p>6.将n和e封装成公钥，n和d封装成私钥</p>
+<p>可靠性：能不能在已知n和e的情况下，推出d，也就是能不能在已知公钥的情况下，推出私钥？</p>
+<p>结论：不行，需要对大整数进行因式分解，这个过程很困难，目前被破解的最长RSA密钥为768位</p>
+<p>7.加密过程：</p>
+<p>通过公钥(n,e)对m进行加密，m必须为整数，且m必须小于n</p>
+<p>加密过程</p>
+<p>m ^ e ≡ c (mod n)</p>
+<p>8.解密过程</p>
+<p>c ^ d ≡ m (mod n)</p>
+<h2 id="3-安全性描述"><a href="#3-安全性描述" class="headerlink" title="3.安全性描述"></a>3.安全性描述</h2><ul>
+<li>保密强度随着密钥的长度增加而增强，但是密钥越长，加解密的时间也就夜场</li>
+<li>RSA安全性依赖于大数分解</li>
+<li>因为进行的都是大数计算，使得RSA的速度比DES慢上好几倍甚至好几十倍，因为AES这类算法通常厂商会在硬件方面进行优化，RSA一般只用于少量的数据加密，RSA的速度比对应同样安全级别的对称密码算法要慢1000倍左右</li>
+</ul>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-10-08T20:45:31+08:00"
-              content="2022-10-08">
-          10-08
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/" rel="tag"># 密码学</a>
+              <a href="/tags/%E5%AE%89%E5%85%A8/" rel="tag"># 安全</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2022/10/08/%E4%BA%91%E5%8E%9F%E7%94%9F%E4%B8%8E%E5%BE%AE%E6%9C%8D%E5%8A%A1/" itemprop="url">
-            <span itemprop="name">云原生与微服务</span>
-          </a>
-      </div>
+        
 
-    </header>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/10/22/%E5%B7%A5%E4%B8%9A%E7%95%8C%E7%9A%84%E5%87%A0%E7%A7%8D%E5%8F%91%E5%B8%83%E6%A8%A1%E5%BC%8F/" rel="prev" title="工业界的几种发布模式">
+      <i class="fa fa-chevron-left"></i> 工业界的几种发布模式
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
   </article>
-
-    </div>
-  </div>
   
   
-  
-
   
 
 
 
           </div>
           
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC81NjgwMy8zMzI2Nw=="></div>
+  </div>
+  
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -260,6 +370,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#RSA%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">RSA详解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-RSA%E6%80%9D%E6%83%B3"><span class="nav-number">1.1.</span> <span class="nav-text">1.RSA思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%AE%97%E6%B3%95%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.2.</span> <span class="nav-text">2.算法描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%AE%89%E5%85%A8%E6%80%A7%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.3.</span> <span class="nav-text">3.安全性描述</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -447,6 +558,21 @@ $(document).ready(function() {
 
   
 
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
 
 </body>
 </html>
