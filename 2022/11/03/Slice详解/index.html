@@ -22,20 +22,20 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="JSON的几种标准格式  今天在使用mongoimport导入json格式的时候发现出问题了，需要我去了解一下json的标准格式，在这之前我一直以为json是用{}括起来的键值对，且最后一个键值对不能有逗号。（弱者的自嘲） 什么是JSON json是JavaScript Object Notation（JavaScript对象表示法） json是轻量级的文本数据交换格式 json独立于语言 jso">
+  <meta name="description" content="Slice详解slice和数组的区别众所周知，go是一门强类型的语言，什么是强类型呢？就是对类型要求非常严格(在运算时)，所以go中的float不能和int进行运算，甚至int和int64也不能进行运算。 数组是指长度固定的数据集合，比如 [3] int 指的就是长度为3的int类型集合，它和[4] int是两个完全不同的类型，所以不能作比较，比较也是一种运算。 而slice则是动态数组，长度不固">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JSON的几种标准格式">
-<meta property="og:url" content="http://example.com/2022/10/13/JSON%E7%9A%84%E5%87%A0%E7%A7%8D%E6%A0%87%E5%87%86%E6%A0%BC%E5%BC%8F/index.html">
+<meta property="og:title" content="Slice详解">
+<meta property="og:url" content="http://example.com/2022/11/03/Slice%E8%AF%A6%E8%A7%A3/index.html">
 <meta property="og:site_name" content="安妮的心动录的园子">
-<meta property="og:description" content="JSON的几种标准格式  今天在使用mongoimport导入json格式的时候发现出问题了，需要我去了解一下json的标准格式，在这之前我一直以为json是用{}括起来的键值对，且最后一个键值对不能有逗号。（弱者的自嘲） 什么是JSON json是JavaScript Object Notation（JavaScript对象表示法） json是轻量级的文本数据交换格式 json独立于语言 jso">
+<meta property="og:description" content="Slice详解slice和数组的区别众所周知，go是一门强类型的语言，什么是强类型呢？就是对类型要求非常严格(在运算时)，所以go中的float不能和int进行运算，甚至int和int64也不能进行运算。 数组是指长度固定的数据集合，比如 [3] int 指的就是长度为3的int类型集合，它和[4] int是两个完全不同的类型，所以不能作比较，比较也是一种运算。 而slice则是动态数组，长度不固">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-10-13T13:23:20.000Z">
-<meta property="article:modified_time" content="2022-10-13T13:24:03.890Z">
+<meta property="article:published_time" content="2022-11-03T14:10:39.000Z">
+<meta property="article:modified_time" content="2022-11-03T14:12:12.188Z">
 <meta property="article:author" content="安妮的心动录">
-<meta property="article:tag" content="后端">
+<meta property="article:tag" content="Go">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/2022/10/13/JSON%E7%9A%84%E5%87%A0%E7%A7%8D%E6%A0%87%E5%87%86%E6%A0%BC%E5%BC%8F/">
+<link rel="canonical" href="http://example.com/2022/11/03/Slice%E8%AF%A6%E8%A7%A3/">
 
 
 <script id="page-configurations">
@@ -48,7 +48,7 @@
   };
 </script>
 
-  <title>JSON的几种标准格式 | 安妮的心动录的园子</title>
+  <title>Slice详解 | 安妮的心动录的园子</title>
   
 
 
@@ -173,7 +173,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/13/JSON%E7%9A%84%E5%87%A0%E7%A7%8D%E6%A0%87%E5%87%86%E6%A0%BC%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/03/Slice%E8%AF%A6%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -186,7 +186,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          JSON的几种标准格式
+          Slice详解
         </h1>
 
         <div class="post-meta">
@@ -197,7 +197,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-10-13 21:23:20 / 修改时间：21:24:03" itemprop="dateCreated datePublished" datetime="2022-10-13T21:23:20+08:00">2022-10-13</time>
+              <time title="创建时间：2022-11-03 22:10:39 / 修改时间：22:12:12" itemprop="dateCreated datePublished" datetime="2022-11-03T22:10:39+08:00">2022-11-03</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -205,7 +205,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%90%8E%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">后端</span></a>
+                  <a href="/categories/Go/" itemprop="url" rel="index"><span itemprop="name">Go</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Go/%E5%90%8E%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">后端</span></a>
                 </span>
             </span>
 
@@ -222,14 +226,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>754</span>
+              <span>2.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -241,44 +245,35 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="JSON的几种标准格式"><a href="#JSON的几种标准格式" class="headerlink" title="JSON的几种标准格式"></a>JSON的几种标准格式</h1><p>  今天在使用mongoimport导入json格式的时候发现出问题了，需要我去了解一下json的标准格式，在这之前我一直以为json是用{}括起来的键值对，且最后一个键值对不能有逗号。（弱者的自嘲）</p>
-<h2 id="什么是JSON"><a href="#什么是JSON" class="headerlink" title="什么是JSON"></a>什么是JSON</h2><ul>
-<li>json是JavaScript Object Notation（JavaScript对象表示法）</li>
-<li>json是轻量级的文本数据交换格式</li>
-<li>json独立于语言</li>
-<li>json具有自我描述性，更衣理解</li>
-<li>json使用js语法来描述数据对象，但是json仍然独立于语言和平台，json解析器和json库支持许多不同的变成语言</li>
-</ul>
-<p>json是一种轻量级的数据交换格式，易于人阅读和编写，同时也易于机器解析和生成，之所以json这么流行，是因为json的结构和多级结构体刚好能对应上，而前后端交互的时候后端通常会返回给前端一个多级的结构体，于是json慢慢开始流行了，且json是跨语言和跨平台的，自身也足够轻量级。</p>
-<p>json的标准格式</p>
-<h5 id="json数值"><a href="#json数值" class="headerlink" title="json数值"></a>json数值</h5><p><code>//每个key对应的是一个value</code> </p>
-<p><code>&#123;</code></p>
-<p>​	<code>“k1&quot;: 1,</code></p>
-<p>​	<code>&quot;k2&quot;: 2</code> &#x2F;&#x2F;注意结尾的这个不能有逗号</p>
-<p><code>&#125;</code></p>
-<h5 id="json字符串"><a href="#json字符串" class="headerlink" title="json字符串"></a>json字符串</h5><p><code>&#123;</code></p>
-<p>​	<code>&quot;k1&quot;: &quot;1&quot;,</code></p>
-<p>​	<code>&quot;k2&quot;: &quot;2&quot;</code></p>
-<p><code>&#125;</code></p>
-<h5 id="json数组"><a href="#json数组" class="headerlink" title="json数组"></a>json数组</h5><p>{</p>
-<p>​	“k1”:  [1,2],</p>
-<p>​	“k2”: [3,4]</p>
-<p>}</p>
-<h5 id="json对象"><a href="#json对象" class="headerlink" title="json对象"></a>json对象</h5><p>{</p>
-<p>​	“k1”: {“1”: “haihai”},</p>
-<p>​	“k2”: {“2”:”haihahai”}</p>
-<p>}</p>
-<h5 id="json对象数组"><a href="#json对象数组" class="headerlink" title="json对象数组"></a>json对象数组</h5><p>{</p>
-<p>​	“k1”: [</p>
-<p>​		{“k11”: “hellohello”},</p>
-<p>​		{“k12”: “badbad”}</p>
-<p>]</p>
-<p>}</p>
-<h5 id="json数组对象"><a href="#json数组对象" class="headerlink" title="json数组对象"></a>json数组对象</h5><p>{</p>
-<p>​	“k2”: {</p>
-<p>​	         “hello”: [1,2,3]</p>
-<p>}</p>
-<p>}</p>
+        <h1 id="Slice详解"><a href="#Slice详解" class="headerlink" title="Slice详解"></a>Slice详解</h1><h3 id="slice和数组的区别"><a href="#slice和数组的区别" class="headerlink" title="slice和数组的区别"></a>slice和数组的区别</h3><p>众所周知，go是一门强类型的语言，什么是强类型呢？就是对类型要求非常严格(在运算时)，所以go中的float不能和int进行运算，甚至int和int64也不能进行运算。</p>
+<p>数组是指长度固定的数据集合，比如 [3] int 指的就是长度为3的int类型集合，它和[4] int是两个完全不同的类型，所以不能作比较，比较也是一种运算。</p>
+<p>而slice则是动态数组，长度不固定，可以动态扩容，slice的类型和长度没有关系，所以不同的slice可以进行比较(但这个操作通常没有意义)</p>
+<h3 id="slice本质"><a href="#slice本质" class="headerlink" title="slice本质"></a>slice本质</h3><p>slice其实就是一个结构体，里面有着对数组的封装，还有len和cap两个字段来描述数组的长度和容量</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// runtime/slice.go</span></span><br><span class="line"><span class="keyword">type</span> slice <span class="keyword">struct</span> &#123;</span><br><span class="line">	array unsafe.Pointer <span class="comment">// 元素指针 指向的其实是一个底层的数组</span></span><br><span class="line">	<span class="built_in">len</span>   <span class="type">int</span> <span class="comment">// 长度 </span></span><br><span class="line">	<span class="built_in">cap</span>   <span class="type">int</span> <span class="comment">// 容量</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>如果要判断slice是否为空，要使用</p>
+<p><code>len(slice)==0</code></p>
+<p>而不能使用</p>
+<p><code>slice==nil</code></p>
+<p>因为slice&#x3D;0判断的是数组内是否有元素，如果没有元素则为空，而slice&#x3D;&#x3D;nil判断的是一整个结构体是否为Nil 如果我们用var 的方式声明，不会给slice分配内存，那么slice确实&#x3D;nil。但如果我们使用make的方式进行声明，那么就会给slice分配内存，所以slice就!&#x3D;nil了</p>
+<p>同理的 要判断两个slice是否相同，不能简单的通过slice1&#x3D;&#x3D;slice2进行判断，而是要循环切片进行判断</p>
+<h3 id="slice传参"><a href="#slice传参" class="headerlink" title="slice传参"></a>slice传参</h3><p>在我们把slice作为参数传递出去的时候，传的是<strong>值</strong>，这也就是为什么我们在被调函数中对数组进行append，在主调函数中看不到这个变化。但是如果直接通过下标的方式对slice进行修改，那么是可以反映到主调函数中的(因为下标修改是直接对底层的数组进行修改)</p>
+<p>准确的来说，go中所有的参数传递，都是值传递，并没有引用传递，那有的同学可能就疑惑了，我传递map的话不是在被调函数中的改变可以反映到主调函数中吗？</p>
+<p>因为进行函数调用的时候，slice类型会调用runtime.makeslice函数，这个函数的返回值类型是值，而map类型会调用runtime.makemap函数，这个函数的返回值类型是一个指针</p>
+<h3 id="slice的扩容过程"><a href="#slice的扩容过程" class="headerlink" title="slice的扩容过程"></a>slice的扩容过程</h3><p>网上流传的版本是:当slice容量小于1024的时候，每次扩容翻倍，在1024长度之后，每次扩容1.25倍，而在1.18版本之后变为了，当容量小于256的时候，扩容为两倍，超过256，newcap&#x3D;oldcap+(oldcap+3*256) &#x2F;4</p>
+<p>这个说法不对，或者说只对了一半</p>
+<p>go 1.9.5源码</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// go 1.9.5 src/runtime/slice.go:82</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">growslice</span><span class="params">(et *_type, old slice, <span class="built_in">cap</span> <span class="type">int</span>)</span></span> slice &#123;</span><br><span class="line">    <span class="comment">// ……</span></span><br><span class="line">    newcap := old.<span class="built_in">cap</span></span><br><span class="line">	doublecap := newcap + newcap</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">cap</span> &gt; doublecap &#123;</span><br><span class="line">		newcap = <span class="built_in">cap</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> old.<span class="built_in">len</span> &lt; <span class="number">1024</span> &#123;</span><br><span class="line">			newcap = doublecap</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">for</span> newcap &lt; <span class="built_in">cap</span> &#123;</span><br><span class="line">				newcap += newcap / <span class="number">4</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//</span></span><br><span class="line">	<span class="comment">//内存对齐 </span></span><br><span class="line">	capmem = roundupsize(<span class="type">uintptr</span>(newcap) * ptrSize)</span><br><span class="line">	newcap = <span class="type">int</span>(capmem / ptrSize)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>go 1.18源码</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// go 1.18 src/runtime/slice.go:178</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">growslice</span><span class="params">(et *_type, old slice, <span class="built_in">cap</span> <span class="type">int</span>)</span></span> slice &#123;</span><br><span class="line">    <span class="comment">// ……</span></span><br><span class="line">    newcap := old.<span class="built_in">cap</span></span><br><span class="line">	doublecap := newcap + newcap</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">cap</span> &gt; doublecap &#123;</span><br><span class="line">		newcap = <span class="built_in">cap</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">const</span> threshold = <span class="number">256</span></span><br><span class="line">		<span class="keyword">if</span> old.<span class="built_in">cap</span> &lt; threshold &#123;</span><br><span class="line">			newcap = doublecap</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">for</span> <span class="number">0</span> &lt; newcap &amp;&amp; newcap &lt; <span class="built_in">cap</span> &#123;</span><br><span class="line">                <span class="comment">// Transition from growing 2x for small slices</span></span><br><span class="line">				<span class="comment">// to growing 1.25x for large slices. This formula</span></span><br><span class="line">				<span class="comment">// gives a smooth-ish transition between the two.</span></span><br><span class="line">				newcap += (newcap + <span class="number">3</span>*threshold) / <span class="number">4</span></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> newcap &lt;= <span class="number">0</span> &#123;</span><br><span class="line">				newcap = <span class="built_in">cap</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">    </span><br><span class="line">	<span class="comment">//内存对齐</span></span><br><span class="line">	capmem = roundupsize(<span class="type">uintptr</span>(newcap) * ptrSize)</span><br><span class="line">	newcap = <span class="type">int</span>(capmem / ptrSize)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果只看前半部分，那么网上的各种文章说的是对的，现实是，后半部分还对newcap做了一个内存对齐，这个和内存分配策略有关，进行内存对齐之后，新slice的容量&gt;&#x3D;未进行内存对齐之前的cap</p>
+<h3 id="new和make的区别"><a href="#new和make的区别" class="headerlink" title="new和make的区别"></a>new和make的区别</h3><p>首先new和make都是Go内置的用来分配内存的函数，区别是make用来给slice map channel等引用类型分配内存，返回值是一个值类型，而new用来给数组、结构体值类型来分配内存，后者返回值是一个指针</p>
 
     </div>
 
@@ -288,7 +283,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag"># 后端</a>
+              <a href="/tags/Go/" rel="tag"># Go</a>
           </div>
 
         
@@ -297,13 +292,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/10/12/netrpc%E5%88%9D%E8%AF%86/" rel="prev" title="netrpc初识">
-      <i class="fa fa-chevron-left"></i> netrpc初识
+    <a href="/2022/11/03/Go-web%E4%B8%8EContent-Type/" rel="prev" title="Go web与Content-Type">
+      <i class="fa fa-chevron-left"></i> Go web与Content-Type
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2022/10/18/CPU%E4%B8%8EGPU%E7%9A%84%E5%8C%BA%E5%88%AB/" rel="next" title="CPU与GPU的区别">
-      CPU与GPU的区别 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -367,7 +359,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JSON%E7%9A%84%E5%87%A0%E7%A7%8D%E6%A0%87%E5%87%86%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">JSON的几种标准格式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFJSON"><span class="nav-number">1.1.</span> <span class="nav-text">什么是JSON</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#json%E6%95%B0%E5%80%BC"><span class="nav-number">1.1.0.0.1.</span> <span class="nav-text">json数值</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#json%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-number">1.1.0.0.2.</span> <span class="nav-text">json字符串</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#json%E6%95%B0%E7%BB%84"><span class="nav-number">1.1.0.0.3.</span> <span class="nav-text">json数组</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#json%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.1.0.0.4.</span> <span class="nav-text">json对象</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#json%E5%AF%B9%E8%B1%A1%E6%95%B0%E7%BB%84"><span class="nav-number">1.1.0.0.5.</span> <span class="nav-text">json对象数组</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#json%E6%95%B0%E7%BB%84%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.1.0.0.6.</span> <span class="nav-text">json数组对象</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Slice%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">Slice详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#slice%E5%92%8C%E6%95%B0%E7%BB%84%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.0.1.</span> <span class="nav-text">slice和数组的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#slice%E6%9C%AC%E8%B4%A8"><span class="nav-number">1.0.2.</span> <span class="nav-text">slice本质</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#slice%E4%BC%A0%E5%8F%82"><span class="nav-number">1.0.3.</span> <span class="nav-text">slice传参</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#slice%E7%9A%84%E6%89%A9%E5%AE%B9%E8%BF%87%E7%A8%8B"><span class="nav-number">1.0.4.</span> <span class="nav-text">slice的扩容过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#new%E5%92%8Cmake%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.0.5.</span> <span class="nav-text">new和make的区别</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
