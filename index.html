@@ -169,6 +169,235 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/15/toms%E5%88%9D%E8%AF%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/11/15/toms%E5%88%9D%E8%AF%86/" class="post-title-link" itemprop="url">toms初识</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-11-15 22:12:43 / 修改时间：22:19:24" itemprop="dateCreated datePublished" datetime="2022-11-15T22:12:43+08:00">2022-11-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%90%8E%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">后端</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="toms初识"><a href="#toms初识" class="headerlink" title="toms初识"></a>toms初识</h1><p>tmos一个特征和功能的集和，为了满足当今市场而出现的一个代理、高性能的一系列操作系统和固件，他们都在big-ip硬件设备上或BIG-IP虚拟版中运行</p>
+<p>基于包设计和基于代理（全权代理）设计的区别<br>- 基于包：这些网络设备都是网络数据流中间的节点，并不是数据交互流的终点或起点，并且这些设备只需要满足部分协议而不是整个协议栈，比如一个位于第三层（IP）的设备，可能只需要会读写IP地址TCP地址即可，至于第二层第一层的协议将与其无关。现在这些设备越来越智能了，可以修改tcp数据流，甚至能修改tcp数据包的头部（seq ack）字段，而这些是通过一个状态跟踪引擎来实现的这些设备可以识别出哪些是单独的http请求（第一次的）这些基于包设计的设备是比后者快的，而且也没有那么复杂，最根本的原因就是它们只需要理解一部分协议</p>
+<p>- 基于代理： 全权代理和基于包的设计刚好是相反的，它需要理解整个网络传输的协议栈，同时他们也是协议的发起者和接收者，而一个代理服务器和客户端之间的通信与一个代理服务器和后段服务器之间的通信是不同的（反向代理、正向代理）<br>二者之间的矛盾基于代理的设计比基于包的设计更加智能，但是目前来说基于代理的设计性能更强。当流量激增的时候，基于包管理的性能也会被限制，所以在企业进行选型的时候，二者都可以被考虑</p>
+<p>什么是tmos<br>- 模块的集和 每个模块提供一部分功能 比如arp ip tcp各自有各自的模块，每个模块都是自称一体的，这样将可以减少系统的复杂性，类似于搭积木一样，当需要增加对某个协议的支持时，我再去构建这么一个单独的模块<br>- 自主&amp;独立的 tmos具有自己的CPU 内存 和外围设备的接口，当一个基于tmos的设备受到数据包的时候，这些线路的子管理系统是完全在tmos中独立的，linux是不参与这个过程的，也就是说tmos并不与linux操作系统发生耦合，linux只用来管理程序<br>- 实施操作系统 （非抢占式的操作系统） 对于tmos这样高性能、大流量的操作系统来说，抢占式的os会浪费掉cpu的部分性能（高优先级插队），tmos的设计是每个组件执行必要的操作，然后把cpu让出去给下一个组件运行。这样将消除了中断、上下文切换等cpu开销，并且让程序有序运行<br>- 基于软件与硬件 它可以从软件和硬件两方面来解决问题，如果是难度比较高的，可能优先走的就是软件，如果是资源密集的，那么优先丢给硬件执行<br>- 事件驱动 因为tmos是模块化并且实时的，也就意味着它能够在任何时间内切换任务，也能够在短时间内改变性能来满足当前的需求<br>- 状态检测 tmos的内核是基于高速代理的，<br>- 动态数据包筛选 tmos能够筛选数据包，它有一个重要优势就是全权代理隐藏了后端服务的网络对战，f5的iRules允许动态控制应用程序流量，可以重定向，动态过滤，或者阻止流量等等<br>以上：tmos三一个功能强大、适应性强的解决反感，模块化与字包含、实时、事件驱动的操作系统相结合，为tmos提供了前所未有的功能<br>tmos体系中的特殊模块<br>tcp express 基于包管理的设计无法提供这个功能，tcp express包括了 延迟和选择性确认、显示拥塞统治、快重传，拥塞避免等等算法，tmos基本上把tcp能优化的地方全部进行了优化，这才能实现显著的加速</p>
+<p>tmm（多线程进程）:流量管理微内核处理big-ip系统上的所有负载均衡流量，在tmos中作为额u一个实时用户进程运行，cpu和内存资源在big-ip配置中明确配置</p>
+<p>影响tmm使用cpu资源的因素</p>
+<p>每个处理器的内核</p>
+<p>每个核心的超线程数</p>
+<p>big-ip版本</p>
+<p> big-ip系统许可的模块</p>
+<p>单cpu </p>
+<p>单核的cpu使用率<br>在big-ip 11.5.0之前，每个cpu内核被分配一个单独的tmm实例，每个内核处理数据平面任务（tmm特定）和控制平面任务（非tmm特定） 。从big-ip11.5.0开始，数据平面任务和控制平面任务都采用英特尔超线程技术在CPU的系统上使用单独的逻辑内核，偶数编号给TMM，奇数编号给其他进程。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/15/Map%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/11/15/Map%E8%AF%A6%E8%A7%A3/" class="post-title-link" itemprop="url">Map详解</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-11-15 22:12:30 / 修改时间：22:15:37" itemprop="dateCreated datePublished" datetime="2022-11-15T22:12:30+08:00">2022-11-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Go/" itemprop="url" rel="index"><span itemprop="name">Go</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Map详解"><a href="#Map详解" class="headerlink" title="Map详解"></a>Map详解</h1><h3 id="什么是Map"><a href="#什么是Map" class="headerlink" title="什么是Map"></a>什么是Map</h3><p>基本上每种计算机语言里面都会内置一个map类型，map是一个由一组key,value组成的数据类型，并且同一个key只会出现一次。同时map支持增删改查四种操作，map的主要实现方式有两种，分别是哈希查找表(hash table)和搜索树(search tree)</p>
+<p>哈希表：使用一个哈希函数将key分配到不同的bucket(桶，可以理解成数组中的索引)，开销主要是在哈希函数的计算和数组的常数访问时间，很多场景下，我们可以简单的把哈希表的时间复杂度看成O(1)。哈希表通常还会有一个碰撞的问题，所谓的哈希碰撞就是多个key被哈希函数分配到了同一个bucket。一般有两种解决方法：链表法和开放地址法。链表法是将一个bucket实现程一个链表，落在同一个bucket中的key会插入这个链表。而开发地址法则是在发生碰撞之后，通过一定的规律，在空着的bucket里面挑选，用来放置新的key </p>
+<p>搜索树：一般使用自平衡二叉树，比如AVL树和红黑树</p>
+<p>二者的区别是，自平衡搜索树的时间复杂度最低为O(logN)，而哈希表的最差情况是O(N)，哈希表平均查找效率是O(1)。 还有一个区别是，遍历自平衡搜索树，返回的key是有序的，而哈希表则是乱序的</p>
+<h3 id="Go-Map"><a href="#Go-Map" class="headerlink" title="Go Map"></a>Go Map</h3><p>Go中的Map使用的是哈希表，并且使用链表的方式解决哈希冲突</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A header for a Go map.</span></span><br><span class="line"><span class="keyword">type</span> hmap <span class="keyword">struct</span> &#123;</span><br><span class="line">    <span class="comment">// 元素个数，调用 len(map) 时，直接返回此值</span></span><br><span class="line">	count     <span class="type">int</span></span><br><span class="line">	flags     <span class="type">uint8</span></span><br><span class="line">	<span class="comment">// buckets 的对数 log_2</span></span><br><span class="line">	B         <span class="type">uint8</span></span><br><span class="line">	<span class="comment">// overflow 的 bucket 近似数</span></span><br><span class="line">	noverflow <span class="type">uint16</span></span><br><span class="line">	<span class="comment">// 计算 key 的哈希的时候会传入哈希函数</span></span><br><span class="line">	hash0     <span class="type">uint32</span></span><br><span class="line">    <span class="comment">// 指向 buckets 数组，大小为 2^B</span></span><br><span class="line">    <span class="comment">// 如果元素个数为0，就为 nil</span></span><br><span class="line">	buckets    unsafe.Pointer</span><br><span class="line">	<span class="comment">// 等量扩容的时候，buckets 长度和 oldbuckets 相等</span></span><br><span class="line">	<span class="comment">// 双倍扩容的时候，buckets 长度会是 oldbuckets 的两倍</span></span><br><span class="line">	oldbuckets unsafe.Pointer</span><br><span class="line">	<span class="comment">// 指示扩容进度，小于此地址的 buckets 迁移完成</span></span><br><span class="line">	nevacuate  <span class="type">uintptr</span></span><br><span class="line">	extra *mapextra <span class="comment">// optional fields</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>B就是buckets数组的长度对数，也就是buckets数组长度为2^B，buckets里面存放着key-value对，buckets也是一个指针，类似于slice中指向数组的指针。</p>
+<p>buckets指向的是下面这个东西</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> bmap <span class="keyword">struct</span> &#123;</span><br><span class="line">	tophash [bucketCnt]<span class="type">uint8</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译之后就变成了</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> bmap <span class="keyword">struct</span> &#123;</span><br><span class="line">    topbits  [<span class="number">8</span>]<span class="type">uint8</span></span><br><span class="line">    keys     [<span class="number">8</span>]keytype</span><br><span class="line">    values   [<span class="number">8</span>]valuetype</span><br><span class="line">    pad      <span class="type">uintptr</span></span><br><span class="line">    overflow <span class="type">uintptr</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>其中bmap就是我们所说的哈希桶，每个桶里面最多装下8个key-value对，这些key之所以会落入同一个桶中，是因为他们经过哈希计算之后，得到的结果是一类的(哈希结果得到的后八位相同)，之后会根据key计算出来的hash值的高8位来决定key到底落入桶内的那个位置(哪个槽)</p>
+<p><img src="/2022/11/15/Map%E8%AF%A6%E8%A7%A3/1.png"></p>
+<p>其中每个bmap的key1…key8是存放在一起的，value1….value8是存放在一起的，这样的目的是为了节省因为内存对齐造成的空间浪费。</p>
+<p>每个bucket设计成最多只能存放8个key-value对，如果有第九个key-value落入当前的bucket，则需要再构建一个bucket,然后通过overflow指针连接起来。</p>
+<p><strong>创建map</strong></p>
+<p>底层调用的是makemap函数，主要做的工作就是初始化hamp结构体的各种字段，比如计算B的大小，设置哈西种子hash0等等</p>
+<p><strong>哈希函数</strong></p>
+<p>map的一个关键点在于哈希函数的选择，在程序启动时会检测cpu是否支持aes，如果支持则使用aes hash，否则使用memhash。hash函数有加密型和非加密型，加密型的一般用于加密数据、数字摘要等，典型代表就是md5 sha1 sha256 aes256这种，非加密型的就是查找，而map就是使用的查找hash函数</p>
+<p><strong>key定位过程</strong></p>
+<p>key经过哈希计算后得到哈希值，共64bit，计算它落到那个桶的时候，会用到最后B个bit位，最后B个bit位的值，就是落入桶的序号、当两个不同的key落在同一个桶中，也就是发生了哈希冲突，解决手段是链表法，从前往后找到第一个空位，这样，在查找某个key的时候先找到对应的桶，然后再去遍历bucket里的key。</p>
+<p>在槽内的查找过程：使用高八位的bit值，高八位的值就是槽位，如果在bucket中没找到，并且overflow不为空，还要继续去overflow bucket中查找，直到找到或是所有的key槽位都遍历完</p>
+<p>综上，这是一个双重循环的过程，外层循环查找所有bucket和overflow bucket，内层循环遍历单个bucket的所有槽位</p>
+<p><strong>get</strong></p>
+<p>Go中读取map有两种语法，带comma和不带comma，当要查询的key不在map里，带comma的用法会返回一个bool型变量提示key是否在map中，而不带comma的语法则会返回一个对应类型的零值</p>
+<p><strong>遍历</strong></p>
+<p>本来map的遍历过程比较简单：遍历所有的bucket以及它后面挂的overflow bucket(第一层遍历)，然后挨个遍历bucket中的所有cell(槽)，每个bucket包含8个cell，从有key的cell中取出key value </p>
+<p>但是现实并没有这么简单，因为扩容并不是一个原子的操作，每次最多只搬运两个bucket，所以如果触发了扩容操作，那么很长时间内，map状态都是处于一种中间态，有些bucket已经搬迁到新家，有些bucket还呆在老地方</p>
+<p>因此，遍历如果发生在扩容的过程中，就会涉及到遍历新老bucket的过程</p>
+<p>具体是遍历老的bucket，然后再遍历老的bucket裂变到新的bucket里的元素</p>
+<p><strong>赋值</strong></p>
+<p>调用的是mapassign函数，语法和插入key的过程一样，只不过前者的key在map在不存在，后者存在</p>
+<p>具体过程</p>
+<p>1.检查map标志位flgas,如果为1则说明其他协程在执行写操作，导致程序panic</p>
+<p>2.如果map正在扩容，那么当key定位到了某个bucket后，需要确保这个bucket对应的老bucket完成了迁移，即老bucket的key都要迁移到新的bucket中之后，才能在新的bucket中进行插入或者更新的操作</p>
+<p><strong>删除</strong></p>
+<p>调用的是底层的mapdelete函数</p>
+<p>1.检查标志位flags，如果发现标志位为1，说明其他协程在执行写操作，直接panic </p>
+<p>2.计算key的哈希，找到落入的bucket，如果正在扩容中，直接完成一次扩容</p>
+<p>3.同样是两层循环，找到key的具体位置，然后删掉</p>
+<p><strong>扩容</strong></p>
+<p>使用哈希表的目的是快速找到目标key，随着map中添加的key越来越多,key发生碰撞的概率也越来越大，当bucket中的8个cell倍塞满的时候，效率就是最低的，最理想的情况是一个bucket只装一个key，这样就能达到o1的效率，当然这样空间消耗太多了</p>
+<p>触发扩容的条件</p>
+<p>1.装载因子超过阈值6.5</p>
+<p>2.overflow的bucket数量过多，当B&lt;15如果overflow的数量大于2^B,当B&gt;&#x3D;15，如果overflow的数量大于2^15(装载因子比较小，map的插入和查找效率也很低，但是bucket的数量很多)</p>
+<p>两种扩容方式</p>
+<p>1.元素太多，bucket太少，将B+1，让bucket的数量翻倍</p>
+<p>2.元素不多，但overflow bucket很多，说明很多bucket都没满，开辟一个新的bucket空间，将老bucket中的元素移动到移动到新的bucket，是的一个bucket中的key排列更加紧密</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/03/Slice%E8%AF%A6%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1102,262 +1331,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/13/JSON%E7%9A%84%E5%87%A0%E7%A7%8D%E6%A0%87%E5%87%86%E6%A0%BC%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="安妮的心动录">
-      <meta itemprop="description" content="永远不要高估自己">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="安妮的心动录的园子">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/10/13/JSON%E7%9A%84%E5%87%A0%E7%A7%8D%E6%A0%87%E5%87%86%E6%A0%BC%E5%BC%8F/" class="post-title-link" itemprop="url">JSON的几种标准格式</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-10-13 21:23:20 / 修改时间：21:24:03" itemprop="dateCreated datePublished" datetime="2022-10-13T21:23:20+08:00">2022-10-13</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%90%8E%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">后端</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>754</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="JSON的几种标准格式"><a href="#JSON的几种标准格式" class="headerlink" title="JSON的几种标准格式"></a>JSON的几种标准格式</h1><p>  今天在使用mongoimport导入json格式的时候发现出问题了，需要我去了解一下json的标准格式，在这之前我一直以为json是用{}括起来的键值对，且最后一个键值对不能有逗号。（弱者的自嘲）</p>
-<h2 id="什么是JSON"><a href="#什么是JSON" class="headerlink" title="什么是JSON"></a>什么是JSON</h2><ul>
-<li>json是JavaScript Object Notation（JavaScript对象表示法）</li>
-<li>json是轻量级的文本数据交换格式</li>
-<li>json独立于语言</li>
-<li>json具有自我描述性，更衣理解</li>
-<li>json使用js语法来描述数据对象，但是json仍然独立于语言和平台，json解析器和json库支持许多不同的变成语言</li>
-</ul>
-<p>json是一种轻量级的数据交换格式，易于人阅读和编写，同时也易于机器解析和生成，之所以json这么流行，是因为json的结构和多级结构体刚好能对应上，而前后端交互的时候后端通常会返回给前端一个多级的结构体，于是json慢慢开始流行了，且json是跨语言和跨平台的，自身也足够轻量级。</p>
-<p>json的标准格式</p>
-<h5 id="json数值"><a href="#json数值" class="headerlink" title="json数值"></a>json数值</h5><p><code>//每个key对应的是一个value</code> </p>
-<p><code>&#123;</code></p>
-<p>​	<code>“k1&quot;: 1,</code></p>
-<p>​	<code>&quot;k2&quot;: 2</code> &#x2F;&#x2F;注意结尾的这个不能有逗号</p>
-<p><code>&#125;</code></p>
-<h5 id="json字符串"><a href="#json字符串" class="headerlink" title="json字符串"></a>json字符串</h5><p><code>&#123;</code></p>
-<p>​	<code>&quot;k1&quot;: &quot;1&quot;,</code></p>
-<p>​	<code>&quot;k2&quot;: &quot;2&quot;</code></p>
-<p><code>&#125;</code></p>
-<h5 id="json数组"><a href="#json数组" class="headerlink" title="json数组"></a>json数组</h5><p>{</p>
-<p>​	“k1”:  [1,2],</p>
-<p>​	“k2”: [3,4]</p>
-<p>}</p>
-<h5 id="json对象"><a href="#json对象" class="headerlink" title="json对象"></a>json对象</h5><p>{</p>
-<p>​	“k1”: {“1”: “haihai”},</p>
-<p>​	“k2”: {“2”:”haihahai”}</p>
-<p>}</p>
-<h5 id="json对象数组"><a href="#json对象数组" class="headerlink" title="json对象数组"></a>json对象数组</h5><p>{</p>
-<p>​	“k1”: [</p>
-<p>​		{“k11”: “hellohello”},</p>
-<p>​		{“k12”: “badbad”}</p>
-<p>]</p>
-<p>}</p>
-<h5 id="json数组对象"><a href="#json数组对象" class="headerlink" title="json数组对象"></a>json数组对象</h5><p>{</p>
-<p>​	“k2”: {</p>
-<p>​	         “hello”: [1,2,3]</p>
-<p>}</p>
-<p>}</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/12/netrpc%E5%88%9D%E8%AF%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="安妮的心动录">
-      <meta itemprop="description" content="永远不要高估自己">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="安妮的心动录的园子">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/10/12/netrpc%E5%88%9D%E8%AF%86/" class="post-title-link" itemprop="url">netrpc初识</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-10-12 21:15:49 / 修改时间：21:17:01" itemprop="dateCreated datePublished" datetime="2022-10-12T21:15:49+08:00">2022-10-12</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Go/" itemprop="url" rel="index"><span itemprop="name">Go</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="net-x2F-rpc初识"><a href="#net-x2F-rpc初识" class="headerlink" title="net&#x2F;rpc初识"></a>net&#x2F;rpc初识</h1><p>RPC：远程调用过程协议，相关理论可以说是分布式和微服务的基础了，有需要的可以自行深入学习，简单来说RPC就是为了本机可以调用远程机器的子服务而产生的这么一种通信协议，基本上在后端开发中，RPC接口和HTTP接口的出现次数是最多的。</p>
-<p>RPC通常和protobuf联系在一起，这么说其实不太准确，其实是grpc和protobuf联系在一起，因为protobuf序列化和反序列化的速度比json快，而且protobuf更加轻量级，更适合进行轻量的rpc通信（restful风格接口）</p>
-<p>不管是轻量的GRPC框架，还是基于GRPC框架的微服务框架Go-Micro、Go-Kit等，它们在RPC这一块的实现肯定都是基于Go语言内建库：net&#x2F;rpc上的，很多人上来就直接去撸框架，我其实并不认同这种学习方法，从语言的底层开始学起显然是一种更优的方法。</p>
-<p>来看看Go内置的rpc包</p>
-<p>服务1：求圆形面积</p>
-<p><code>server</code></p>
-<p><code>//结构体 作为服务的接收者</code> </p>
-<p><code>type  MathUtil struct&#123;</code></p>
-<p><code>&#125;</code></p>
-<p><code>//向外暴露的服务 对应着Go的方法 方法：有接收者的函数</code></p>
-<p><code>//net/rpc规定 服务的参数只能有两个 第二个参数必须为指针 返回类型必须为error</code></p>
-<p><code>func (mu *MathUtil) CalculateCircleArea(req float32,resp *float32) error &#123;</code></p>
-<p> <code>*resp=math.Pi * req * req</code></p>
-<p>​    <code>return nil</code> </p>
-<p><code>&#125;</code></p>
-<p><code>func main() &#123;</code></p>
-<p>​	<code>//初始化指针类型数据</code></p>
-<p>​	<code>mathUtil:=new(MathUtil)</code></p>
-<p>​	<code>//调用 rpc注册服务</code></p>
-<pre><code> `err:=rpc.Register(mathutil)`
-</code></pre>
-<p>​	 <code>if err!=nil &#123;</code></p>
-<p>​	 <code>panic(err.Error())</code></p>
-<p>​	<code>return</code> </p>
-<p>​	<code>&#125;</code></p>
-<p>​	 <code>//将服务注册到http协议上，调用者可以通过http的方式进行调用</code></p>
-<p>​	<code>rpc.HandleHTTP()</code></p>
-<p>   <code>//进行特定端口的监听</code></p>
-<p>​	<code>listen,err:=net.Listen(&quot;tcp&quot;,&quot;:8087&quot;)</code></p>
-<p>​	<code>if err!=nil &#123;</code></p>
-<p>​	<code>panic(err.Error())</code>   </p>
-<p>​	<code>&#125;</code></p>
-<p>​	<code>http.Serve(listen,nil)</code></p>
-<p><code>&#125;</code></p>
-<p><code>client</code></p>
-<p><code>func main() &#123;</code></p>
-<p>  <code>//拨通HTTP</code></p>
-<p>  <code>client, err := rpc.DialHTTP(&quot;tcp&quot;, &quot;localhost:8087&quot;)</code></p>
-<p>  <code>if err != nil &#123;</code></p>
-<p>​    <code>panic(err.Error())</code></p>
-<p>  <code>&#125;</code></p>
-<p>  <code>var req float32</code></p>
-<p>  <code>req = 2</code></p>
-<p>  <code>var resp *float32</code></p>
-<p>  <code>//同步调用 Call的参数分别为服务名 注意这里的字符串是定死的 必须为 结构体.服务 和参数</code></p>
-<p>  <code>err = client.Call(&quot;MathUtil.CalculateCircleArea&quot;, req, &amp;resp)</code></p>
-<p>  <code>if err != nil &#123;</code></p>
-<p>​    <code>panic(err.Error())</code></p>
-<p>  <code>&#125;</code></p>
-<p>  <code>fmt.Println(resp)</code></p>
-<p>  <code>//异步调用</code></p>
-<p>  <code>//syncCall := client.Go(&quot;MathUtil.CalculateCircleArea&quot;, req, &amp;resp, nil)</code></p>
-<p>  <code>//replayDone := &lt;-syncCall.Done</code></p>
-<p>  <code>//fmt.Println(replayDone)</code></p>
-<p>  <code>//fmt.Println(*resp)</code></p>
-<p><code>&#125;</code></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1429,7 +1402,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">16</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1442,7 +1415,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1489,12 +1462,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">26k</span>
+    <span title="站点总字数">31k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">24 分钟</span>
+    <span title="站点阅读时长">28 分钟</span>
 </div>
 
 
