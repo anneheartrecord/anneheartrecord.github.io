@@ -22,25 +22,24 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Go编译相关Go的一些环境变量在我们安装Go语言的时候，都要设置一些环境变量，最重要的就是GOROOT和GOPATH，那么他们分别代表的是什么呢？ 下图是所有的Go环境变量  随便挑几个  GOROOT是GO的安装路径，有一些关于操作系统方面的支持和编译器、链接器等等  GOPATH是一个工作空间，目的是提供一个寻找.go源码的路径，可以设置多个目录，GO官方要求需要包含三个文件夹，src存放源文">
+  <meta name="description" content="前言前言：其实我是比较喜欢用文字、博客来记录自己的生活，记录自己的一些想法和感悟的，但是之前我一直觉得博客嘛，就应该发一些技术相关的东西，看了很多同龄人的博客我才发现，其实博客可以发的东西有很多很多，不一定要仅限于技术，于是就有了这篇文章。 还记得去年这个时候我还没有开始准备实习，那段时间应该是在完成工作室的考核，现在回头看看其实已经走出去很远了。 下面简单说一下我找实习的几个阶段吧。 stage">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Go编译相关">
-<meta property="og:url" content="http://example.com/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/index.html">
+<meta property="og:title" content="实习求职总结">
+<meta property="og:url" content="http://example.com/2023/02/24/%E5%AE%9E%E4%B9%A0%E6%B1%82%E8%81%8C%E6%80%BB%E7%BB%93/index.html">
 <meta property="og:site_name" content="安妮的心动录的园子">
-<meta property="og:description" content="Go编译相关Go的一些环境变量在我们安装Go语言的时候，都要设置一些环境变量，最重要的就是GOROOT和GOPATH，那么他们分别代表的是什么呢？ 下图是所有的Go环境变量  随便挑几个  GOROOT是GO的安装路径，有一些关于操作系统方面的支持和编译器、链接器等等  GOPATH是一个工作空间，目的是提供一个寻找.go源码的路径，可以设置多个目录，GO官方要求需要包含三个文件夹，src存放源文">
+<meta property="og:description" content="前言前言：其实我是比较喜欢用文字、博客来记录自己的生活，记录自己的一些想法和感悟的，但是之前我一直觉得博客嘛，就应该发一些技术相关的东西，看了很多同龄人的博客我才发现，其实博客可以发的东西有很多很多，不一定要仅限于技术，于是就有了这篇文章。 还记得去年这个时候我还没有开始准备实习，那段时间应该是在完成工作室的考核，现在回头看看其实已经走出去很远了。 下面简单说一下我找实习的几个阶段吧。 stage">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/1.jpg">
-<meta property="og:image" content="http://example.com/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/2.png">
-<meta property="og:image" content="http://example.com/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/3.png">
-<meta property="og:image" content="http://example.com/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/4.png">
-<meta property="article:published_time" content="2022-10-31T14:52:56.000Z">
-<meta property="article:modified_time" content="2022-11-15T14:14:25.718Z">
+<meta property="og:image" content="http://example.com/2023/02/24/%E5%AE%9E%E4%B9%A0%E6%B1%82%E8%81%8C%E6%80%BB%E7%BB%93/1.png">
+<meta property="og:image" content="http://example.com/2023/02/24/%E5%AE%9E%E4%B9%A0%E6%B1%82%E8%81%8C%E6%80%BB%E7%BB%93/2.png">
+<meta property="article:published_time" content="2023-02-24T03:08:23.000Z">
+<meta property="article:modified_time" content="2023-02-24T03:14:10.477Z">
 <meta property="article:author" content="安妮的心动录">
-<meta property="article:tag" content="Go">
+<meta property="article:tag" content="感悟及认知">
+<meta property="article:tag" content="实习">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/1.jpg">
+<meta name="twitter:image" content="http://example.com/2023/02/24/%E5%AE%9E%E4%B9%A0%E6%B1%82%E8%81%8C%E6%80%BB%E7%BB%93/1.png">
 
-<link rel="canonical" href="http://example.com/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/">
+<link rel="canonical" href="http://example.com/2023/02/24/%E5%AE%9E%E4%B9%A0%E6%B1%82%E8%81%8C%E6%80%BB%E7%BB%93/">
 
 
 <script id="page-configurations">
@@ -53,7 +52,7 @@
   };
 </script>
 
-  <title>Go编译相关 | 安妮的心动录的园子</title>
+  <title>实习求职总结 | 安妮的心动录的园子</title>
   
 
 
@@ -178,7 +177,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/24/%E5%AE%9E%E4%B9%A0%E6%B1%82%E8%81%8C%E6%80%BB%E7%BB%93/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -191,7 +190,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Go编译相关
+          实习求职总结
         </h1>
 
         <div class="post-meta">
@@ -200,23 +199,17 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2022-10-31 22:52:56" itemprop="dateCreated datePublished" datetime="2022-10-31T22:52:56+08:00">2022-10-31</time>
+              <time title="创建时间：2023-02-24 11:08:23 / 修改时间：11:14:10" itemprop="dateCreated datePublished" datetime="2023-02-24T11:08:23+08:00">2023-02-24</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-11-15 22:14:25" itemprop="dateModified" datetime="2022-11-15T22:14:25+08:00">2022-11-15</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Go/" itemprop="url" rel="index"><span itemprop="name">Go</span></a>
+                  <a href="/categories/%E6%84%9F%E6%82%9F%E5%8F%8A%E8%AE%A4%E7%9F%A5/" itemprop="url" rel="index"><span itemprop="name">感悟及认知</span></a>
                 </span>
             </span>
 
@@ -233,7 +226,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.3k</span>
+              <span>2.1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -252,82 +245,22 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="Go编译相关"><a href="#Go编译相关" class="headerlink" title="Go编译相关"></a>Go编译相关</h1><h2 id="Go的一些环境变量"><a href="#Go的一些环境变量" class="headerlink" title="Go的一些环境变量"></a>Go的一些环境变量</h2><p>在我们安装Go语言的时候，都要设置一些环境变量，最重要的就是GOROOT和GOPATH，那么他们分别代表的是什么呢？</p>
-<p>下图是所有的Go环境变量</p>
-<p><img src="/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/1.jpg"></p>
-<p>随便挑几个</p>
-<ul>
-<li><p>GOROOT是GO的安装路径，有一些关于操作系统方面的支持和编译器、链接器等等</p>
-</li>
-<li><p>GOPATH是一个工作空间，目的是提供一个寻找.go源码的路径，可以设置多个目录，GO官方要求需要包含三个文件夹，src存放源文件，pkg存放编译后的库文件，后缀为.a，bin则存放可执行文件。</p>
-</li>
-<li><p>GOOS是Go当前所在的操作系统</p>
-</li>
-<li><p>GOARCH是Go所在的计算机架构</p>
-</li>
-<li><p>GO111MODULE表示是否开启Gomod</p>
-</li>
-<li><p>GOPROXY表示代理，direct表示是否直接走代理</p>
-</li>
-<li><p>CGO表示是否开启CGO</p>
-</li>
-</ul>
-<p>在交叉编译的时候就要使用到GOOS和GOARCH，交叉编译指的是：编译的平台和代码最终运行的平台不一样，我们都知道，不同机器的机器码是不一样的，不是说一个二进制文件，在所有机器上都可以执行的。</p>
-<p>比如这么一个场景：你的开发环境是Win10，但是服务器是Centos7，这时候你想要让代码在服务器上运行，可以有这么两种解决方案</p>
-<ol>
-<li>把整个工程文件传到服务器上，在服务器上进行编译和运行，但这显然不方便，因为你还要在服务器上安装Go</li>
-<li>在开发环境进行编译，编译出的二进制文件能够在服务器上运行</li>
-</ol>
-<p>显然第二种解决方案更加简单</p>
-<p>那么该怎么做呢？</p>
-<ol>
-<li>修改GOOS和GOARCH为对应的平台与计算机架构，在Go1.13之后修改环境变量要用到go env -w  </li>
-<li>GOOS&#x3D;linux GOARCH&#x3D;amd64 go build &#x2F;&#x2F;分别指定对应的平台和机器的位数</li>
-</ol>
-<p>当然，在实际开发中一般环境都是和服务器相同的(操作系统和机器位数)，这样就不会有类似的问题。</p>
-<h2 id="Go代码编译链接过程"><a href="#Go代码编译链接过程" class="headerlink" title="Go代码编译链接过程"></a>Go代码编译链接过程</h2><p><img src="/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/2.png"></p>
-<p>从上图可以看出来，一份Go代码需要先经过编译器的编译称为汇编程序，再通过汇编器成为二进制可执行程序，再经过链接器的链接，最后才成为了一份二进制可执行文件。</p>
-<p>具体过程：go build其实就是编译和链接的过程，编译是指对源文件进行词法分析、语法分析、语义分析、优化，最后生成汇编代码文件，以.s作为文件的后缀。之后，汇编器会将汇编代码转变成机器可以执行的指令，每一条汇编语句都与一条机器指令对应。编译是一个很智能的过程，里面还包含了优化的部分，而汇编则是比较机械的部分，将汇编语句转换成机器指令。</p>
-<p>编译过程</p>
-<p><img src="/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/3.png"></p>
-<p>主要过程就是：扫描、语法分析、语义分析、源代码优化、代码生成、目标代码优化</p>
-<p>词法分析（扫描）：将源代码字符序列转换为标记(token)序列的过程 进行这个步骤的程序叫做词法分析器，也叫作扫描器(scanner)，一般以函数的方式存在，.go文件被输入到scanner，它使用一种类似于有限状态机的算法，将源代码的字符系列分割成一系列的token。token分为这几种：关键字、标识符、字面量、特殊符号等等</p>
-<p>Go语言scanner的具体逻辑就是通过next函数，获取下一个未被解析的字符，并且跳过之后的空格，回车，换行，tab这些字符，进入一个大的switch-case语句，匹配不同的情况。</p>
-<p>语法分析：上一步生成的token序列，需要经过进一步的处理，生成一颗以表达式为结点的语法树（把符号组成一个句子）</p>
-<p>语义分析：检查常量、类型、函数声明等等，可以把这一步看成静态检查，如果有很明显的语法错误，就会报错。</p>
-<p>中间代码生成：编译过程可以分为前端和后端，前端生成和平台无关的中间代码，而后端会针对不同的平台，生成不同的机器码，前面的词法分析、语法分析、语义分析都属于编译器前端，后面的阶段属于编译器后端。</p>
-<p>目标代码生成与优化：不同机器的机器字长、寄存器都不一样，意味着在不同机器上跑的机器码是不一样的，最后一步的目的就是要生成能在不同CPU架构上运行的代码。目标代码优化器会对一些指令进行优化，提升程序的效率。</p>
-<p>链接：将编译器生成的一个个目标文件链接成可执行文件，最后得到的文件是分成各种段的。</p>
-<p>其实关于编译链接这部分的内容还有很多需要学习的，这里只是简单的说明了一下，具体可以参考《程序员自我修养》这本书</p>
-<h2 id="Go编译相关命令"><a href="#Go编译相关命令" class="headerlink" title="Go编译相关命令"></a>Go编译相关命令</h2><p>Go语言的源码分为三类：命令源码、库源码、测试源码</p>
-<p>命令源码：Go程序的入口，包含func main() 函数，且第一行用package main声明属于main包</p>
-<p>库源码：主要是各种函数、各种接口，例如工具类的函数</p>
-<p>测试源码：以_test.go为后缀，用于测试功能、性能等</p>
-<p>与编译相关的Go命令主要有三个</p>
-<ul>
-<li>go build</li>
-<li>go install</li>
-<li>go run</li>
-</ul>
-<p>go build的一些参数</p>
-<ul>
-<li>-a 强制重新编译所有涉及到的包</li>
-<li>-n 打印命令执行过程 不真正执行</li>
-<li>-p n 打印命令执行的并行数 n默认为cpu核数</li>
-<li>-race 检测并报告程序中的数据竞争问题</li>
-<li>-v 打印命令执行中涉及到的代码包名称</li>
-<li>-x 打印命令过程中涉及到的命令 并执行</li>
-<li>-work 打印编译过程中的临时文件夹，编译完成后会被删除</li>
-</ul>
-<p>go build：编译过程会忽略掉测试源码 执行过程是递归寻找main.go所依赖的包，以及依赖的依赖，直至最低层的包，如果有循环依赖，则直接退出</p>
-<p>go install ：编译并安装指定的代码包，相比于Go build，它多了一个“安装编译后的结果文件到指定目录”的步骤</p>
-<p>go run ：先编译，再链接，再执行</p>
-<h2 id="Go程序启动过程"><a href="#Go程序启动过程" class="headerlink" title="Go程序启动过程"></a>Go程序启动过程</h2><p>1.检查运行平台的CPU 设置好程序运行需要相关标志</p>
-<p>2.TLS的初始化</p>
-<p>3.runtime包进行变量和调度器的设置</p>
-<p>4.创建新的goroutine绑定用户的main方法</p>
-<p>5.开始进行goroutine的调度</p>
-<p><img src="/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/4.png"></p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>前言：其实我是比较喜欢用文字、博客来记录自己的生活，记录自己的一些想法和感悟的，但是之前我一直觉得博客嘛，就应该发一些技术相关的东西，看了很多同龄人的博客我才发现，其实博客可以发的东西有很多很多，不一定要仅限于技术，于是就有了这篇文章。</p>
+<p>还记得去年这个时候我还没有开始准备实习，那段时间应该是在完成工作室的考核，现在回头看看其实已经走出去很远了。</p>
+<p>下面简单说一下我找实习的几个阶段吧。</p>
+<h1 id="stage-one"><a href="#stage-one" class="headerlink" title="stage one"></a>stage one</h1><p>在21年年底的时候，我在QQ空间里面看到了有学长分享食铁兽招新的信息，然后加入了招新QQ群，22年1月13日，那时候我刚考完《数据结构》这门课，这也是那学期的最后一门考试，考完之后打算和我的爱人去主城区耍的，然后突如其来的约面了，那是我人生中的第一次技术面试，说实话答得很差，完全没有准备过八股，只能凭借平常做项目的一些实践经历答上来一部分问题，大概只答上来了一小半吧，我印象很深的问题有Redis的持久化，Redis的数据结构，HTTP2的特性这些，面试官还和我讨论了一下Go的优劣和以后职业规划的事情。</p>
+<p>之后食铁兽的负责人晚上又和我联系了一下，简单问了一些职业发展之类的问题。</p>
+<p>第二天通知我面试通过了，当时真的非常非常开心，第一次觉得自己在技术上或者说是在编程上被认可了，然后就打车去了食铁兽那边，见到了面试官源哥，婧姐，还有负责人峰哥。</p>
+<p>之后的话就放寒假了，我当时在家不怎么学习，基本上都是食铁兽给的一些任务PUSH着我去学，比如尝试基于TCP、UDP、KCP、和HTTP编程，还有当时Go的最新版本是1.18beta，推出了泛型这一特性，但是还没有来得及对内置数据结构（slice map等）进行泛型的封装，于是我去学习了泛型，实现了简单的泛型封装，之后的任务就是写一个分布式消息队列。</p>
+<p>差不多三月到五月吧，基本每个周末都会去食铁兽那边敲代码，慢慢的把分布式消息队列的拼图一块块补全，从raft选主的实现，到消息的存储和删除，到消息的切片，再到考虑结点状态进行消息的分发，慢慢的也把这个项目做出来了，这也是我第一个不看视频写出来的非web项目。</p>
+<p>除了工程上的收获之外，我还认识了很多很厉害的大佬，比如源哥，给我的感觉就是在技术上钻的很深，不管是理论知识还是工程能力都很强，在大四的时候就能写出很多很多东西了，架构层面的知识也很优秀，之前问过他一点设计方面的题目，能感觉出来思考的方面特别多。而且他知识的广度也很大，前端后端嵌入式都会，现在我也大三下了，感觉我也很难在一年之后达到这样的水平。还有峰哥、翔哥、婧姐，就不一一说了，食铁兽的氛围是真的挺好的，这些哥哥姐姐们也很照顾我，在那边呆着也很舒服。</p>
+<h1 id="stage-two"><a href="#stage-two" class="headerlink" title="stage two"></a>stage two</h1><p>差不多五月开始正式准备八股和算法了，那段时间的学习强度真的特别大，差不多白天一整天都在工作室呆着，学到脑子疼才结束，晚上睡眠质量也差，差不多准备了两个礼拜之后就开始投递简历了，尴尬的事情来了，投了很多厂子，不过大部分厂子看到是24届就直接拒了，最后好像只有几个小厂还有字节给了面试机会，字节的算法没做出来，于是一面挂，拿了一个小厂的offer但是不太想去。</p>
+<h1 id="stage-three"><a href="#stage-three" class="headerlink" title="stage three"></a>stage three</h1><p>没有找到合适的实习就选择了去老师的实验室干活，做的是偏运维的华为HPC高性能迁移项目，其实就是写脚本，不过真的挺折磨的，需要保证一个大的脚本一次性执行成功。做完了就差不多七月底了，八月主要是在陪我的爱人，当时自己也生病了，除了复习八股之外还学了一些gRPC，做了一个简单的分布式系统来巩固知识。九月回校，这时候八股和算法都算比较巩固了，开始了新一轮的投递，两个礼拜下来面了五六家吧，也没有大厂愿意给面试机会，最后拿到了两个offer，分别是通明智云和daocloud，其实更想去daocloud，面试官说做的是容器方向，还能带薪做开源，狠狠的心动了，不过daocloud的给的薪资属实是有点少，算了一下得贴钱实习，于是去了通明智云，在通明智云的实习期间也很舒服，我的leader很信任我直接让我和客户对接，为期三个月的实习确实有真的在做东西学东西，也从同事前辈们身上学到了很多东西，总之是一段很有意义的实习经历。</p>
+<h1 id="stage-four"><a href="#stage-four" class="headerlink" title="stage four"></a>stage four</h1><p>差不多十二月的时候，当时考虑到通明这边的实习期快到了，于是开启了新一轮的投递，可能是因为在盘hc，同样的也没有大厂面试机会，一轮面下来也拿了几个小厂的offer，而且待遇也不是很好，做的东西也不太感兴趣，唯一感兴趣的可能是默安科技的云原生开发，但是突如其来的我的爱人与我分手了，当时就不太想去实习了，想回家修养一阵子，于是把offer给拒了，在流程中的面试也给推了。</p>
+<p><img src="/2023/02/24/%E5%AE%9E%E4%B9%A0%E6%B1%82%E8%81%8C%E6%80%BB%E7%BB%93/1.png" alt="image-20230224111242791"></p>
+<h1 id="stage-five"><a href="#stage-five" class="headerlink" title="stage five"></a>stage five</h1><p>年后市场开始复苏了，从一月底开始投递，一共投的也就那么几家吧，最后拿到了百度中台和莉莉丝运维的offer，最后打算去百度。</p>
+<p><img src="/2023/02/24/%E5%AE%9E%E4%B9%A0%E6%B1%82%E8%81%8C%E6%80%BB%E7%BB%93/2.png" alt="image-20230224111357693"></p>
+<h1 id="一些想法"><a href="#一些想法" class="headerlink" title="一些想法"></a>一些想法</h1><p>从大一确定毕业就业开始，我就很想去大厂实习，但是拿到大厂offer之后也没有很开心，是真的没有波澜，很平淡，和我当时通过食铁兽面试，拿到通明智云的offer一样，非常平淡。也许这就是人生吧，很多事情不要太去追求结果，这样在结果不如意的时候真的会很痛苦，结果如意了也不见得开心，多关注过程，那些奋斗的日子回过头看是真的挺美好的。</p>
 
     </div>
 
@@ -337,7 +270,8 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Go/" rel="tag"># Go</a>
+              <a href="/tags/%E6%84%9F%E6%82%9F%E5%8F%8A%E8%AE%A4%E7%9F%A5/" rel="tag"># 感悟及认知</a>
+              <a href="/tags/%E5%AE%9E%E4%B9%A0/" rel="tag"># 实习</a>
           </div>
 
         
@@ -346,13 +280,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/10/31/Go-defer%E8%AF%A6%E8%A7%A3/" rel="prev" title="Go defer详解">
-      <i class="fa fa-chevron-left"></i> Go defer详解
+    <a href="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/" rel="prev" title="设计模式的学习">
+      <i class="fa fa-chevron-left"></i> 设计模式的学习
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2022/11/03/Go-web%E4%B8%8EContent-Type/" rel="next" title="Go web与Content-Type">
-      Go web与Content-Type <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -416,7 +347,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3"><span class="nav-number">1.</span> <span class="nav-text">Go编译相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E7%9A%84%E4%B8%80%E4%BA%9B%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">1.1.</span> <span class="nav-text">Go的一些环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E4%BB%A3%E7%A0%81%E7%BC%96%E8%AF%91%E9%93%BE%E6%8E%A5%E8%BF%87%E7%A8%8B"><span class="nav-number">1.2.</span> <span class="nav-text">Go代码编译链接过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4"><span class="nav-number">1.3.</span> <span class="nav-text">Go编译相关命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E7%A8%8B%E5%BA%8F%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B"><span class="nav-number">1.4.</span> <span class="nav-text">Go程序启动过程</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#stage-one"><span class="nav-number">2.</span> <span class="nav-text">stage one</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#stage-two"><span class="nav-number">3.</span> <span class="nav-text">stage two</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#stage-three"><span class="nav-number">4.</span> <span class="nav-text">stage three</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#stage-four"><span class="nav-number">5.</span> <span class="nav-text">stage four</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#stage-five"><span class="nav-number">6.</span> <span class="nav-text">stage five</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E6%83%B3%E6%B3%95"><span class="nav-number">7.</span> <span class="nav-text">一些想法</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
