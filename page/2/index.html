@@ -169,6 +169,169 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/" class="post-title-link" itemprop="url">Go编译相关</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-10-31 22:52:56" itemprop="dateCreated datePublished" datetime="2022-10-31T22:52:56+08:00">2022-10-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-11-15 22:14:25" itemprop="dateModified" datetime="2022-11-15T22:14:25+08:00">2022-11-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Go/" itemprop="url" rel="index"><span itemprop="name">Go</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Go编译相关"><a href="#Go编译相关" class="headerlink" title="Go编译相关"></a>Go编译相关</h1><h2 id="Go的一些环境变量"><a href="#Go的一些环境变量" class="headerlink" title="Go的一些环境变量"></a>Go的一些环境变量</h2><p>在我们安装Go语言的时候，都要设置一些环境变量，最重要的就是GOROOT和GOPATH，那么他们分别代表的是什么呢？</p>
+<p>下图是所有的Go环境变量</p>
+<p><img src="/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/1.jpg"></p>
+<p>随便挑几个</p>
+<ul>
+<li><p>GOROOT是GO的安装路径，有一些关于操作系统方面的支持和编译器、链接器等等</p>
+</li>
+<li><p>GOPATH是一个工作空间，目的是提供一个寻找.go源码的路径，可以设置多个目录，GO官方要求需要包含三个文件夹，src存放源文件，pkg存放编译后的库文件，后缀为.a，bin则存放可执行文件。</p>
+</li>
+<li><p>GOOS是Go当前所在的操作系统</p>
+</li>
+<li><p>GOARCH是Go所在的计算机架构</p>
+</li>
+<li><p>GO111MODULE表示是否开启Gomod</p>
+</li>
+<li><p>GOPROXY表示代理，direct表示是否直接走代理</p>
+</li>
+<li><p>CGO表示是否开启CGO</p>
+</li>
+</ul>
+<p>在交叉编译的时候就要使用到GOOS和GOARCH，交叉编译指的是：编译的平台和代码最终运行的平台不一样，我们都知道，不同机器的机器码是不一样的，不是说一个二进制文件，在所有机器上都可以执行的。</p>
+<p>比如这么一个场景：你的开发环境是Win10，但是服务器是Centos7，这时候你想要让代码在服务器上运行，可以有这么两种解决方案</p>
+<ol>
+<li>把整个工程文件传到服务器上，在服务器上进行编译和运行，但这显然不方便，因为你还要在服务器上安装Go</li>
+<li>在开发环境进行编译，编译出的二进制文件能够在服务器上运行</li>
+</ol>
+<p>显然第二种解决方案更加简单</p>
+<p>那么该怎么做呢？</p>
+<ol>
+<li>修改GOOS和GOARCH为对应的平台与计算机架构，在Go1.13之后修改环境变量要用到go env -w  </li>
+<li>GOOS&#x3D;linux GOARCH&#x3D;amd64 go build &#x2F;&#x2F;分别指定对应的平台和机器的位数</li>
+</ol>
+<p>当然，在实际开发中一般环境都是和服务器相同的(操作系统和机器位数)，这样就不会有类似的问题。</p>
+<h2 id="Go代码编译链接过程"><a href="#Go代码编译链接过程" class="headerlink" title="Go代码编译链接过程"></a>Go代码编译链接过程</h2><p><img src="/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/2.png"></p>
+<p>从上图可以看出来，一份Go代码需要先经过编译器的编译称为汇编程序，再通过汇编器成为二进制可执行程序，再经过链接器的链接，最后才成为了一份二进制可执行文件。</p>
+<p>具体过程：go build其实就是编译和链接的过程，编译是指对源文件进行词法分析、语法分析、语义分析、优化，最后生成汇编代码文件，以.s作为文件的后缀。之后，汇编器会将汇编代码转变成机器可以执行的指令，每一条汇编语句都与一条机器指令对应。编译是一个很智能的过程，里面还包含了优化的部分，而汇编则是比较机械的部分，将汇编语句转换成机器指令。</p>
+<p>编译过程</p>
+<p><img src="/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/3.png"></p>
+<p>主要过程就是：扫描、语法分析、语义分析、源代码优化、代码生成、目标代码优化</p>
+<p>词法分析（扫描）：将源代码字符序列转换为标记(token)序列的过程 进行这个步骤的程序叫做词法分析器，也叫作扫描器(scanner)，一般以函数的方式存在，.go文件被输入到scanner，它使用一种类似于有限状态机的算法，将源代码的字符系列分割成一系列的token。token分为这几种：关键字、标识符、字面量、特殊符号等等</p>
+<p>Go语言scanner的具体逻辑就是通过next函数，获取下一个未被解析的字符，并且跳过之后的空格，回车，换行，tab这些字符，进入一个大的switch-case语句，匹配不同的情况。</p>
+<p>语法分析：上一步生成的token序列，需要经过进一步的处理，生成一颗以表达式为结点的语法树（把符号组成一个句子）</p>
+<p>语义分析：检查常量、类型、函数声明等等，可以把这一步看成静态检查，如果有很明显的语法错误，就会报错。</p>
+<p>中间代码生成：编译过程可以分为前端和后端，前端生成和平台无关的中间代码，而后端会针对不同的平台，生成不同的机器码，前面的词法分析、语法分析、语义分析都属于编译器前端，后面的阶段属于编译器后端。</p>
+<p>目标代码生成与优化：不同机器的机器字长、寄存器都不一样，意味着在不同机器上跑的机器码是不一样的，最后一步的目的就是要生成能在不同CPU架构上运行的代码。目标代码优化器会对一些指令进行优化，提升程序的效率。</p>
+<p>链接：将编译器生成的一个个目标文件链接成可执行文件，最后得到的文件是分成各种段的。</p>
+<p>其实关于编译链接这部分的内容还有很多需要学习的，这里只是简单的说明了一下，具体可以参考《程序员自我修养》这本书</p>
+<h2 id="Go编译相关命令"><a href="#Go编译相关命令" class="headerlink" title="Go编译相关命令"></a>Go编译相关命令</h2><p>Go语言的源码分为三类：命令源码、库源码、测试源码</p>
+<p>命令源码：Go程序的入口，包含func main() 函数，且第一行用package main声明属于main包</p>
+<p>库源码：主要是各种函数、各种接口，例如工具类的函数</p>
+<p>测试源码：以_test.go为后缀，用于测试功能、性能等</p>
+<p>与编译相关的Go命令主要有三个</p>
+<ul>
+<li>go build</li>
+<li>go install</li>
+<li>go run</li>
+</ul>
+<p>go build的一些参数</p>
+<ul>
+<li>-a 强制重新编译所有涉及到的包</li>
+<li>-n 打印命令执行过程 不真正执行</li>
+<li>-p n 打印命令执行的并行数 n默认为cpu核数</li>
+<li>-race 检测并报告程序中的数据竞争问题</li>
+<li>-v 打印命令执行中涉及到的代码包名称</li>
+<li>-x 打印命令过程中涉及到的命令 并执行</li>
+<li>-work 打印编译过程中的临时文件夹，编译完成后会被删除</li>
+</ul>
+<p>go build：编译过程会忽略掉测试源码 执行过程是递归寻找main.go所依赖的包，以及依赖的依赖，直至最低层的包，如果有循环依赖，则直接退出</p>
+<p>go install ：编译并安装指定的代码包，相比于Go build，它多了一个“安装编译后的结果文件到指定目录”的步骤</p>
+<p>go run ：先编译，再链接，再执行</p>
+<h2 id="Go程序启动过程"><a href="#Go程序启动过程" class="headerlink" title="Go程序启动过程"></a>Go程序启动过程</h2><p>1.检查运行平台的CPU 设置好程序运行需要相关标志</p>
+<p>2.TLS的初始化</p>
+<p>3.runtime包进行变量和调度器的设置</p>
+<p>4.创建新的goroutine绑定用户的main方法</p>
+<p>5.开始进行goroutine的调度</p>
+<p><img src="/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/4.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/31/Go-defer%E8%AF%A6%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1185,97 +1348,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/09/DLL%E5%88%9D%E8%AF%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="安妮的心动录">
-      <meta itemprop="description" content="永远不要高估自己">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="安妮的心动录的园子">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/10/09/DLL%E5%88%9D%E8%AF%86/" class="post-title-link" itemprop="url">DLL初识</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-10-09 22:58:29 / 修改时间：22:59:40" itemprop="dateCreated datePublished" datetime="2022-10-09T22:58:29+08:00">2022-10-09</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">计算机基础</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>287</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="什么是DLL文件"><a href="#什么是DLL文件" class="headerlink" title="什么是DLL文件"></a>什么是DLL文件</h1><p>DLL：Dynamic Link Library 动态链接库，可以理解成一种.ddl后缀的可执行文件，绝大部分的DLL文件都是二进制机器码，DLL是不能够直接运行的，通常DLL文件中包含的是多个程序都能够使用的通用代码、数据等。</p>
-<p>当程序编译完成的时候，在编译完到执行的这个过程中，会有一个链接器进行链接的过程，因为变异后的二进制文件会告诉编链接器，我现在还需要什么dll文件才能够启动，如果报错，则是无法找到dll文件或者dll文件缺失。</p>
-<p>以windows系统举例，dll文件可以放在</p>
-<ul>
-<li>windows系统文件</li>
-<li>windows文件</li>
-<li>.exe文件的目录下</li>
-<li>当前目录</li>
-<li>PATH环境变量</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1347,7 +1419,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1407,12 +1479,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">78k</span>
+    <span title="站点总字数">80k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:11</span>
+    <span title="站点阅读时长">1:12</span>
 </div>
 
 
