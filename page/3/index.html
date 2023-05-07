@@ -169,6 +169,301 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/22/%E5%B7%A5%E4%B8%9A%E7%95%8C%E7%9A%84%E5%87%A0%E7%A7%8D%E5%8F%91%E5%B8%83%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/10/22/%E5%B7%A5%E4%B8%9A%E7%95%8C%E7%9A%84%E5%87%A0%E7%A7%8D%E5%8F%91%E5%B8%83%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">工业界的几种发布模式</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-10-22 11:07:35" itemprop="dateCreated datePublished" datetime="2022-10-22T11:07:35+08:00">2022-10-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-02-22 14:46:50" itemprop="dateModified" datetime="2023-02-22T14:46:50+08:00">2023-02-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">计算机基础</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="工业界的几种发布模式"><a href="#工业界的几种发布模式" class="headerlink" title="工业界的几种发布模式"></a>工业界的几种发布模式</h1><h2 id="蓝绿发布"><a href="#蓝绿发布" class="headerlink" title="蓝绿发布"></a>蓝绿发布</h2><ul>
+<li>蓝绿发布的本质上是通过系统冗余来解决上线风险的问题，通常生产环境中配置两套完全一样的环境，一组是active的生产环境配置（绿色），一组是inactivate的准备环境配置（蓝色），两套系统都是功能完善的，并且正在运行的系统，只是系统版本和对外服务情况不同</li>
+<li>最初始的状态下，没有任何系统，也没有蓝绿之分，然后第一套系统开发完成直接上线，只有一个系统，后来业务更新，要用新版本替换线上的旧版本，这时候就有两个系统，正在对外提供服务的是老系统为绿色，新部署的系统为蓝色</li>
+</ul>
+<p>为什么要有蓝色系统？因为蓝色其实是为了对新版本进行全方位的测试</p>
+<ul>
+<li>如果测试没出问题，可以通过负载均衡器&#x2F;反向代理&#x2F;路由指向蓝色环境，之后只要检测这个环境是否有故障，如果运行良好， 就可以删除v1.0使用的资源，为下一次蓝绿部署空出可用资源</li>
+<li>如果测试有问题，直接修改指向，快速回滚到绿色环境</li>
+</ul>
+<p>优点：部署过程中，应用始终在线，并且新版本没有修改老版本的任何内容，在部署期间，老版本的转改不收影响，风险很小，并且理论上可以在任何时间回滚到老版本</p>
+<p>缺点：需要两套环境，冗余的基础设施。而且对于设计数据表结构变更等不可逆转的升级，不太适合</p>
+<h2 id="金丝雀发布"><a href="#金丝雀发布" class="headerlink" title="金丝雀发布"></a>金丝雀发布</h2><p>金丝雀发布就是灰度发布，这两个东西是同一类策略，策略就是只有一套系统，并且逐渐替换这套系统。</p>
+<p>指的是增量发布的一种类型，在原有版本可用的情况下，同时部署一个新版本应用作为“金丝雀”，测试新版本的性能和表现，以保证整体系统的稳定性。</p>
+<p>发布过程</p>
+<ul>
+<li>从负载均衡列表里下掉</li>
+<li>升级金丝雀应用</li>
+<li>重新添加到负载均衡列表中</li>
+<li>如果测试成功，升级其他的服务器，否则回滚</li>
+</ul>
+<p>通常会AB测试一起使用</p>
+<h2 id="AB测试"><a href="#AB测试" class="headerlink" title="AB测试"></a>AB测试</h2><p>AB测试是效果测试，同一时间有多个版本的服务对外服务，这些服务都是经过足够测试，达到了上线标准的服务，有差异但是没有新旧之分，核心目的是用来测试应用功能表现的方法。比如页面的样式、颜色不一样，最后通过分析各个服务的实际效果，选择效果最好的版本。</p>
+<h2 id="滚动发布"><a href="#滚动发布" class="headerlink" title="滚动发布"></a>滚动发布</h2><p>所谓滚动发布一般是取出一个或者多个服务器停止服务，执行更新，并重新投入使用，周而复始，直到集群中的所有实例都更新成新版本，比如每次选出集群中的20%进行升级。比蓝绿部署更节省资源。</p>
+<p>缺点：</p>
+<ul>
+<li>没有一个确定OK的环境</li>
+<li>需要回滚的话很麻烦</li>
+</ul>
+<h2 id="红黑部署"><a href="#红黑部署" class="headerlink" title="红黑部署"></a>红黑部署</h2><p>这是Netfix采用的部署手段，主要基础设施在AWS上，它利用了AWS的特性，在部署新的版本的时候，通过AutoScaling Group 用包含新版本的AMI创建新的服务器，服务始终在线，同时采用不可变部署的方式。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/22/%E5%AE%B9%E9%94%99%E3%80%81%E9%AB%98%E5%8F%AF%E7%94%A8%E5%92%8C%E7%81%BE%E5%A4%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/10/22/%E5%AE%B9%E9%94%99%E3%80%81%E9%AB%98%E5%8F%AF%E7%94%A8%E5%92%8C%E7%81%BE%E5%A4%87/" class="post-title-link" itemprop="url">容错、高可用和灾备</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-10-22 11:07:22 / 修改时间：11:13:19" itemprop="dateCreated datePublished" datetime="2022-10-22T11:07:22+08:00">2022-10-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">计算机基础</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>429</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="容错、高可用和灾备"><a href="#容错、高可用和灾备" class="headerlink" title="容错、高可用和灾备"></a>容错、高可用和灾备</h1><p>容错：指的是在发生故障时，系统仍然能够继续运行，比如飞机的设计就遵从了容错的思想，如果一个引擎坏了，剩下几个引擎，仍然能够飞。容错的目的是：发生故障时，系统的运行水平可能有所下降，但是依然可用，不会完全失效。</p>
+<p>高可用：系统能比正常时间更久地保持一定的运行水平，骑车的备胎就是一个高可用的栗子，如果没有备胎，轮胎坏了，车就开不久，备胎延长了骑车行驶的可用时间。指的是一旦中断能够快速恢复，且中断必须是短暂的。</p>
+<p>灾备：发生灾难时恢复业务的能力。如果飞行员是业务的话，飞机就是基础设施，飞行员的弹射装置就是灾备措施，一旦飞机即将坠毁，基础设施就要没了，灾备可以让业务幸存下来。目的：保留系统的核心部分，一个好的灾备方案，就是从失败的基础佘时仲获取企业最宝贵的数据，然后在新的基础设施上恢复它们。</p>
+<p>总结可以通过以上的三个方面结合起来，设计一个可靠的系统</p>
+<ul>
+<li>容错：发生故障的时候，如何让系统继续运行</li>
+<li>高可用：系统中断时，如何尽快恢复</li>
+<li>灾备：系统毁灭时，如何抢救数据</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/18/CPU%E4%B8%8EGPU%E7%9A%84%E5%8C%BA%E5%88%AB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/10/18/CPU%E4%B8%8EGPU%E7%9A%84%E5%8C%BA%E5%88%AB/" class="post-title-link" itemprop="url">CPU与GPU的区别</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-10-18 20:33:36 / 修改时间：20:37:35" itemprop="dateCreated datePublished" datetime="2022-10-18T20:33:36+08:00">2022-10-18</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>912</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="CPU和GPU的区别"><a href="#CPU和GPU的区别" class="headerlink" title="CPU和GPU的区别"></a>CPU和GPU的区别</h1><p>CPU：Central Processing Unit 中央处理器，是计算机的大脑，包括运算器、控制器、寄存器、高速缓存以及总线</p>
+<p>GPU：Graphics Processing Unit 图形处理器，最初是用在个人电脑、工作站、游戏机和一些移动设备上运行绘图运算工作的微处理器。</p>
+<p>CPU和GPU之所以大不相同，主要是由于设计目标的不同，分别针对两种不同的应用场景。</p>
+<p>CPUI需要很强的通用性来处理各种不同的数据类型，同时又要逻辑判断引入大量的分支跳转和中断的处理，这些使得CPU的内部结构是很复杂的。</p>
+<p><img src="/2022/10/18/CPU%E4%B8%8EGPU%E7%9A%84%E5%8C%BA%E5%88%AB/image-20221018203400386.png" alt="image-20221018203400386"></p>
+<p>而GPU所面对的数据则是类型高度统一、相互无依赖的大规模数据和不需要被打断的纯净的计算环境，所以GPU的构成相对简单，有数量众多的计算单元和超长的流水线，特别适合处理量大且同一的数据。在设计上采用了众多的计算单元和超长的流水线，但只有简单的控制逻辑并且省去了cache</p>
+<p>除了渲染图形的能力，在并行处理方面GPU是很强的，因此在密码破译，大数据处理，金融分析等领域应用广泛（所以为什么会有那么多矿卡知道了吧）。其实GPU并没有专门为图像服务的部件。</p>
+<p>为什么GPU擅长处理图像数据呢？这是因为图像上的每一个像素带你都有被处理的需要，而且每个像素点处理的过程和方式都十分类似，很适合机械的GPU进行处理。但是GPU无法单独工作，必须由CPU进行控制调用，CPU可单独作用，处理复杂的逻辑运算和不同的数据类型。</p>
+<p>打个比方，GPU的运算速度取决于雇佣了多少小学生，CPU的运算速度取决于请了多么厉害的教授，教授处理复杂任务的能力是碾压小学生的，但是对于没那么复杂的任务，还是顶不住人多。</p>
+<p>为什么在人工智能领域GPU十分盛行呢？因为深度学习是模拟人脑神经系统简历的数学网络模型，这个模型的最大特点是需要大数据来训练。所以需要大量的并行的重复计算，在深度学习方面GPU有以下特点</p>
+<ul>
+<li>提供了多核并行计算的基础结构，且核心数很多（通常有成百上千个核心），可以支撑大量数据的并行计算。</li>
+<li>用于更高的访存带宽和速度</li>
+<li>具备更高的浮点运算能力</li>
+</ul>
+<p>独立显卡：把GPU焊死在了显卡的电路板上，上面有一个散热风扇</p>
+<p>集成显卡：把GPU和CPU放在一起，共用缓存来工作，并共用风扇。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/13/JSON%E7%9A%84%E5%87%A0%E7%A7%8D%E6%A0%87%E5%87%86%E6%A0%BC%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1088,101 +1383,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/09/23/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E7%BB%8F%E5%8E%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="安妮的心动录">
-      <meta itemprop="description" content="永远不要高估自己">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="安妮的心动录的园子">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/09/23/%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E7%BB%8F%E5%8E%86/" class="post-title-link" itemprop="url">关于博客</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-09-23 00:00:00" itemprop="dateCreated datePublished" datetime="2022-09-23T00:00:00+08:00">2022-09-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-10-08 20:43:44" itemprop="dateModified" datetime="2022-10-08T20:43:44+08:00">2022-10-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%84%9F%E6%82%9F%E5%8F%8A%E8%AE%A4%E7%9F%A5/" itemprop="url" rel="index"><span itemprop="name">感悟及认知</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>281</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="搭建博客网站经历"><a href="#搭建博客网站经历" class="headerlink" title="搭建博客网站经历"></a>搭建博客网站经历</h2><p>时间过得好快啊，突然就大三了，大一大二的学习资料基本都是网上找的，有很多大佬会写博客来分享技术，其实很早之前就想搭个网站写博客了，但是大一的时候感觉学的东西还太浅了，发出来就是纯纯黑历史。</p>
-<p>这个网站在今年四五月的时候就搭好了，当时是用WordPress搭的，但是苦于找不到好看的主题，于是我在七月的时候重新用hexo构建了一下，关于hexo建站网上有很多教程，有需要的可以去看一看。</p>
-<p>个人觉得写博客这个东西既能巩固自己所学的知识，也能记录自己的成长过程，是一件回报比较高的事情，所以我也希望自己能够坚持下去。</p>
-<p>最后立个flag：一个星期至少一篇blog</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1250,7 +1454,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-count">31</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1310,12 +1514,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">93k</span>
+    <span title="站点总字数">100k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:24</span>
+    <span title="站点阅读时长">1:31</span>
 </div>
 
 

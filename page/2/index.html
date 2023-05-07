@@ -169,6 +169,623 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/24/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/24/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/" class="post-title-link" itemprop="url">Go微服务与云原生一</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-02-24 12:07:13 / 修改时间：12:08:30" itemprop="dateCreated datePublished" datetime="2023-02-24T12:07:13+08:00">2023-02-24</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><h3 id="架构演变"><a href="#架构演变" class="headerlink" title="架构演变"></a>架构演变</h3><p>用架构历史</p>
+<p>1.单体架构 堆机子 高耦合 一改动就需要重新部署 而且编译时间很长，不容易拓展，不支持多语言技术栈 </p>
+<p>2.分层架构 典型的有MVC和MSC架构 当访问量逐渐增大，单体架构扛不住了，把单体项目进行垂直划分，耦合还是很大，项目之间的接口多为数据同步，比如不同项目之间的数据库同步。 架构简单，成本低开发周期短，经过垂直拆分之后原来的单体项目不至于太大，每一层可以用不同的技术，但还是不易拓展和维护 </p>
+<p>3.SOA面向服务架构 ：当垂直架构的应用越来越多，就会出现多个应用都依赖的业务组件，比如数据库，而且各个应用交互越来越频繁，此时就需要把部分通用的组件拆分独立处理，于是SOA面向服务架构诞生了，它带来了模块化开发、分布式拓展部署和服务接口定义等概念</p>
+<p>实时SOA需要建立企业服务总线，外部应用通过总线调用服务，有以下特征：可从企业外部访问、随时可用、标准化的服务接口等</p>
+<p><img src="/2023/02/24/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/1.png" alt="img"></p>
+<p>优点：</p>
+<ul>
+<li>已经具有微服务的影子了，将重复的功能抽离出来，提高开发效率</li>
+<li>减少接口耦合</li>
+</ul>
+<p>SOA架构适用于大型软件服务企业对外提供服务的场景，并不适合一般的业务场景，其服务的定义、注册和调用都需要繁琐的配置，业务总线的吞吐量决定了整个系统的上限，因为整个系统都是通过总线进行任务分配的。并且业务总线也容易导致系统崩掉、影响性能。</p>
+<p>4.微服务架构：</p>
+<p><img src="/2023/02/24/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/2.png" alt="img"></p>
+<p>特点</p>
+<p>1.服务层完全独立出来 并将服务层抽取为一个一个的微服务</p>
+<p>2.微服务遵循单一原则</p>
+<p>3.微服务之间采用RESTful等轻量协议通信</p>
+<p>4.微服务一般用容器技术部署 运行在自己的独立进程中</p>
+<p>微服务架构下服务的拆分粒度更细，有利于资源重复利用，提高开发效率，采用去中心化思想，更轻量级</p>
+<p>缺点：如果服务实例过多，治理成本就会很大，不利于维护；服务之间相互依赖，可能形成复杂的依赖链条，往往单个服务异常，其他服务也会受到影响，出现服务雪崩效应。</p>
+<p>微服务与SOA的区别：</p>
+<p>微服务继承了SOA的众多优点和理念</p>
+<p>SOA更适合与许多其他应用程序继承的大型复杂企业应用程序环境，小型的应用并不适合SOA，微服务则更适合于较小和良好的分割式web业务系统</p>
+<p>微服务不再强调SOA架构中比较重要的ESB企业服务总线，而是通过轻量级通信机制相互沟通</p>
+<p>SOA注重的是系统继承，而微服务关注的则是完全分离，SOA尝试采用中心化管理来确保各个应用能够协同运作，微服务则尝试部署新功能，快速有效地拓展开发团队，它着重于分散管理、代码再利用和自动化执行。</p>
+<h3 id="微服务的优势和劣势"><a href="#微服务的优势和劣势" class="headerlink" title="微服务的优势和劣势"></a>微服务的优势和劣势</h3><p>微服务的优势</p>
+<p>1.快：更注重CI&#x2F;CD 敏捷开发、持续交付</p>
+<p>2.准：服务粒度小、服务质量精准可控</p>
+<p>3.狠：适用于互联网时代、产品迭代周期更短</p>
+<p>微服务的劣势</p>
+<p>1.系统的复杂性</p>
+<p>2.服务依赖管理</p>
+<p>3.数据的一致性保障</p>
+<p>4.测试更加艰难</p>
+<p>5.对于DevOps等基础设施的高要求</p>
+<h3 id="如何划分微服务界限"><a href="#如何划分微服务界限" class="headerlink" title="如何划分微服务界限"></a>如何划分微服务界限</h3><p>如何进行服务划分？</p>
+<p>1.按照业务职能进行划分</p>
+<p>由公司内部不同部门提供的只能。例如客户服务部门提供客户服务的职能，财务部门提供财务相关的职能</p>
+<p>2.按照DDD的限界上下文划分</p>
+<p>限界上下文是DDD中用来划分不同业务边界的元素</p>
+<p>这里业务边界的含义是“解决不同业务问题”的问题域和对应的解决方案域</p>
+<p>为了解决某种类型的业务问题，贴近领域只是，也就是业务</p>
+<p>CQRS将系统中的操作划分为两类，即【命令】Command和【查询】Query</p>
+<p>命令则是对会引起数据发生变化操作的总称，即我们常说的新增、更新、删除的这些操作，都是命令。</p>
+<p>而查询则和字面意思一样，即不会对数据产生变化的操作，只是按照某些条件查询数据。</p>
+<p>CQRS的核心思想是将两类不同的操作进行分离，然后在两个独立的【服务】中实现。这里的服务一般指的是两个独立部署的应用，在某些特殊情况下，也可以部署在同一个应用内的不同接口上。 </p>
+<h3 id="微服务的迭代"><a href="#微服务的迭代" class="headerlink" title="微服务的迭代"></a>微服务的迭代</h3><p>1.第一代</p>
+<p><img src="/2023/02/24/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/3.png" alt="img"></p>
+<p>2.第二代</p>
+<p><img src="/2023/02/24/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/4.png" alt="img"></p>
+<p>把那些服务监控、服务管理作为基础服务提供给我们的业务</p>
+<p>架构分层</p>
+<p> <img src="/2023/02/24/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/5.png" alt="img"></p>
+<p>核心组件</p>
+<ul>
+<li>API网关</li>
+<li>服务注册中心</li>
+<li>配置中心</li>
+<li>服务通信</li>
+<li>服务治理</li>
+<li>服务监控</li>
+</ul>
+<h2 id="net-x2F-rpc"><a href="#net-x2F-rpc" class="headerlink" title="net&#x2F;rpc"></a>net&#x2F;rpc</h2><h3 id="RPC出现的原因"><a href="#RPC出现的原因" class="headerlink" title="RPC出现的原因"></a>RPC出现的原因</h3><p>RPC需要解决三个问题</p>
+<p>1.如何要确定要执行的函数？在本地调用中，函数主体通过函数指针函数指定，然后调用add函数，编译器你通过函数指针函数确定add函数在内存中的位置。但是在RPC中，调用不能通过函数指针完成，因为他们的内存地址可能完全不同。因此，调用方和被调用方都需要维护一个{fuction&lt;-&gt;ID}映射表，以确保调用正确的函数</p>
+<p>2.如何表达参数？本地过程调用中传递的参数是通过堆栈结构实现的，但是RPC不能直接使用内存传递参数，因此参数或返回值需要在传输期间徐丽湖儿啊并转换成字节流，反之亦然</p>
+<p>3.如何通过网络传输？函数的调用方和被调用方通常是通过网络连接的，也就是说 function ID和序列化字节流需要通过网络传输，因此，只要能够完成传输，调用方和被调用方就不受某个网络协议的限制。例如，一些RPC框架使用TCP协议，一些使用HTTP。</p>
+<p>以往实现跨服务调用的时候，我们会采用restful api的方式，被调用方会对外提供一个HTTP接口，调用方按要求发起HTTP请求并接收API接口返回的响应数据。</p>
+<p>本地调用，通过HTTP的API的方式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">server</span><br><span class="line">//定义参数和响应  </span><br><span class="line">type addParam struct &#123;</span><br><span class="line">	X int `json:&quot;x&quot;`</span><br><span class="line">	Y int `json:&quot;y&quot;`</span><br><span class="line">&#125;</span><br><span class="line">type addResult struct &#123;</span><br><span class="line">	Code int `json:&quot;code&quot;`</span><br><span class="line">	Data int `json:&quot;data&quot;`</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func add(x, y int) int &#123;</span><br><span class="line">	return x + y</span><br><span class="line">&#125;</span><br><span class="line">// addHandler 解析参数+调用add+响应写回</span><br><span class="line">func addHandler(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">	// parse parameters</span><br><span class="line">	b, _ := ioutil.ReadAll(r.Body)</span><br><span class="line">	var param addParam</span><br><span class="line">	json.Unmarshal(b, &amp;param)</span><br><span class="line">	// use the add func</span><br><span class="line">	ret := add(param.X, param.Y)</span><br><span class="line">	// return the response</span><br><span class="line">	respBytes, _ := json.Marshal(addResult&#123;Code: 0, Data: ret&#125;)</span><br><span class="line">	w.Write(respBytes)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	http.HandleFunc(&quot;/add&quot;, addHandler)</span><br><span class="line">	log.Fatal(http.ListenAndServe(&quot;:9090&quot;, nil))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">client</span><br><span class="line">type addParam struct &#123;</span><br><span class="line">	X int `json:&quot;x&quot;`</span><br><span class="line">	Y int `json:&quot;y&quot;`</span><br><span class="line">&#125;</span><br><span class="line">type addResult struct &#123;</span><br><span class="line">	Code int `json:&quot;code&quot;`</span><br><span class="line">	Data int `json:&quot;data&quot;`</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	url := &quot;http://127.0.0.1:9090/add&quot;</span><br><span class="line">	param := addParam&#123;</span><br><span class="line">		X: 10,</span><br><span class="line">		Y: 20,</span><br><span class="line">	&#125;</span><br><span class="line">	// marshal to json</span><br><span class="line"></span><br><span class="line">	paramBytes, _ := json.Marshal(param)</span><br><span class="line">	// call</span><br><span class="line">	resp, _ := http.Post(url, &quot;application/json&quot;, bytes.NewReader(paramBytes))</span><br><span class="line">	defer resp.Body.Close()</span><br><span class="line">	respBytes, _ := ioutil.ReadAll(resp.Body)</span><br><span class="line">	var respData addResult</span><br><span class="line">	json.Unmarshal(respBytes, &amp;respData)</span><br><span class="line">	fmt.Println(respData.Data)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>而RPC调用则不需要如此</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">service.go</span><br><span class="line">type Args struct &#123;</span><br><span class="line">	X, Y int</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type ServiceA struct&#123;&#125;</span><br><span class="line"></span><br><span class="line">// Add is an out method</span><br><span class="line">// has two args and a return </span><br><span class="line">// two params must be out </span><br><span class="line">// and the return value must be error type </span><br><span class="line">func (s *ServiceA) Add(args *Args, reply *int) error &#123;</span><br><span class="line">	*reply = args.X + args.Y</span><br><span class="line">	return nil</span><br><span class="line">&#125;</span><br><span class="line">server.go</span><br><span class="line">func main() &#123;</span><br><span class="line">  //new service instance   </span><br><span class="line">	service := new(yunyuansheng.ServiceA)</span><br><span class="line">  //register rpc service   </span><br><span class="line">	rpc.Register(service) </span><br><span class="line">  //botton on http  </span><br><span class="line">	//rpc.HandleHTTP()      </span><br><span class="line">  //botton on tcp   </span><br><span class="line">	l, e := net.Listen(&quot;tcp&quot;, &quot;:9091&quot;)</span><br><span class="line">	if e != nil &#123;</span><br><span class="line">		log.Fatal(&quot;listen error:&quot;, e)</span><br><span class="line">	&#125;</span><br><span class="line">	//http.Serve(l, nil)</span><br><span class="line">	for &#123;</span><br><span class="line">	  // accpet the request and serve   </span><br><span class="line">		conn, _ := l.Accept()</span><br><span class="line">		rpc.ServeConn(conn)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">client.go</span><br><span class="line">func main() &#123;</span><br><span class="line">	//因为服务端是HTTP请求 所以要建立HTTP连接</span><br><span class="line">	client, err := rpc.Dial(&quot;tcp&quot;, &quot;127.0.0.1:9091&quot;)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		fmt.Println(err)</span><br><span class="line">	&#125;</span><br><span class="line">	// 同步调用 Call</span><br><span class="line">	args := &amp;yunyuansheng.Args&#123;10, 20&#125;</span><br><span class="line">	reply := new(int)</span><br><span class="line">	err = client.Call(&quot;ServiceA.Add&quot;, args, reply)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatal(&quot;ServiceA.Add error:&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Printf(&quot;ServiceA.Add %d+%d=%d\n&quot;, args.X, args.Y, *reply)</span><br><span class="line"></span><br><span class="line">	//异步调用 Go</span><br><span class="line">	var reply2 int</span><br><span class="line">	divCall := client.Go(&quot;ServiceA.Add&quot;, args, &amp;reply2, nil)</span><br><span class="line">	replyCall := &lt;-divCall.Done //Done是一个调用结果的通知 有值了就说明调用完成了</span><br><span class="line">	fmt.Println(replyCall.Error)</span><br><span class="line">	fmt.Println(reply2)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p><strong>RPC的最终目的：让调用远程方法更加简单，并且速度更快</strong></p>
+<p><strong>Go原生net&#x2F;rpc库需要注意的几点</strong></p>
+<p><strong>1.可以支持很多种协议，包括但不限于HTTP和TCP，如果使用HTTP的话，那么客户端就使用DialHTTP，服务端通过HandleHTTP进行HTTP连接的处理，使用TCP的话，客户端使用Dial，服务端就应该for循环处理连接</strong></p>
+<p><strong>2.客户端支持同步调用和异步调用两种方式，对应的分别是Call和Go</strong></p>
+<p><strong>3.暴露出的服务必须满足两个条件，两个参数，一个返回值，返回值必须要是error类型，第二个参数必须是指针</strong></p>
+<h3 id="RPC原理"><a href="#RPC原理" class="headerlink" title="RPC原理"></a>RPC原理</h3><p><img src="/2023/02/24/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/6.png" alt="img"></p>
+<ol>
+<li>client以本地调用方式调用服务</li>
+<li>client stub接收到调用后负责将方法、参数等组装成能够进行网络传输的消息体</li>
+<li>client stub找到服务地址，并将服务发送到服务端</li>
+<li>server 接收到消息之后，通过server stub对消息进行解码</li>
+<li>server stub根据解码的结果调用本地服务</li>
+<li>本地服务执行并把消息返回给server stub</li>
+<li>server stub将结果打包成能够进行网络传输的结构体，发送到消息方</li>
+<li>client 收到消息并进行解码，得到最终结果</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/24/%E5%AE%9E%E4%B9%A0%E6%B1%82%E8%81%8C%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/24/%E5%AE%9E%E4%B9%A0%E6%B1%82%E8%81%8C%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">实习求职总结</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-02-24 11:08:23" itemprop="dateCreated datePublished" datetime="2023-02-24T11:08:23+08:00">2023-02-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-04 20:52:49" itemprop="dateModified" datetime="2023-03-04T20:52:49+08:00">2023-03-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%84%9F%E6%82%9F%E5%8F%8A%E8%AE%A4%E7%9F%A5/" itemprop="url" rel="index"><span itemprop="name">感悟及认知</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前我一直觉得博客嘛，就应该发一些技术相关的东西，看了很多同龄人的博客我才发现，其实博客可以发的东西有很多很多，不一定要仅限于技术，于是就有了这篇文章。</p>
+<p>同时我是一个很喜欢用文字记录生活与想法的人，但是由于文字功底太弱，这些文字大多都躺在我的备忘录和废纸篓里。</p>
+<p>昨天看到了一个我很尊敬的学长写的一篇博文，深有所感。于是想把这篇于2023-2-24日写好的博文修改一下，记录一下大学这两年的一些经历，感悟和想法。</p>
+<p>还记得去年这个时候我还没有开始准备实习，那段时间应该是在完成工作室的考核，现在回头看看其实已经走出去很远了。</p>
+<p>下面简单说一下我找实习的几个阶段吧。</p>
+<h1 id="stage-one"><a href="#stage-one" class="headerlink" title="stage one"></a>stage one</h1><p>在21年年底的时候，我在QQ空间里面看到了有学长分享食铁兽招新的信息，然后加入了招新QQ群，22年1月13日，那时候我刚考完《数据结构》这门课，这也是那学期的最后一门考试，考完之后打算和我的爱人去主城区耍的，然后突如其来的约面了，那是我人生中的第一次技术面试，说实话答得很差，完全没有准备过八股，只能凭借平常做项目的一些实践经历答上来一部分问题，大概只答上来了一小半吧，我印象很深的问题有Redis的持久化，Redis的数据结构，HTTP2的特性这些，面试官还和我讨论了一下Go的优劣和以后职业规划的事情。</p>
+<p>之后食铁兽的负责人晚上又和我联系了一下，简单问了一些职业发展之类的问题。</p>
+<p>第二天通知我面试通过了，当时真的非常非常开心，第一次觉得自己在技术上或者说是在编程上被认可了，然后就打车去了食铁兽那边，见到了面试官源哥，婧姐，还有负责人峰哥。</p>
+<p>之后的话就放寒假了，我当时在家不怎么学习，基本上都是食铁兽给的一些任务PUSH着我去学，比如尝试基于TCP、UDP、KCP、和HTTP编程，还有当时Go的最新版本是1.18beta，推出了泛型这一特性，但是还没有来得及对内置数据结构（slice map等）进行泛型的封装，于是我去学习了泛型，实现了简单的泛型封装，之后的任务就是写一个分布式消息队列。</p>
+<p>差不多三月到五月吧，基本每个周末都会去食铁兽那边敲代码，慢慢的把分布式消息队列的拼图一块块补全，从raft选主的实现，到消息的存储和删除，到消息的切片，再到考虑结点状态进行消息的分发，慢慢的也把这个项目做出来了，这也是我第一个不看视频写出来的非web项目。</p>
+<p>除了工程上的收获之外，我还认识了很多很厉害的大佬，比如源哥，给我的感觉就是在技术上钻的很深，不管是理论知识还是工程能力都很强，在大四的时候就能写出很多很多东西了，架构层面的知识也很优秀，之前问过他一点设计方面的题目，能感觉出来思考的方面特别多。而且他知识的广度也很大，前端后端嵌入式都会，现在我也大三下了，感觉我也很难在一年之后达到这样的水平。还有峰哥、翔哥、婧姐，就不一一说了，食铁兽的氛围是真的挺好的，这些哥哥姐姐们也很照顾我，在那边呆着也很舒服。</p>
+<h1 id="stage-two"><a href="#stage-two" class="headerlink" title="stage two"></a>stage two</h1><p>差不多五月开始正式准备八股和算法了，那段时间的学习强度真的特别大，差不多白天一整天都在工作室呆着，学到脑子疼才结束，晚上睡眠质量也差，差不多准备了两个礼拜之后就开始投递简历了，尴尬的事情来了，投了很多厂子，不过大部分厂子看到是24届就直接拒了，最后好像只有几个小厂还有字节给了面试机会，字节的算法没做出来，于是一面挂，拿了一个小厂的offer但是不太想去。</p>
+<h1 id="stage-three"><a href="#stage-three" class="headerlink" title="stage three"></a>stage three</h1><p>没有找到合适的实习就选择了去老师的实验室干活，做的是偏运维的华为HPC高性能迁移项目，其实就是写脚本，不过真的挺折磨的，需要保证一个大的脚本一次性执行成功。做完了就差不多七月底了，八月主要是在陪我的爱人，当时自己也生病了，除了复习八股之外还学了一些gRPC，做了一个简单的分布式系统来巩固知识。九月回校，这时候八股和算法都算比较巩固了，开始了新一轮的投递，两个礼拜下来面了五六家吧，也没有大厂愿意给面试机会，最后拿到了两个offer，分别是通明智云和daocloud，其实更想去daocloud，面试官说做的是容器方向，还能带薪做开源，狠狠的心动了，不过daocloud的给的薪资属实是有点少，算了一下得贴钱实习，于是去了通明智云，在通明智云的实习期间也很舒服，我的leader很信任我直接让我和客户对接，为期三个月的实习确实有真的在做东西学东西，也从同事前辈们身上学到了很多东西，总之是一段很有意义的实习经历。</p>
+<h1 id="stage-four"><a href="#stage-four" class="headerlink" title="stage four"></a>stage four</h1><p>差不多十二月的时候，当时考虑到通明这边的实习期快到了，于是开启了新一轮的投递，可能是因为在盘hc，同样的也没有大厂面试机会，一轮面下来也拿了几个小厂的offer，而且待遇也不是很好，做的东西也不太感兴趣，唯一感兴趣的可能是默安科技的云原生开发，但是突如其来的我的爱人与我分手了，当时就不太想去实习了，想回家修养一阵子，于是把offer给拒了，在流程中的面试也给推了。</p>
+<p><img src="/2023/02/24/%E5%AE%9E%E4%B9%A0%E6%B1%82%E8%81%8C%E6%80%BB%E7%BB%93/1.png" alt="image-20230224111242791"></p>
+<h1 id="stage-five"><a href="#stage-five" class="headerlink" title="stage five"></a>stage five</h1><p>年后市场开始复苏了，从一月底开始投递，一共投的也就那么几家吧，最后拿到了百度中台和莉莉丝运维的offer，最后打算去百度。</p>
+<p><img src="/2023/02/24/%E5%AE%9E%E4%B9%A0%E6%B1%82%E8%81%8C%E6%80%BB%E7%BB%93/2.png" alt="image-20230224111357693"></p>
+<h1 id="一些想法"><a href="#一些想法" class="headerlink" title="一些想法"></a>一些想法</h1><p>从大一确定毕业就业开始，我就很想去大厂实习，但是拿到大厂offer之后也没有很开心，是真的没有波澜，很平淡，和我当时通过食铁兽面试，拿到通明智云的offer一样，非常平淡。也许这就是人生吧，很多事情不要太去追求结果，这样在结果不如意的时候真的会很痛苦，结果如意了也不见得开心，多关注过程，那些奋斗的日子回过头看是真的挺美好的。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/" class="post-title-link" itemprop="url">设计模式的学习</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-02-22 14:54:48 / 修改时间：14:57:12" itemprop="dateCreated datePublished" datetime="2023-02-22T14:54:48+08:00">2023-02-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">计算机基础</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>23k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>21 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="理论"><a href="#理论" class="headerlink" title="理论"></a>理论</h1><h3 id="设计模式从何而来"><a href="#设计模式从何而来" class="headerlink" title="设计模式从何而来"></a>设计模式从何而来</h3><p>模式：每个模式都描述了一个在我们的环境中不断出现的问题，然后描述了该问题的解决方案的核心，也就是说，<strong>设计模式是在特定环境下人们解决某类重复出现问题的一套成功或者有效的解决方案</strong></p>
+<h3 id="软件设计模式"><a href="#软件设计模式" class="headerlink" title="软件设计模式"></a>软件设计模式</h3><p><strong>Gang of Four提出了软件设计模式</strong><br>Gof提出的设计模式有23个，包括</p>
+<ul>
+<li>创建型模式：如何创建对象</li>
+<li>结构型模式：如何实现类或者对象的组合</li>
+<li>行为型模式：类或者对象怎么交互以及怎样分配职责</li>
+</ul>
+<p>“简单工厂模式”不属于23种<br>设计模式：GOF的23种+简单工厂模式<br><img src="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/1.png" alt="image.png"><br><img src="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/16.png" alt="image.png"><br><img src="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/17.png" alt="image.png"><br><img src="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/2.png" alt="image.png"></p>
+<h1 id="设计原则"><a href="#设计原则" class="headerlink" title="设计原则"></a>设计原则</h1><p>设计原则是设计模式的核心思想，一共有七种</p>
+<ul>
+<li>单一职责原则： 类的职责单一，对外只提供一种功能，而引起类变化的原因都应该只有一个</li>
+<li><strong>开闭原则</strong>：类的改动<strong>是通过增加代码</strong>进行的，而不是修改源代码</li>
+<li>里氏代换原则：任何抽象类（interface接口）出现的地方都可以用他的实现类进行替换，实际就是虚拟机制，语言级别实现面向对象功能</li>
+<li><strong>依赖倒转原则</strong>：依赖于抽象（接口），不要依赖具体的实现（类），也就是<strong>针对接口</strong>编程</li>
+<li>接口隔离原则：不应该强迫用户的程序依赖他们不需要的接口方法。一个接口应该只提供一种对外功能，不应该把所有操作都封装到一个接口中去</li>
+<li>合成复用原则：如果使用继承，会导致父类的任何变换都可能影响到子类的行为。如果使用对象组合，就降低了这种依赖关系。对于继承和组合，优先使用组合</li>
+<li><strong>迪米特法则</strong>：<strong>一个对象应当对其他对象尽可能少的了解</strong>，从而降低各个对象之间的耦合，提高系统的可维护性，例如在一个程序中，各个模块相互调用时，通常会提供一个同一的接口来实现。这样其他模块不需要了解另外一个模块的内部实现细节，这样当一个模块内部的实现发生改变的时候，不会影响其他模块的使用（黑盒原理）</li>
+</ul>
+<h3 id="单一职责原则"><a href="#单一职责原则" class="headerlink" title="单一职责原则"></a>单一职责原则</h3><p>类的职责是单一的，对外只提供一种功能，而引起类变化的原因也应该只有一个<br>在面向对象编程的过程中，设计一个类，建议对外提供的功能单一，接口单一，影响一个类的范围就限定在这一个接口上，一个类的一个接口具备这个类的功能含义，职责单一不复杂<br><strong>一个类对外只提供一种功能</strong><br><strong>实例代码</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import &quot;fmt&quot;</span><br><span class="line"></span><br><span class="line">// 以下代码不遵循单一职责原则，一个类实现了多个功能</span><br><span class="line">// 即一个clothes结构体实现了“工作装扮”和“逛街装扮”两个方法</span><br><span class="line">type Clothes struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//func (c *Clothes) Style() &#123;</span><br><span class="line">//	fmt.Println(&quot;工作的装扮&quot;)</span><br><span class="line">//&#125;</span><br><span class="line">//</span><br><span class="line">//func (c *Clothes) Style2() &#123;</span><br><span class="line">//	fmt.Println(&quot;逛街的装扮&quot;)</span><br><span class="line">//&#125;</span><br><span class="line">//</span><br><span class="line">//func main() &#123;</span><br><span class="line">//	c := Clothes&#123;&#125;</span><br><span class="line">//	c.Style()</span><br><span class="line">//	c.Style2()</span><br><span class="line">//&#125;</span><br><span class="line"></span><br><span class="line">// 单一职责原则</span><br><span class="line">// 每一个类（结构体）负责一个功能或者一个逻辑</span><br><span class="line"></span><br><span class="line">type ClothesShop struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type ClothesWork struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (c *ClothesWork) Style() &#123;</span><br><span class="line">	fmt.Println(&quot;工作的装扮&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (c *ClothesShop) Style() &#123;</span><br><span class="line">	fmt.Println(&quot;逛街的装扮&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	c := ClothesWork&#123;&#125;</span><br><span class="line">	c.Style()</span><br><span class="line">	c1 := ClothesShop&#123;&#125;</span><br><span class="line">	c1.Style()</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="开闭原则"><a href="#开闭原则" class="headerlink" title="开闭原则"></a>开闭原则</h3><p>开闭原则的核心思想就是当我们添加一个新功能的时候，不是通过修改代码，而是通过增添代码来实现的。<br>如果我们使用接口<code>interface</code>就可以进行一层抽象，然后提供一个抽象的方法供业务进行实现。<br><strong>增加功能的时候去增加代码而不是修改代码</strong><br><strong>示例代码</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">// 以下代码是平铺式设计 每当添加一个业务就需要增加方法 会导致Banker类越来越臃肿</span><br><span class="line">// 不符合开闭原则  每当有新的功能出现就要对类添加对应功能的代码</span><br><span class="line">// 当Banker业务越多再修改Banker的业务或者添加新业务的时候 出现问题的问题也会越来越大</span><br><span class="line">// 耦合度太高 Banker的职责也不够单一 代码的维护成本与业务的复杂程度成正比</span><br><span class="line"></span><br><span class="line">//type Banker struct &#123;</span><br><span class="line">//&#125;</span><br><span class="line">//</span><br><span class="line">//func (b *Banker) Save() &#123;</span><br><span class="line">// fmt.Println(&quot;进行了 存款业务...&quot;)</span><br><span class="line">//&#125;</span><br><span class="line">//</span><br><span class="line">//func (b *Banker) Transfer() &#123;</span><br><span class="line">// fmt.Println(&quot;进行了 转账业务...&quot;)</span><br><span class="line">//&#125;</span><br><span class="line">//</span><br><span class="line">//func (b *Banker) Pay() &#123;</span><br><span class="line">// fmt.Println(&quot;进行了 支付业务...&quot;)</span><br><span class="line">//&#125;</span><br><span class="line">// 新增的Deal服务</span><br><span class="line">//func (b *Banker) Deal() &#123;</span><br><span class="line">// fmt.Println(&quot;进行了 交易业务...&quot;)</span><br><span class="line">//&#125;</span><br><span class="line">//</span><br><span class="line">//func main() &#123;</span><br><span class="line">// banker := &amp;Banker&#123;&#125;</span><br><span class="line">// banker.Save()</span><br><span class="line">// banker.Transfer()</span><br><span class="line">// banker.Pay()</span><br><span class="line">//&#125;</span><br><span class="line"></span><br><span class="line">// 开闭原则</span><br><span class="line">// 在Go中的描述就是通过接口实现多态，每个类去实现接口</span><br><span class="line">// 这样的话就能实现一个结果：类的改动是通过增加代码进行的，而不是修改源代码</span><br><span class="line"></span><br><span class="line">type AbstractBanker interface &#123;</span><br><span class="line">   Business()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type SaveBanker struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (sb *SaveBanker) Business() &#123;</span><br><span class="line">   fmt.Println(&quot;进行了存款&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 添加转账功能</span><br><span class="line"></span><br><span class="line">type TransferBanker struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (tb *TransferBanker) Business() &#123;</span><br><span class="line">   fmt.Println(&quot;进行了转账&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 可以基于抽象层进行业务封装-针对interface接口进行封装</span><br><span class="line"></span><br><span class="line">func BankBusiness(banker AbstractBanker) &#123;</span><br><span class="line">   banker.Business()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">   sb := SaveBanker&#123;&#125;</span><br><span class="line">   sb.Business()</span><br><span class="line">   tb := TransferBanker&#123;&#125;</span><br><span class="line">   tb.Business()</span><br><span class="line">   BankBusiness(&amp;sb)</span><br><span class="line">   BankBusiness(&amp;tb)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="依赖倒转原则"><a href="#依赖倒转原则" class="headerlink" title="依赖倒转原则"></a>依赖倒转原则</h3><p>在设计一个系统的时候我们可以将模块分成三个层次，抽象层、实现层、业务逻辑层。我们首先将抽象层的模块和接口定义出来，然后通过interface接口的设计依照抽象层依次实现每个实现层的模块，在我们写实现层代码的时候，实际上只需要参考对应的抽象层，实现每个模块。而业务逻辑层也是通过抽象层暴露出来的接口进行实现的，可以使用的方法就是抽象层暴露出来的方法<br><strong>模块与模块之间依赖抽象而不是具体实现</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></td><td class="code"><pre><span class="line">// 下面的代码耦合度很高，不满足依赖倒转原则</span><br><span class="line">// 如果要满足张三开宝马，李四开奔驰，就需要重新添加代码</span><br><span class="line">// 如果司机人数为m，汽车数量为n，那么需要编写的方法为m*n</span><br><span class="line"></span><br><span class="line">//type Benz struct &#123;</span><br><span class="line">//&#125;</span><br><span class="line">//</span><br><span class="line">//func (b *Benz) Run() &#123;</span><br><span class="line">//	fmt.Println(&quot;Benz is running&quot;)</span><br><span class="line">//&#125;</span><br><span class="line">//</span><br><span class="line">//type BMW struct &#123;</span><br><span class="line">//&#125;</span><br><span class="line">//</span><br><span class="line">//func (b *BMW) Run() &#123;</span><br><span class="line">//	fmt.Println(&quot;BMW is runnning&quot;)</span><br><span class="line">//&#125;</span><br><span class="line">//</span><br><span class="line">//type Zhang3 struct &#123;</span><br><span class="line">//&#125;</span><br><span class="line">//</span><br><span class="line">//func (z *Zhang3) DriveBenz(benz *Benz) &#123;</span><br><span class="line">//	benz.Run()</span><br><span class="line">//	fmt.Println(&quot;Zhang3 is driving Benz&quot;)</span><br><span class="line">//&#125;</span><br><span class="line">//</span><br><span class="line">//type Li4 struct &#123;</span><br><span class="line">//&#125;</span><br><span class="line">//</span><br><span class="line">//func (l *Li4) DriveBMW(bmw *BMW) &#123;</span><br><span class="line">//	bmw.Run()</span><br><span class="line">//	fmt.Println(&quot;Li4 is driving BMW&quot;)</span><br><span class="line">//&#125;</span><br><span class="line">//</span><br><span class="line">//func main() &#123;</span><br><span class="line">//	benz := &amp;Benz&#123;&#125;</span><br><span class="line">//	zhang3 := Zhang3&#123;&#125;</span><br><span class="line">//	zhang3.DriveBenz(benz)</span><br><span class="line">//	bmw := &amp;BMW&#123;&#125;</span><br><span class="line">//	li4 := Li4&#123;&#125;</span><br><span class="line">//	li4.DriveBMW(bmw)</span><br><span class="line">//&#125;</span><br><span class="line"></span><br><span class="line">// 抽象层</span><br><span class="line"></span><br><span class="line">type Car interface &#123;</span><br><span class="line">	Run()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Driver interface &#123;</span><br><span class="line">	Driver(car Car)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 实现层</span><br><span class="line">// 每个车子都实现Run方法</span><br><span class="line">// 每个司机都实现Drive方法</span><br><span class="line">// 这样需要实现的方法为m+n </span><br><span class="line">// 而且实现层只依赖于抽象层</span><br><span class="line">type Benz struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (b *Benz) Run() &#123;</span><br><span class="line">	fmt.Println(&quot;Benz is Running&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type BMW struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (b *BMW) Run() &#123;</span><br><span class="line">	fmt.Println(&quot;BMW is Running&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Zhang3 struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (z3 *Zhang3) Drive(car Car) &#123;</span><br><span class="line">	fmt.Println(&quot;zhang3 drive car&quot;)</span><br><span class="line">	car.Run()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Li4 struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (l4 *Li4) Drive(car Car) &#123;</span><br><span class="line">	fmt.Println(&quot;li4 drive car&quot;)</span><br><span class="line">	car.Run()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 业务逻辑层</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	var benz Car = new(Benz)</span><br><span class="line">	z := new(Zhang3)</span><br><span class="line">	z.Drive(benz)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="合成复用原则"><a href="#合成复用原则" class="headerlink" title="合成复用原则"></a>合成复用原则</h3><p>如果使用继承，会导致父类的任何变换都可能影响到子类的行为。如果使用对象组合，就降低了这种依赖关系。对于继承和组合，优先使用组合。<br><strong>使用组合来实现父类方法</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">type Cat struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (c *Cat) Eat() &#123;</span><br><span class="line">	fmt.Println(&quot;小猫吃饭&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//使用继承来实现 添加一个睡觉的方法</span><br><span class="line"></span><br><span class="line">type CatB struct &#123;</span><br><span class="line">	Cat</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (c *CatB) Sleep() &#123;</span><br><span class="line">	fmt.Println(&quot;小猫睡觉&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//使用组合来添加可睡觉的方法</span><br><span class="line"> </span><br><span class="line">type CatC struct &#123;</span><br><span class="line">	C *Cat</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (cc *CatC) Sleep() &#123;</span><br><span class="line">	fmt.Println(&quot;小猫睡觉 &quot;)</span><br><span class="line">&#125;</span><br><span class="line">func main() &#123;</span><br><span class="line">	c := &amp;Cat&#123;&#125;</span><br><span class="line">	c.Eat()</span><br><span class="line">	cb := &amp;CatB&#123;&#125;</span><br><span class="line">	cb.Eat()</span><br><span class="line">	cb.Sleep()</span><br><span class="line">	cc := &amp;CatC&#123;&#125;</span><br><span class="line">	cc.Sleep()</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="迪米特法则"><a href="#迪米特法则" class="headerlink" title="迪米特法则"></a>迪米特法则</h3><p><strong>依赖第三方进行解耦</strong></p>
+<h3 id="接口的意义"><a href="#接口的意义" class="headerlink" title="接口的意义"></a>接口的意义</h3><p>接口的意义就是实现多态的思想，我们可以根据interface类型来设计API接口，那么这种API接口的适应能力不仅能够适应当下所实现的全部模块，也适应未来实现的模块来进行调用。<code>**调用未来**</code>也许是接口最大的意义所在，良好的架构师可以针对interface进行设计一套框架，在未来的许多年后仍然可以适用</p>
+<h1 id="设计模式"><a href="#设计模式" class="headerlink" title="设计模式"></a>设计模式</h1><h2 id="创建型模式"><a href="#创建型模式" class="headerlink" title="创建型模式"></a>创建型模式</h2><p><img src="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/3.png" alt="image.png"><br>思想就是可以通过添加一层<strong>工厂模块</strong>，来做到业务逻辑层和基础模块层之间的耦合，避免业务逻辑层对基础模块层的直接依赖。</p>
+<h3 id="简单工厂模式"><a href="#简单工厂模式" class="headerlink" title="简单工厂模式"></a>简单工厂模式</h3><p>简单工厂模式并不属于GoF的23种设计模式，它是开发者自发认为的一种非常简易的设计模式，其角色和职责如下：</p>
+<ul>
+<li>工厂：简单工厂模式的核心，它负责创建所有实例的内部逻辑。工厂类可以被外界直接调用，创建所需要的产品对象</li>
+<li>抽象产品：简单工厂模式所创建的所有对象的分类，它负责描述实例所公有的公共接口</li>
+<li>具体产品：简单工厂模式所创建的具体实例对象</li>
+</ul>
+<p>设计模式类图<br><img src="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/4.png" alt="image.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">// 抽象层</span><br><span class="line"></span><br><span class="line">type Fruit interface &#123;</span><br><span class="line">	Show()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 实现层</span><br><span class="line"></span><br><span class="line">type Apple struct &#123;</span><br><span class="line">	Fruit</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (a *Apple) Show() &#123;</span><br><span class="line">	fmt.Println(&quot;i am apple&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Banana struct &#123;</span><br><span class="line">	Fruit</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (b *Banana) Show() &#123;</span><br><span class="line">	fmt.Println(&quot;i am banana&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Pear struct &#123;</span><br><span class="line">	Fruit</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (p *Pear) Show() &#123;</span><br><span class="line">	fmt.Println(&quot;i am pear&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 工厂模块</span><br><span class="line"></span><br><span class="line">type Factory struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (f *Factory) CreateFruit(kind string) Fruit &#123;</span><br><span class="line">	var fruit Fruit</span><br><span class="line">	if kind == &quot;apple&quot; &#123;</span><br><span class="line">		fruit = new(Apple)</span><br><span class="line">	&#125; else if kind == &quot;banana&quot; &#123;</span><br><span class="line">		fruit = new(Banana)</span><br><span class="line">	&#125; else if kind == &quot;pear&quot; &#123;</span><br><span class="line">		fruit = new(Pear)</span><br><span class="line">	&#125;</span><br><span class="line">	return fruit</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 逻辑层</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	factory := new(Factory)</span><br><span class="line">	apple := factory.CreateFruit(&quot;apple&quot;)</span><br><span class="line">	apple.Show()</span><br><span class="line">	banana := factory.CreateFruit(&quot;banana&quot;)</span><br><span class="line">	banana.Show()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>优缺点</strong><br>优点：</p>
+<ul>
+<li>实现了对象创建和使用的分离</li>
+<li>不需要记住具体类名，记住参数就可以，减少使用者记忆量</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>对工厂职责过重，一旦不能工作，系统会受到影响</li>
+<li>增加系统中类的个数，复杂度和理解度增加</li>
+<li>违反“开闭原则”，添加新产品需要修改工厂逻辑，工厂越来越复杂</li>
+</ul>
+<p><strong>适用场景</strong>：</p>
+<ul>
+<li>工厂类负责创建的对象比较少，由于创建的对象较少，不会造成工厂方法中的逻辑太复杂</li>
+<li>客户端只知道传入工厂类的参数，对于如何创建对象并不关心</li>
+</ul>
+<h3 id="工厂方法模式"><a href="#工厂方法模式" class="headerlink" title="工厂方法模式"></a>工厂方法模式</h3><ul>
+<li>抽象工厂：工厂的核心，任何工厂类都必须实现这个接口</li>
+<li>工厂：具体工厂是抽象工厂的一个实现，负责实例化产品对象</li>
+<li>抽象产品：工厂方法模式所创建的所有对象的父类，它负责描述所有实例所共有的公共接口</li>
+<li>具体产品：工厂方法模式所创建的具体实例对象</li>
+</ul>
+<p>简单工厂+开闭原则&#x3D;工厂<br>模式类图<br><img src="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/5.png" alt="image.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line">// 抽象层</span><br><span class="line"></span><br><span class="line">type fruit interface &#123;</span><br><span class="line">	show()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 工厂类（抽象的接口）</span><br><span class="line"></span><br><span class="line">type AbstractFactory interface &#123;</span><br><span class="line">	CreateFruit() fruit</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 基础模块层</span><br><span class="line"></span><br><span class="line">type apple struct &#123;</span><br><span class="line">	fruit</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (a *apple) show() &#123;</span><br><span class="line">	fmt.Println(&quot;i am apple&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type banana struct &#123;</span><br><span class="line">	fruit</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (b *banana) show() &#123;</span><br><span class="line">	fmt.Println(&quot;i am banana&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type pear struct &#123;</span><br><span class="line">	fruit</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (p *pear) show() &#123;</span><br><span class="line">	fmt.Println(&quot;i am pear&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type AppleFactory struct &#123;</span><br><span class="line">	AbstractFactory</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (fac *AppleFactory) CreateFruit() fruit &#123;</span><br><span class="line">	var f fruit</span><br><span class="line">	f = new(apple)</span><br><span class="line">	return f</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type BananaFactory struct &#123;</span><br><span class="line">	AbstractFactory</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (fac *BananaFactory) CreateFruit() fruit &#123;</span><br><span class="line">	var f fruit</span><br><span class="line">	f = new(banana)</span><br><span class="line">	return f</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type PearFactory struct &#123;</span><br><span class="line">	AbstractFactory</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (fac *PearFactory) CreateFruit() fruit &#123;</span><br><span class="line">	var f fruit</span><br><span class="line">	f = new(pear)</span><br><span class="line">	return f</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 业务逻辑层</span><br><span class="line">func main() &#123;</span><br><span class="line">	//需求1 需要一个具体的苹果对象</span><br><span class="line">	//需要一个具体的苹果工厂</span><br><span class="line">	var a AbstractFactory</span><br><span class="line">	a = new(AppleFactory)</span><br><span class="line">	//生产一个具体的水果</span><br><span class="line">	var apple fruit</span><br><span class="line">	apple = a.CreateFruit()</span><br><span class="line">	apple.show()</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>优缺点</strong><br>优点：</p>
+<ul>
+<li>不需要记住具体类名，甚至连具体参数都不用记忆</li>
+<li>实现了对象创建和使用的分离</li>
+<li>系统的可拓展性也变得非常好，不需要修改接口和原类</li>
+<li>对于新产品的创建，符合开闭原则</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>增加系统中的类的个数，复杂度和理解度增加</li>
+<li>增加了系统的抽象性</li>
+</ul>
+<p><strong>适用场景</strong></p>
+<ol>
+<li>客户端不知道它所需要的对象的类</li>
+<li>抽象工厂类通过其子类来指定创建哪个对象</li>
+</ol>
+<h3 id="抽象工厂模式"><a href="#抽象工厂模式" class="headerlink" title="抽象工厂模式"></a>抽象工厂模式</h3><p>工厂模式中的每个工厂只生产一类产品，可能会导致系统中存在大量的工厂类，势必会增加系统的开销。因此，可以将一些相关的产品组成一个“产品族”，从而由同一个工厂来统一生产。</p>
+<ul>
+<li>抽象工厂：它声明了一组用于创建一组产品的方法，每一个方法对应一种产品</li>
+<li>具体工厂：它实现了在抽象工厂中声明的创建产品的方法，生成一组具体产品，这些产品构成了一个产品族，每一个产品都位于某在产品等级结构中</li>
+<li>抽象产品：它为每种产品声明接口，在抽象产品中声明了产品所具有的业务方法</li>
+<li>具体产品：它定义具体工厂生产的具体产品对象，实现抽象产品接口中声明的业务方法</li>
+</ul>
+<p>模式例图<br><img src="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/6.png" alt="image.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line">// 抽象层</span><br><span class="line"></span><br><span class="line">type AbstractApple interface &#123;</span><br><span class="line">	ShowApple()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type AbstractBanana interface &#123;</span><br><span class="line">	ShowBanana()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type AbstractPear interface &#123;</span><br><span class="line">	ShowPear()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 抽象的工厂</span><br><span class="line"></span><br><span class="line">type AbstractFactory interface &#123;</span><br><span class="line">	CreateApple() AbstractApple</span><br><span class="line">	CreateBanana() AbstractBanana</span><br><span class="line">	CreatePear() AbstractPear</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 实现层</span><br><span class="line"></span><br><span class="line">type ChinaApple struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type ChinaBanana struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type ChinaPear struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type ChinaFactory struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (ca *ChinaApple) ShowApple() &#123;</span><br><span class="line">	fmt.Println(&quot;china apple&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (cb *ChinaBanana) ShowBanana() &#123;</span><br><span class="line">	fmt.Println(&quot;china banana&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (cp *ChinaPear) ShowPear() &#123;</span><br><span class="line">	fmt.Println(&quot;china pear&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (cf *ChinaFactory) CreateApple() AbstractApple &#123;</span><br><span class="line">	var apple AbstractApple</span><br><span class="line">	apple = new(ChinaApple)</span><br><span class="line">	return apple</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (cf *ChinaFactory) CreateBanana() AbstractBanana &#123;</span><br><span class="line">	var b AbstractBanana</span><br><span class="line">	b = new(ChinaBanana)</span><br><span class="line">	return b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (cf *ChinaFactory) CreatePear() AbstractPear &#123;</span><br><span class="line">	var p AbstractPear</span><br><span class="line">	p = new(ChinaPear)</span><br><span class="line">	return p</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	// 需要中国的水果</span><br><span class="line">	//1. 创建中国工厂</span><br><span class="line">	var cF AbstractFactory</span><br><span class="line">	cF = new(ChinaFactory)</span><br><span class="line">	var cApple AbstractApple</span><br><span class="line">	cApple = cF.CreateApple()</span><br><span class="line">	cApple.ShowApple()</span><br><span class="line">	var cBanana AbstractBanana</span><br><span class="line">	cBanana = cF.CreateBanana()</span><br><span class="line">	cBanana.ShowBanana()</span><br><span class="line">	var cPear AbstractPear</span><br><span class="line">	cPear = cF.CreatePear()</span><br><span class="line">	cPear.ShowPear()</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>优缺点</strong><br>优点</p>
+<ol>
+<li>用于工厂方法模式的优点</li>
+<li>当一个产品族中的多个对象被设计成一起工作时，它能够保证客户端始终只使用同一个产品族中的对象</li>
+<li>增加新的产品族很方便，无须修改已有系统，符合“开闭原则”</li>
+</ol>
+<p>缺点</p>
+<ol>
+<li>增加新的产品等级结构麻烦，需要对原有系统进行较大的修改，甚至需要修改抽象层代码，这显然会带来较大的不便，违背了”开闭原则“</li>
+</ol>
+<p><strong>适用场景</strong></p>
+<ol>
+<li>系统中有多于一个的产品族，而每次只使用其中某一产品族，可以通过配置文件等方式来使得用户可以动态改变产品族，也可以很方便地增加新的产品族</li>
+<li>产品等级结构稳定。设计完成之后，不会像系统中增加新的产品等级结构或者删除已有的产品等级结构</li>
+</ol>
+<h3 id="三种工厂的区别"><a href="#三种工厂的区别" class="headerlink" title="三种工厂的区别"></a>三种工厂的区别</h3><ul>
+<li>简单工厂：一个工厂负责创建所有产品，违反开闭原则，添加新产品需要修改工厂逻辑，工厂会变得越来越复杂</li>
+<li>工厂：一个工厂创建一个产品，系统的可扩展性非常好，无需修改接口和类，但是系统中类的个数变多，复杂度和理解度增加</li>
+<li>抽象工厂：一个工厂创建一系列（同一个产品族）的产品，增加新的产品族很方便，无需修改已有系统，符合开闭原则，增加新的产品等级结构很麻烦，需要对原有系统进行较大的修改，违背了开闭原则，相当于在工厂方法的模式下进行了折中，如果产品结构等级稳定，那么就相当于完全遵循开闭</li>
+</ul>
+<h3 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h3><p>保证一个类、只有一个实例存在，同时提供能对该实例加以访问的全局访问方法。<br>要解决的问题是：保证一个类永远只能有一个对象，且该对象的功能依然能被其他模块使用。<br>类图：<br><img src="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/7.png" alt="image.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">//三个要点</span><br><span class="line">// 某个类只能有一个实例</span><br><span class="line">// 它必须自行创建这个实例</span><br><span class="line">// 必须自行向整个系统提供这个实例</span><br><span class="line"></span><br><span class="line">// 总结：一个类永远只能有一个对象，这个对象还能被系统的其他模块使用</span><br><span class="line"></span><br><span class="line">//1. 因为这个类必须保证私有化 所以首字母要小写</span><br><span class="line">type singelton struct&#123;&#125;</span><br><span class="line"></span><br><span class="line">// 2.指针只能指向这个唯一对象，但是这个指针不能改变方向，也必须小写</span><br><span class="line">var instance *singelton = new(singelton)</span><br><span class="line"></span><br><span class="line">// 3.对外提供一个方法来获取到这个对象 把instance的写权限去掉 只暴露读权限</span><br><span class="line"></span><br><span class="line">func GetInstance() *singelton &#123;</span><br><span class="line">	return instance</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (s *singelton) DoSomeThing() &#123;</span><br><span class="line">	fmt.Println(&quot;Do something&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	s := GetInstance()</span><br><span class="line">	s.DoSomeThing()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 懒汉式的单例模式:只有被第一次访问的时候 才给instance赋值 平常为nil</span><br><span class="line">// 但是懒汉式可能有并发问题： 同时有两个Getinstance同一时刻首次调用 那么就会出现两个instance 可以加锁解决</span><br><span class="line">// 锁的粒度太大了 可以通过一个uint的标记 使用atomic.LoadUnit函数判断 不用每次访问都加锁</span><br><span class="line">// 或者直接使用sync.Once进行new 这是对atomic.LoadUint的封装</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>优缺点</strong><br>优点：</p>
+<ol>
+<li>单例模式提供了对唯一实例的受控访问</li>
+<li>节约系统资源，由于在系统内存中只存在一个对象</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>扩展性差，单利模式中没有抽象层</li>
+<li>单例类的职责过重</li>
+</ol>
+<p><strong>适用场景</strong></p>
+<ol>
+<li>系统只需要一个实例对象，比如系统要求提供一个唯一的序列号生成器或者资源管理器，或者需要考虑资源消耗太大而只允许创建一个对象</li>
+<li>客户调用类的单个实力只允许使用一个公共访问点，除了该节点之外，不能通过其他途径访问该实例</li>
+</ol>
+<h2 id="结构型模式"><a href="#结构型模式" class="headerlink" title="结构型模式"></a>结构型模式</h2><h3 id="代理模式"><a href="#代理模式" class="headerlink" title="代理模式"></a>代理模式</h3><p>Proxy模式又叫代理模式，可以为其他对象提供一种代理（Proxy）以控制对这个对象的访问。<br>所谓代理，是指具有与代理元（被代理的对象）具有相同的接口的类，客户端必须通过代理与被代理的目标类进行交互</p>
+<ul>
+<li>抽象主题：真实主题与代理主题的共同接口</li>
+<li>真实主题：定义了代理角色所代表的真实对象</li>
+<li>代理主题角色：含有对真实主题角色的引用，代理角色通常在客户端调用给真实主题对象之前或者之后执行某些操作</li>
+</ul>
+<p><img src="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/8.png" alt="image.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line">type Goods struct &#123;</span><br><span class="line">	Kind string</span><br><span class="line">	Fact bool</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 抽象层</span><br><span class="line">type Shopping interface&#123;</span><br><span class="line">	Buy(goods *Goods)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 实现层</span><br><span class="line">type KoreaShopping struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (ks *KoreaShopping) Buy(good *Goods) &#123;</span><br><span class="line">	fmt.Println(&quot;go korea buy&quot;, good.Kind)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type AmericaShopping struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (as *AmericaShopping) Buy(good *Goods) &#123;</span><br><span class="line">	fmt.Println(&quot;go america buy&quot;, good.Kind)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type AfricaShopping struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (as *AfricaShopping) Buy(good *Goods) &#123;</span><br><span class="line">	fmt.Println(&quot;go africa buy&quot;, good.Kind)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 海外代理</span><br><span class="line"></span><br><span class="line">type OverSeasProxy struct &#123;</span><br><span class="line">	shopping Shopping</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (op *OverSeasProxy) Buy(good *Goods) &#123;</span><br><span class="line">	//1.辨别真伪</span><br><span class="line">	if op.distinguish(good) == true &#123;</span><br><span class="line">		op.shopping.Buy(good)</span><br><span class="line">		op.check(good)</span><br><span class="line">	&#125;</span><br><span class="line">	//2.调用具体需要被代理的Buy方法</span><br><span class="line">	//3.海关安检</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 辨别真伪</span><br><span class="line">func (op *OverSeasProxy) distinguish(goods *Goods) bool &#123;</span><br><span class="line">	fmt.Println(&quot;对&quot;, goods.Kind, &quot;进行了辨别真伪&quot;)</span><br><span class="line">	if goods.Fact == false &#123;</span><br><span class="line">		fmt.Println(&quot;发现假货&quot;)</span><br><span class="line">	&#125;</span><br><span class="line">	return goods.Fact</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (op *OverSeasProxy) check(good *Goods) &#123;</span><br><span class="line">	fmt.Println(&quot;通过海关&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func NewProxy(s Shopping) Shopping &#123;</span><br><span class="line">	return &amp;OverSeasProxy&#123;s&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	g1 := Goods&#123;</span><br><span class="line">		Kind: &quot;韩国面膜&quot;,</span><br><span class="line">		Fact: true,</span><br><span class="line">	&#125;</span><br><span class="line">	g2 := Goods&#123;</span><br><span class="line">		Kind: &quot;苹果&quot;,</span><br><span class="line">		Fact: false,</span><br><span class="line">	&#125;</span><br><span class="line">	var k Shopping = new(KoreaShopping)</span><br><span class="line">	var p Shopping</span><br><span class="line">	p = NewProxy(k)</span><br><span class="line">	p.Buy(&amp;g1)</span><br><span class="line">	var a Shopping = new(AmericaShopping)</span><br><span class="line">	p = NewProxy(a)</span><br><span class="line">	p.Buy(&amp;g2)</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p><strong>优缺点</strong><br>优点：<br>1.能够协调调用者和被调用者，在一定程度上降低了系统的耦合度<br>2.客户端可以针对抽象主题角色进行编程，符合开闭原则，系统具有姣好的灵活性和可拓展性<br>缺点：<br>1.实现较为复杂<br><strong>适用场景</strong><br>为其他对象提供一种代理以控制对这个对象的访问</p>
+<h3 id="装饰模式"><a href="#装饰模式" class="headerlink" title="装饰模式"></a>装饰模式</h3><p>装饰模式（Decorator）用来动态地给一个对象增加一些额外的职责，比生成子类实现更加灵活<br>装饰模式关注于在一个对象上动态的添加方法，然而代理模式关注于控制对对象的访问。换句话说，用代理模式，代理类可以对它的客户隐藏一个对象的具体信息。因此，当使用模式的时候，我们常常在一个代理类中创建一个对象的实例。并且当我们使用装饰器模式的时候，我们通常的做法是将原始对象作为一个参数传给装饰者的构造器。</p>
+<ul>
+<li>抽象构件：是具体构件和抽象装饰类的共同父类，声明了在具体构件中实现的业务方法，它的引入可以使客户端以一致的方法处理未被装饰的对象以及装饰之后的对象，实现客户端的透明操作</li>
+<li>具体构件：它是抽象构建类的子类，用于定义具体的构件对象，实现了在抽象构件中声明的方法，装饰器可以给它增加额外的职责</li>
+</ul>
+<p>例图<br><img src="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/9.png" alt="image.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">type Phone interface &#123;</span><br><span class="line">	Show()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 抽象的装饰器，装饰器的基础类</span><br><span class="line"></span><br><span class="line">type Decorator struct &#123;</span><br><span class="line">	phone Phone</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (d *Decorator) Show() &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 具体的构件</span><br><span class="line"></span><br><span class="line">type Huawei struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (hw *Huawei) Show() &#123;</span><br><span class="line">	fmt.Println(&quot;it is a huawei phone&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Xiaomi struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (xm *Xiaomi) Show() &#123;</span><br><span class="line">	fmt.Println(&quot;it is a xiaomi phone&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type MoDecorator struct &#123;</span><br><span class="line">	Decorator</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (md *MoDecorator) Show() &#123;</span><br><span class="line">	md.phone.Show()</span><br><span class="line">	fmt.Println(&quot;it is a mo phone&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func NewMoDecorator(p Phone) Phone &#123;</span><br><span class="line">	return &amp;MoDecorator&#123;Decorator&#123;</span><br><span class="line">		p,</span><br><span class="line">	&#125;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type KeDecorator struct &#123;</span><br><span class="line">	Decorator</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (kd *KeDecorator) Show() &#123;</span><br><span class="line">	kd.phone.Show()</span><br><span class="line">	fmt.Println(&quot;it is a ke phone&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func NewKeDecorator(p Phone) Phone &#123;</span><br><span class="line">	return &amp;KeDecorator&#123;Decorator&#123;p&#125;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	var hw Phone</span><br><span class="line">	hw = new(Huawei)</span><br><span class="line">	hw.Show()</span><br><span class="line">	var mo Phone</span><br><span class="line">	mo = NewMoDecorator(hw)</span><br><span class="line">	mo.Show()</span><br><span class="line">	var ke Phone</span><br><span class="line">	ke = NewKeDecorator(hw)</span><br><span class="line">	ke.Show()</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p><strong>优缺点</strong><br>优点：</p>
+<ol>
+<li>对于扩展一个对象的功能，装饰模式比继承更加灵活，不会导致类的个数急剧增加</li>
+<li>可以通过一种动态的方式来扩展一个对象的功能，从而实现不同的行为</li>
+<li>可以对一个对象进行多次装饰</li>
+<li>具体构建类与具体装饰类可以独立变化，符合开闭</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>使用装饰模式进行系统设计时将产生很多小对象，大量小对象的产生势必会占用更多的系统资源，影响程序的性能</li>
+<li>装饰模式提供了一种比继承更加灵活激动的解决方案，同时意味着排错也比较困难</li>
+</ol>
+<p><strong>适用场景</strong></p>
+<ol>
+<li>动态、透明的方式给单个对象添加职责</li>
+<li>当不能采用继承的方式对系统进行拓展或者采用继承不利于系统拓展和维护时可以使用装饰模式</li>
+</ol>
+<h3 id="装饰与代理的区别"><a href="#装饰与代理的区别" class="headerlink" title="装饰与代理的区别"></a>装饰与代理的区别</h3><p>装饰器模式关注于在一个对象上动态的添加方法，然而代理模式关注于控制对对象的访问。换句话说，用代理模式，代理类可以对它的客户隐藏一个对象的具体信息。</p>
+<h3 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h3><p>将一个类的接口转换成客户希望的另外一个接口。使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。</p>
+<ul>
+<li>目标抽象类：定义客户所需接口，可以是具体类也可以是抽象接口</li>
+<li>适配器类：可以调用另一个接口，作为一个转换器，让目标抽象类和适配者类进行适配</li>
+<li>适配者类：被适配的角色，定义了一个已经存在的接口，这个接口需要适配</li>
+</ul>
+<p><img src="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/10.png" alt="image.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">type V5 interface &#123;</span><br><span class="line">	Use5V()</span><br><span class="line">&#125;</span><br><span class="line">type V220 struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type phone struct &#123;</span><br><span class="line">	v V5</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (v *V220) Use220V() &#123;</span><br><span class="line">	fmt.Println(&quot;使用220V的电压 &quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Adapter struct &#123;</span><br><span class="line">	v220 *V220</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (a *Adapter) Use5V() &#123;</span><br><span class="line">	fmt.Println(&quot;使用适配器，以220V的电压充电&quot;)</span><br><span class="line">	a.v220.Use220V()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func NewPhone(v V5) *phone &#123;</span><br><span class="line">	return &amp;phone&#123;v&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func NewAdapter(v220 *V220) *Adapter &#123;</span><br><span class="line">	return &amp;Adapter&#123;v220&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (p *phone) Charge() &#123;</span><br><span class="line">	fmt.Println(&quot;Phone 进行了充电&quot;)</span><br><span class="line">	p.v.Use5V()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	phone := NewPhone(NewAdapter(&amp;V220&#123;&#125;))</span><br><span class="line">	phone.Charge()</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p><strong>优缺点</strong><br>优点：</p>
+<ol>
+<li>将目标类和适配者类解耦，通过引入一个适配器类来重用现有的适配者类，无需修改原有结构</li>
+<li>增加了类的透明性和复用性，将具体的业务实现封装在适配者类中，对于客户端类而言是透明的，而且提高了适配者的复用性，同一个适配者类可以在多个不同的系统中复用</li>
+<li>灵活性和扩展性都很好，可以很方便地更换适配器，符合开闭原则</li>
+</ol>
+<p>缺点：<br>适配器中置换适配者类的某些方法比较麻烦<br><strong>适应场景</strong><br>1.系统需要使用一些现有的类，而这些类的接口不符合系统的需要，甚至没有这些类的源代码<br>2.想创建一个可以重复使用的类，用来与一些彼此之间没有太大关联的一些类，包括一些可能在将来引进的类一起工作</p>
+<h3 id="外观模式"><a href="#外观模式" class="headerlink" title="外观模式"></a>外观模式</h3><p>外观模式(Facade)，为一组具有类型功能的类群，比如类库，子系统等等，提供一个一致的简单的界面</p>
+<ul>
+<li>外观角色：为调用方，定义简单的调用接口</li>
+<li>子系统角色：功能提供方，指提供功能的类群</li>
+</ul>
+<p><img src="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/11.png" alt="image.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">type SubSystemA struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type SubSystemB struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type SubSystemC struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type SubSystemD struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (sa *SubSystemA) MethodA() &#123;</span><br><span class="line">	fmt.Println(&quot;sub method a&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (sb *SubSystemB) MethodB() &#123;</span><br><span class="line">	fmt.Println(&quot;sub method b&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (sc *SubSystemC) MethodC() &#123;</span><br><span class="line">	fmt.Println(&quot;sub method c&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (sd *SubSystemD) MethodD() &#123;</span><br><span class="line">	fmt.Println(&quot;sub method d&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 外观类</span><br><span class="line">type Facade struct &#123;</span><br><span class="line">	a *SubSystemA</span><br><span class="line">	b *SubSystemB</span><br><span class="line">	c *SubSystemC</span><br><span class="line">	d *SubSystemD</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (f *Facade) MethodOne() &#123;</span><br><span class="line">	f.a.MethodA()</span><br><span class="line">	f.b.MethodB()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (f *Facade) MethodTwo() &#123;</span><br><span class="line">	f.c.MethodC()</span><br><span class="line">	f.d.MethodD()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	f := Facade&#123;&#125;</span><br><span class="line">	f.MethodOne()</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>优缺点</strong><br>优点：<br>1.它对客户端屏蔽了子系统组件，减少了客户端所需处理的对象数目，并使得子系统使用起来更加容易。通过引入外观模式，客户端代码将变得很简单，与之关联的对象也很少。<br>2.它实现了子系统与客户端之间的松耦合关系，这使得子系统的变化不会影响到调用它的客户端，只需要调整外观类即可<br>3.一个子系统的修改对其他子系统没有任何影响<br>缺点;<br>1.不能很好的限制客户端直接使用子系统类，如果对客户端访问子系统类做太多的限制则减少了可变性和灵活性<br>2.如果设计不当，增加新的子系统可能需要修改外观类的源代码，违背了开闭原则<br><strong>适用场景</strong></p>
+<ol>
+<li>复杂系统需要简单入口使用</li>
+<li>客户端程序与多个子系统之间存在很大的依赖性</li>
+<li>在层次化结构中，可以使用外观模式定义系统中每一层的入口，层与层之间不直接产生联系</li>
+</ol>
+<h2 id="行为型模式"><a href="#行为型模式" class="headerlink" title="行为型模式"></a>行为型模式</h2><h3 id="模板方法模式"><a href="#模板方法模式" class="headerlink" title="模板方法模式"></a>模板方法模式</h3><ul>
+<li>抽象类：在抽象类中定义了一系列基本操作，可以是具体的，也可以是抽象的，每一个基本操作对应算法的一个步骤，在其子类中可以重定义或者实现这些步骤</li>
+<li>具体子类：是抽象类的子类，用于实现在父类中声明的抽象基本操作以完成子类特定算法的步骤，也可以覆盖在父类中已经实现的具体操作</li>
+</ul>
+<p><img src="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/12.png" alt="image.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">// 抽象类 做饮料</span><br><span class="line"></span><br><span class="line">type Beverage interface &#123;</span><br><span class="line">	BoilWater()</span><br><span class="line">	Brew()</span><br><span class="line">	PourInCup()</span><br><span class="line">	AddThings()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 封装一套流程模板</span><br><span class="line">type template struct &#123;</span><br><span class="line">	b Beverage</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (t *template) MakeBeverage() &#123;</span><br><span class="line">	if t == nil &#123;</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	t.b.BoilWater()</span><br><span class="line">	t.b.Brew()</span><br><span class="line">	t.b.PourInCup()</span><br><span class="line">	t.b.AddThings()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type MakeCoffee struct &#123;</span><br><span class="line">	template</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (mc *MakeCoffee) BoilWater() &#123;</span><br><span class="line">	fmt.Println(&quot;boil the water&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (mc *MakeCoffee) Brew() &#123;</span><br><span class="line">	fmt.Println(&quot;use boiled water to brew&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (mc *MakeCoffee) PourInCup() &#123;</span><br><span class="line">	fmt.Println(&quot;pour the coffee to the cup&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (mc *MakeCoffee) AddThings() &#123;</span><br><span class="line">	fmt.Println(&quot;add sugar&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func NewMakeCoffee() *MakeCoffee &#123;</span><br><span class="line">	m := new(MakeCoffee)</span><br><span class="line">	m.b = m</span><br><span class="line">	return m</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	makeCoffee := NewMakeCoffee()</span><br><span class="line">	makeCoffee.MakeBeverage()</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p><strong>优缺点</strong><br>优点：<br>1.在父类中形式化地定义一个算法，而由它的子类来实现细节的处理，在子类实现详细的处理算法时不会改变算法中步骤的执行顺序<br>2.模板方法是一种代码复用技术，他提取了类库中的公共行为，将公共行为放在父类中<br>3.可实现一种反向控制结构，通过子类覆盖父类的钩子方法来决定某一特定步骤是否需要执行<br>4.不同的子类可以提供基本方法的不同实现，更换和增加新的子类很方便，符合单一职责原则和开闭原则<br>缺点：<br>需要为每一个基本方法的不同实现提供一个子类，如果父类中可变的基本方法太多，将会导致类的个数增加，系统更加庞大，设计也更加抽象。<br><strong>适用场景</strong><br>1.具有同一的操作步骤或操作过程<br>2.具有不同的操作细节<br>3.存在多个具有同样操作步骤的应用场景，但某些具体的操作系统却各不相同<br>在抽象类中统一操作步骤，并规定好接口；让子类实现接口。这样可以把各个子类和操作步骤解耦合</p>
+<h3 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h3><p>讲一个请求封装成一个对象，从而让我们可用不同的请求对客户进行参数化；对请求排队或者记录请求日志，以及支持可撤销的操作。命令模式是一种对象行为型模式，其别名为动作模式。命令模式可以将请求发送者和接收者完全解耦，发送者与接收者之间没有直接引用关系，发送请求的对象只需要知道如何发送请求，而不比知道如何完成请求。</p>
+<ul>
+<li>抽象命令类：一个抽象类或者接口，通过这些方法可以调用请求接收者的相关操作</li>
+<li>具体命令类：具体命令类是抽象命令类的子类，实现了在抽象命令类中声明的方法，它对应具体的接收者对象，将接收者对象的动作绑定其中</li>
+<li>调用者：请求发送者，通过命令对象来执行请求</li>
+<li>接收者：接收者执行与请求相关的操作</li>
+</ul>
+<p><img src="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/13.png" alt="image.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">type Doctor struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (d *Doctor) treatEye() &#123;</span><br><span class="line">	fmt.Println(&quot;doctor treat eye&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (d *Doctor) treatMouth() &#123;</span><br><span class="line">	fmt.Println(&quot;doctor treat mouth&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Command interface &#123;</span><br><span class="line">	Treat()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type CommandTreatEye struct &#123;</span><br><span class="line">	d *Doctor</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (cmd *CommandTreatEye) Treat() &#123;</span><br><span class="line">	cmd.d.treatEye()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type CommandTreatMouth struct &#123;</span><br><span class="line">	d *Doctor</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (cmd *CommandTreatMouth) Treat() &#123;</span><br><span class="line">	cmd.d.treatMouth()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Nurse struct &#123;</span><br><span class="line">	CmdList []Command</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (n *Nurse) Notify() &#123;</span><br><span class="line">	if len(n.CmdList) == 0 &#123;</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	for _, cmd := range n.CmdList &#123;</span><br><span class="line">		cmd.Treat()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	doctor := new(Doctor)</span><br><span class="line">	cmdEye := CommandTreatEye&#123;doctor&#125;</span><br><span class="line">	cmdMouth := CommandTreatMouth&#123;doctor&#125;</span><br><span class="line">	nurse := new(Nurse)</span><br><span class="line">	nurse.CmdList = append(nurse.CmdList, &amp;cmdEye)</span><br><span class="line">	nurse.CmdList = append(nurse.CmdList, &amp;cmdMouth)</span><br><span class="line">	nurse.Notify()</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>优缺点</strong><br>优点：<br>1.降低系统的耦合度<br>2.新的命令很容易添加到系统中，满足开闭原则<br>3.可以比较容易地设计一个命令队列或者宏命令<br>缺点：<br>使用命令模式可能会导致某些系统有过多的具体命令类，因为针对每一个对请求接收者的调用操作都需要设计一个具体命令类，因此在某些系统中可能需要提供大量的具体命令类，这将影响命令模式的使用<br><strong>适用场景</strong><br>1.系统需要将请求调用者和请求接收者解耦，使得调用者和接收者不直接交互。请求调用者无需知道接收者的存在，也许无知道接收者是谁<br>2.系统需要在不同的时间指定请求、将请求排队和执行请求<br>3.系统需要将一组操作组合在一起形成宏命令</p>
+<h3 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h3><ul>
+<li>环境类：环境类是使用算法的角色，它在解决某个问题时可以采用多种策略，在环境类中维持一个对抽象策略类的引用实例，用于定义所采用的策略</li>
+<li>抽象策略类：它为所支持的算法声明了抽象方法，是所有策略类的父类，可以是抽象类或者具体类，也可以是接口</li>
+<li>具体策略类：它实现了在抽象策略类中声明的算法，在运行时，具体策略类将覆盖在环境类中定义的抽象策略类，使用一种具体的算法实现某个业务处理</li>
+</ul>
+<p>例图<br><img src="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/14.png" alt="image.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">type WeaponStrategy interface &#123;</span><br><span class="line">	UseWeapon()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type AK47 struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (ak *AK47) UseWeapon() &#123;</span><br><span class="line">	fmt.Println(&quot;使用AK47战斗&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Knife struct &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (k *Knife) UseWeapon() &#123;</span><br><span class="line">	fmt.Println(&quot;使用匕首战斗&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Hero struct &#123;</span><br><span class="line">	strategy WeaponStrategy</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (h *Hero) SetWeaponStrategy(s WeaponStrategy) &#123;</span><br><span class="line">	h.strategy = s</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (h *Hero) Fight() &#123;</span><br><span class="line">	h.strategy.UseWeapon()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	hero := Hero&#123;&#125;</span><br><span class="line">	hero.SetWeaponStrategy(new(AK47))</span><br><span class="line">	hero.Fight()</span><br><span class="line">	hero.SetWeaponStrategy(new(Knife))</span><br><span class="line">	hero.Fight()</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>优缺点</strong><br>优点：<br>1.策略模式提供了对开闭原则的完美支持，用户可以在不修改原有系统的基础上选择算法或者行为<br>2.使用策略模式可以避免多重条件选择语句<br>3.策略模式提供了一种算法的复用机制<br>缺点：<br>1.客户端必须知道所有的策略类，并自行决定使用哪一个策略类<br>2.策略模式将造成系统产生很多具体策略类，任何细小的变化都将导致系统要增加一个新的具体策略类<br><strong>适用场景</strong><br>准备一组算法，并将每一个算法封装起来，使得它们可以互换</p>
+<h3 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h3><p>观察者模式是用于建立一种对象与对象之间的依赖关系，一个对象发生改变时将自动通知其他对象，其他对象将相应作出翻译。在观察者模式中，发生改变的对象称为观察目标，而被通知的对象称为观察者，一个观察目标可以对应多个观察者，而且这些观察者之间可以没有任何相互联系，可以根据需要增加和删除观察者，使得系统更易于扩展。</p>
+<ul>
+<li>抽象主题：被观察的对象</li>
+<li>具体主题：被观察者的具体实现</li>
+<li>观察者：接口或者抽象类</li>
+<li>具体观察者：观察者的具体实现</li>
+</ul>
+<p><img src="/2023/02/22/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/15.png" alt="image.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">type Listener interface &#123;</span><br><span class="line">	OnTeacherComing()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type Notifier interface &#123;</span><br><span class="line">	AddListener(l Listener)</span><br><span class="line">	RemoveListener(l Listener)</span><br><span class="line">	Notify()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type StuZhang3 struct &#123;</span><br><span class="line">	Badthing string</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (s *StuZhang3) OnTeacherComing() &#123;</span><br><span class="line">	fmt.Println(&quot;zhang3 stop&quot;, s.Badthing)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type StuZhao4 struct &#123;</span><br><span class="line">	Badthing string</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (s *StuZhao4) OnTeacherComing() &#123;</span><br><span class="line">	fmt.Println(&quot;zhao4 stop&quot;, s.Badthing)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type StuWang5 struct &#123;</span><br><span class="line">	Badthing string</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (s *StuWang5) OnTeacherComing() &#123;</span><br><span class="line">	fmt.Println(&quot;wang5 stop&quot;, s.Badthing)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type ClassMonitor struct &#123;</span><br><span class="line">	listenerList []Listener</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (m *ClassMonitor) AddListener(l Listener) &#123;</span><br><span class="line">	m.listenerList = append(m.listenerList, l)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (m *ClassMonitor) RemoveListener(l Listener) &#123;</span><br><span class="line">	for index, li := range m.listenerList &#123;</span><br><span class="line">		if li == l &#123;</span><br><span class="line">			m.listenerList = append(m.listenerList[:index], m.listenerList[index+1:]...)</span><br><span class="line">			break</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (m *ClassMonitor) Notify() &#123;</span><br><span class="line">	for _, listener := range m.listenerList &#123;</span><br><span class="line">		listener.OnTeacherComing()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	s1 := &amp;StuZhang3&#123;</span><br><span class="line">		Badthing: &quot;抄作业&quot;,</span><br><span class="line">	&#125;</span><br><span class="line">	s2 := &amp;StuZhao4&#123;</span><br><span class="line">		Badthing: &quot;玩手机&quot;,</span><br><span class="line">	&#125;</span><br><span class="line">	s3 := &amp;StuWang5&#123;</span><br><span class="line">		Badthing: &quot;看别人玩手机&quot;,</span><br><span class="line">	&#125;</span><br><span class="line">	classMonitor := new(ClassMonitor)</span><br><span class="line">	classMonitor.AddListener(s1)</span><br><span class="line">	classMonitor.AddListener(s2)</span><br><span class="line">	classMonitor.AddListener(s3)</span><br><span class="line">	classMonitor.Notify()</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>优缺点</strong><br>优点</p>
+<ol>
+<li>观察者模式可以实现表现层和数据逻辑层的分离，定义了稳定的消息更新传递机制，并抽象了更新接口，使得可以有各种各样不同的表示层充当具体观察者角色</li>
+<li>观察者模式在观察目标和观察者之间建立了一个抽象的耦合。观察目标只需要维持一个抽象观察者的集合，不需要了解其具体的观察者</li>
+<li>观察者模式支持广播通信，观察目标会向所有已注册的观察者对象发送通知，简化了一对多系统设计的难度</li>
+<li>观察者模式满足开闭原则</li>
+</ol>
+<p>缺点</p>
+<ol>
+<li>如果一个观察者对象有很多直接和间接的观察者，将所有的观察者都通知到会花费很多时间</li>
+<li>如果在观察者和观察目标之间存在循环依赖，系统可能会发生崩溃</li>
+<li>观察者模式没有响应的机制让观察者知道所观察到的对象是怎样发生变化的</li>
+</ol>
+<p><strong>适用场景</strong></p>
+<ol>
+<li>一个抽象模型有两个方面，其中一个方面依赖于另一方面，将这两个方面封装在独立的对象中使得它们可以各自独立地改变和复用</li>
+<li>一个对象的改变将导致一个或者多个其他对象也发生改变</li>
+<li>需要在系统中创建一个触发链路，A对象的行为影响B，B对象的行为影响C</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/15/toms%E5%88%9D%E8%AF%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1048,305 +1665,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/22/%E5%B7%A5%E4%B8%9A%E7%95%8C%E7%9A%84%E5%87%A0%E7%A7%8D%E5%8F%91%E5%B8%83%E6%A8%A1%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="安妮的心动录">
-      <meta itemprop="description" content="永远不要高估自己">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="安妮的心动录的园子">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/10/22/%E5%B7%A5%E4%B8%9A%E7%95%8C%E7%9A%84%E5%87%A0%E7%A7%8D%E5%8F%91%E5%B8%83%E6%A8%A1%E5%BC%8F/" class="post-title-link" itemprop="url">工业界的几种发布模式</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-10-22 11:07:35" itemprop="dateCreated datePublished" datetime="2022-10-22T11:07:35+08:00">2022-10-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-02-22 14:46:50" itemprop="dateModified" datetime="2023-02-22T14:46:50+08:00">2023-02-22</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">计算机基础</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="工业界的几种发布模式"><a href="#工业界的几种发布模式" class="headerlink" title="工业界的几种发布模式"></a>工业界的几种发布模式</h1><h2 id="蓝绿发布"><a href="#蓝绿发布" class="headerlink" title="蓝绿发布"></a>蓝绿发布</h2><ul>
-<li>蓝绿发布的本质上是通过系统冗余来解决上线风险的问题，通常生产环境中配置两套完全一样的环境，一组是active的生产环境配置（绿色），一组是inactivate的准备环境配置（蓝色），两套系统都是功能完善的，并且正在运行的系统，只是系统版本和对外服务情况不同</li>
-<li>最初始的状态下，没有任何系统，也没有蓝绿之分，然后第一套系统开发完成直接上线，只有一个系统，后来业务更新，要用新版本替换线上的旧版本，这时候就有两个系统，正在对外提供服务的是老系统为绿色，新部署的系统为蓝色</li>
-</ul>
-<p>为什么要有蓝色系统？因为蓝色其实是为了对新版本进行全方位的测试</p>
-<ul>
-<li>如果测试没出问题，可以通过负载均衡器&#x2F;反向代理&#x2F;路由指向蓝色环境，之后只要检测这个环境是否有故障，如果运行良好， 就可以删除v1.0使用的资源，为下一次蓝绿部署空出可用资源</li>
-<li>如果测试有问题，直接修改指向，快速回滚到绿色环境</li>
-</ul>
-<p>优点：部署过程中，应用始终在线，并且新版本没有修改老版本的任何内容，在部署期间，老版本的转改不收影响，风险很小，并且理论上可以在任何时间回滚到老版本</p>
-<p>缺点：需要两套环境，冗余的基础设施。而且对于设计数据表结构变更等不可逆转的升级，不太适合</p>
-<h2 id="金丝雀发布"><a href="#金丝雀发布" class="headerlink" title="金丝雀发布"></a>金丝雀发布</h2><p>金丝雀发布就是灰度发布，这两个东西是同一类策略，策略就是只有一套系统，并且逐渐替换这套系统。</p>
-<p>指的是增量发布的一种类型，在原有版本可用的情况下，同时部署一个新版本应用作为“金丝雀”，测试新版本的性能和表现，以保证整体系统的稳定性。</p>
-<p>发布过程</p>
-<ul>
-<li>从负载均衡列表里下掉</li>
-<li>升级金丝雀应用</li>
-<li>重新添加到负载均衡列表中</li>
-<li>如果测试成功，升级其他的服务器，否则回滚</li>
-</ul>
-<p>通常会AB测试一起使用</p>
-<h2 id="AB测试"><a href="#AB测试" class="headerlink" title="AB测试"></a>AB测试</h2><p>AB测试是效果测试，同一时间有多个版本的服务对外服务，这些服务都是经过足够测试，达到了上线标准的服务，有差异但是没有新旧之分，核心目的是用来测试应用功能表现的方法。比如页面的样式、颜色不一样，最后通过分析各个服务的实际效果，选择效果最好的版本。</p>
-<h2 id="滚动发布"><a href="#滚动发布" class="headerlink" title="滚动发布"></a>滚动发布</h2><p>所谓滚动发布一般是取出一个或者多个服务器停止服务，执行更新，并重新投入使用，周而复始，直到集群中的所有实例都更新成新版本，比如每次选出集群中的20%进行升级。比蓝绿部署更节省资源。</p>
-<p>缺点：</p>
-<ul>
-<li>没有一个确定OK的环境</li>
-<li>需要回滚的话很麻烦</li>
-</ul>
-<h2 id="红黑部署"><a href="#红黑部署" class="headerlink" title="红黑部署"></a>红黑部署</h2><p>这是Netfix采用的部署手段，主要基础设施在AWS上，它利用了AWS的特性，在部署新的版本的时候，通过AutoScaling Group 用包含新版本的AMI创建新的服务器，服务始终在线，同时采用不可变部署的方式。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/22/%E5%AE%B9%E9%94%99%E3%80%81%E9%AB%98%E5%8F%AF%E7%94%A8%E5%92%8C%E7%81%BE%E5%A4%87/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="安妮的心动录">
-      <meta itemprop="description" content="永远不要高估自己">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="安妮的心动录的园子">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/10/22/%E5%AE%B9%E9%94%99%E3%80%81%E9%AB%98%E5%8F%AF%E7%94%A8%E5%92%8C%E7%81%BE%E5%A4%87/" class="post-title-link" itemprop="url">容错、高可用和灾备</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-10-22 11:07:22 / 修改时间：11:13:19" itemprop="dateCreated datePublished" datetime="2022-10-22T11:07:22+08:00">2022-10-22</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">计算机基础</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>429</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="容错、高可用和灾备"><a href="#容错、高可用和灾备" class="headerlink" title="容错、高可用和灾备"></a>容错、高可用和灾备</h1><p>容错：指的是在发生故障时，系统仍然能够继续运行，比如飞机的设计就遵从了容错的思想，如果一个引擎坏了，剩下几个引擎，仍然能够飞。容错的目的是：发生故障时，系统的运行水平可能有所下降，但是依然可用，不会完全失效。</p>
-<p>高可用：系统能比正常时间更久地保持一定的运行水平，骑车的备胎就是一个高可用的栗子，如果没有备胎，轮胎坏了，车就开不久，备胎延长了骑车行驶的可用时间。指的是一旦中断能够快速恢复，且中断必须是短暂的。</p>
-<p>灾备：发生灾难时恢复业务的能力。如果飞行员是业务的话，飞机就是基础设施，飞行员的弹射装置就是灾备措施，一旦飞机即将坠毁，基础设施就要没了，灾备可以让业务幸存下来。目的：保留系统的核心部分，一个好的灾备方案，就是从失败的基础佘时仲获取企业最宝贵的数据，然后在新的基础设施上恢复它们。</p>
-<p>总结可以通过以上的三个方面结合起来，设计一个可靠的系统</p>
-<ul>
-<li>容错：发生故障的时候，如何让系统继续运行</li>
-<li>高可用：系统中断时，如何尽快恢复</li>
-<li>灾备：系统毁灭时，如何抢救数据</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/18/CPU%E4%B8%8EGPU%E7%9A%84%E5%8C%BA%E5%88%AB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="安妮的心动录">
-      <meta itemprop="description" content="永远不要高估自己">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="安妮的心动录的园子">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/10/18/CPU%E4%B8%8EGPU%E7%9A%84%E5%8C%BA%E5%88%AB/" class="post-title-link" itemprop="url">CPU与GPU的区别</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-10-18 20:33:36 / 修改时间：20:37:35" itemprop="dateCreated datePublished" datetime="2022-10-18T20:33:36+08:00">2022-10-18</time>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>912</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="CPU和GPU的区别"><a href="#CPU和GPU的区别" class="headerlink" title="CPU和GPU的区别"></a>CPU和GPU的区别</h1><p>CPU：Central Processing Unit 中央处理器，是计算机的大脑，包括运算器、控制器、寄存器、高速缓存以及总线</p>
-<p>GPU：Graphics Processing Unit 图形处理器，最初是用在个人电脑、工作站、游戏机和一些移动设备上运行绘图运算工作的微处理器。</p>
-<p>CPU和GPU之所以大不相同，主要是由于设计目标的不同，分别针对两种不同的应用场景。</p>
-<p>CPUI需要很强的通用性来处理各种不同的数据类型，同时又要逻辑判断引入大量的分支跳转和中断的处理，这些使得CPU的内部结构是很复杂的。</p>
-<p><img src="/2022/10/18/CPU%E4%B8%8EGPU%E7%9A%84%E5%8C%BA%E5%88%AB/image-20221018203400386.png" alt="image-20221018203400386"></p>
-<p>而GPU所面对的数据则是类型高度统一、相互无依赖的大规模数据和不需要被打断的纯净的计算环境，所以GPU的构成相对简单，有数量众多的计算单元和超长的流水线，特别适合处理量大且同一的数据。在设计上采用了众多的计算单元和超长的流水线，但只有简单的控制逻辑并且省去了cache</p>
-<p>除了渲染图形的能力，在并行处理方面GPU是很强的，因此在密码破译，大数据处理，金融分析等领域应用广泛（所以为什么会有那么多矿卡知道了吧）。其实GPU并没有专门为图像服务的部件。</p>
-<p>为什么GPU擅长处理图像数据呢？这是因为图像上的每一个像素带你都有被处理的需要，而且每个像素点处理的过程和方式都十分类似，很适合机械的GPU进行处理。但是GPU无法单独工作，必须由CPU进行控制调用，CPU可单独作用，处理复杂的逻辑运算和不同的数据类型。</p>
-<p>打个比方，GPU的运算速度取决于雇佣了多少小学生，CPU的运算速度取决于请了多么厉害的教授，教授处理复杂任务的能力是碾压小学生的，但是对于没那么复杂的任务，还是顶不住人多。</p>
-<p>为什么在人工智能领域GPU十分盛行呢？因为深度学习是模拟人脑神经系统简历的数学网络模型，这个模型的最大特点是需要大数据来训练。所以需要大量的并行的重复计算，在深度学习方面GPU有以下特点</p>
-<ul>
-<li>提供了多核并行计算的基础结构，且核心数很多（通常有成百上千个核心），可以支撑大量数据的并行计算。</li>
-<li>用于更高的访存带宽和速度</li>
-<li>具备更高的浮点运算能力</li>
-</ul>
-<p>独立显卡：把GPU焊死在了显卡的电路板上，上面有一个散热风扇</p>
-<p>集成显卡：把GPU和CPU放在一起，共用缓存来工作，并共用风扇。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1414,7 +1736,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-count">31</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1474,12 +1796,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">93k</span>
+    <span title="站点总字数">100k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:24</span>
+    <span title="站点阅读时长">1:31</span>
 </div>
 
 
