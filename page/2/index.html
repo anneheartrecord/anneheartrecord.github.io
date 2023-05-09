@@ -169,6 +169,397 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/26/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/26/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89/" class="post-title-link" itemprop="url">Go微服务与云原生学习（二）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-02-26 12:45:05" itemprop="dateCreated datePublished" datetime="2023-02-26T12:45:05+08:00">2023-02-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-02-27 22:43:12" itemprop="dateModified" datetime="2023-02-27T22:43:12+08:00">2023-02-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%90%8E%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">后端</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>15k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>13 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="gRPC"><a href="#gRPC" class="headerlink" title="gRPC"></a>gRPC</h2><p>gRPC是一种现代化开源的RPC框架，由Google进行研发，能够运行于任何环境之中，最初由谷歌进行开发，它使用HTTP&#x2F;2作为传输协议。</p>
+<p>在gRPC中，客户端可以像调用本地方法一样直接调用其他机器上的服务端应用程序的方法，帮助你更容易创建分布式应用程序和服务。gRPC是基于定义一个服务，制定一个可以远程调用的带有参数和返回类型的方法。在服务端程序中实现这个接口并且运行gRPC服务处理客户端调用，在客户端，有一个stub提供和服务端相同的方法</p>
+<p><img src="/2023/02/26/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89/1676256947622-90dcc6f3-615b-4154-a261-5a45a2beedbc.png" alt="img"></p>
+<h3 id="为什么要用gRPC"><a href="#为什么要用gRPC" class="headerlink" title="为什么要用gRPC"></a>为什么要用gRPC</h3><p>gRPC可以帮助我们一次性的在一个<code>.proto</code>文件中定义服务并使用任何支持它的语言去实现客户端和服务端，也就是说gRPC解决了<strong>不同语言以及环境间通信的复杂性</strong>。使用<code>protocol buffer</code>还能获得其他好处，包括高效的序列化，简单的IDL以及容易进行接口更新。总之，使用gRPC能够帮助我们更容易编写跨语言的分布式代码</p>
+<p>IDL（Interface description Language） 是指接口描述语言，是用来描述软件组件接口的一种计算机语言，是跨平台开发的基础。IDL通过一种中立的方式来描述接口，使得在不同平台上运行的对象和用不同语言编写的程序可以相互通信交流；比如，一个组件用C++写成，另一个组件用Go写成</p>
+<h3 id="使用gRPC进行开发的步骤"><a href="#使用gRPC进行开发的步骤" class="headerlink" title="使用gRPC进行开发的步骤"></a>使用gRPC进行开发的步骤</h3><p><strong>1.编写.proto文件定义服务</strong></p>
+<p>默认情况下gRPC使用<code>protocol buffers</code>作为接口定义语言（IDL）来描述服务接口和有效负载消息的结构</p>
+<p>在gRPC中可以定义四种类型的服务方法 	</p>
+<p>普通rpc，客户端向服务器发送一个请求，然后得到一个响应，就像普通的函数调用一样</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc SayHello(HelloRequest) returns (HelloResponse);</span><br></pre></td></tr></table></figure>
+
+<p>服务器流式rpc，其中客户端向服务器发送请求，并获得一个流来读取一系列消息。客户端从返回的流中读取，知道没有更多的消息，gRPC保证在单个RPC调用的消息是有序的</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc LotsOfReplies(HelloRequest) returns (stream HelloResponse);</span><br></pre></td></tr></table></figure>
+
+<p>客户端流式rpc，其中客户端写入一系列消息并将其发送到服务器，同样使用提供的流。一旦客户端完成了消息的写入，它就等待服务器读取消息并返回响应，同样，gRPC保证单个RPC调用中的消息是有序的</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc LostsOfGreetings(stream HelloRequest) returns(HelloResponse);</span><br></pre></td></tr></table></figure>
+
+<p>双向流式rpc，其中双方使用读写流发送一系列消息，这两个流独立运行，因此客户端和服务器可以按照自己指定的顺序读写；例如，服务器可以等待接受所有客户端消息后再写响应，或者可以交替读取消息然后写入消息，或者其他读写组合。每个流中的消息是有序的</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc StreamGreetings(stream HelloRequest) returns(stream HelloResponse);</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.生成指定语言的代码（客户端一份、服务端一份）</strong></p>
+<p>在<code>.proto</code>文件中定义好服务之后，gRPC提供了生成客户端和服务端代码的protocol buffers编译器插件。</p>
+<p>我们使用这些插件可以根据需要生成<code>Java Go C++ Python</code>等语言的代码，我们通常会在客户端调用这些API，并且在服务器端实现对应的API</p>
+<ul>
+<li>在服务器端，服务器实现服务声明的方法，并运行一个gRPC服务器来处理客户端发来的调用请求。gRPC底层会对传入的请求进行编码，执行被调用的服务方法，并对服务响应进行编码</li>
+<li>在客户端，客户端有一个称为存根(stub)的本地对象，它实现了与服务相同的方法。然后，客户端可以在本地对象上调用这些方法，将调用的参数包装在适当的<code>protocol buffers</code>消息类型中–gRPC在向服务器发送请求并返回服务器的<code>protocol buffers</code>响应之后进行处理</li>
+</ul>
+<p><strong>3.编写业务逻辑代码</strong></p>
+<p>proto文件生成<code>pb.go</code>以及<code>grpc.pb.go</code>的命令</p>
+<p>不指定proto路径</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative xxx.proto</span><br></pre></td></tr></table></figure>
+
+<p>指定proto路径</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc --proto_path=xx --go_out=pb --go_opt=paths=source_relative --go-grpc_out=pb --go-grpc_opt=paths=source_relative xxx.proto</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="使用grpc实现一个简单的hello服务"><a href="#使用grpc实现一个简单的hello服务" class="headerlink" title="使用grpc实现一个简单的hello服务"></a>使用grpc实现一个简单的hello服务</h3><p><strong>Server</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">type server struct &#123;</span><br><span class="line">	pb.UnimplementedGreeterServer //当没有完全实现proto中的所有方法时依旧可以运行起来</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// gRPC通过.proto文件自动生成的SayHello方法  </span><br><span class="line">func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloResponse, error) &#123;</span><br><span class="line">	reply := &quot;hello&quot; + in.GetName()</span><br><span class="line">	return &amp;pb.HelloResponse&#123;Reply: reply&#125;, nil</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	// 启动服务</span><br><span class="line">	l, err := net.Listen(&quot;tcp&quot;, &quot;:8972&quot;)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		fmt.Println(&quot;failed to listen,err:&quot;, err)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	// 注册服务</span><br><span class="line">	s := grpc.NewServer()</span><br><span class="line">	pb.RegisterGreeterServer(s, &amp;server&#123;&#125;)</span><br><span class="line">	// 启动服务</span><br><span class="line">	err = s.Serve(l)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		fmt.Println(&quot;failed to server,err:&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">syntax = &quot;proto3&quot;;  //版本声明</span><br><span class="line"></span><br><span class="line">option go_package=&quot;hello_server/pb&quot;;  // 项目中import导入生成go代码的模块</span><br><span class="line"></span><br><span class="line">package  pb;  //proto文件模块</span><br><span class="line"></span><br><span class="line">// 定义服务</span><br><span class="line">service Greeter &#123;</span><br><span class="line">  // 定义方法</span><br><span class="line">  rpc SayHello (HelloRequest) returns (HelloResponse) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 定义消息</span><br><span class="line">message HelloRequest &#123;</span><br><span class="line">  string name = 1;   //字段的序号</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message  HelloResponse &#123;</span><br><span class="line">  string reply = 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Client</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">func main() &#123;</span><br><span class="line">	//连接server 带加密连接</span><br><span class="line">	conn, err := grpc.Dial(&quot;127.0.0.1:8972&quot;, grpc.WithTransportCredentials(insecure.NewCredentials()))</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatalf(&quot;grpc.Dial failed,err:%v&quot;, err)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	defer conn.Close()</span><br><span class="line">	//创建客户端</span><br><span class="line">	c := proto.NewGreeterClient(conn)</span><br><span class="line">	//使用context进行控制，传入background和超时时间一秒钟</span><br><span class="line">	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)</span><br><span class="line">	defer cancel()</span><br><span class="line">	name := &quot;xiaocheng&quot;</span><br><span class="line">	resp, err := c.SayHello(ctx, &amp;proto.HelloRequest&#123;Name: name&#125;)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Printf(&quot;c.SayHello failed, err:%v&quot;, err)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	// 拿到RPC响应</span><br><span class="line">	log.Printf(&quot;resp:%v&quot;, resp.GetReply())</span><br><span class="line">&#125;</span><br><span class="line">// 应该是同一份proto文件</span><br><span class="line">syntax = &quot;proto3&quot;;  //版本声明</span><br><span class="line"></span><br><span class="line">option go_package=&quot;hello_client/proto&quot;;  // 项目中import导入生成go代码的模块</span><br><span class="line"></span><br><span class="line">package  pb;  //proto文件模块 必须与server端一致</span><br><span class="line"></span><br><span class="line">// 定义服务</span><br><span class="line">service Greeter &#123;</span><br><span class="line">  // 定义方法</span><br><span class="line">  rpc SayHello (HelloRequest) returns (HelloResponse) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 定义消息</span><br><span class="line">message HelloRequest &#123;</span><br><span class="line">  string name = 1;   //字段的序号</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message  HelloResponse &#123;</span><br><span class="line">  string reply = 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用grpc实现一个简单的add服务"><a href="#使用grpc实现一个简单的add服务" class="headerlink" title="使用grpc实现一个简单的add服务"></a>使用grpc实现一个简单的add服务</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">type server struct &#123;</span><br><span class="line">	pb.UnimplementedAddMethodServer</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (s *server) Add(ctx context.Context, in *pb.AddRequest) (*pb.AddResponse, error) &#123;</span><br><span class="line">	reply := in.GetArgs1() + in.GetArgs2()</span><br><span class="line">	return &amp;pb.AddResponse&#123;Number: reply&#125;, nil</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	//启动服务</span><br><span class="line">	l, err := net.Listen(&quot;tcp&quot;, &quot;:9999&quot;)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		fmt.Println(&quot;net listen failed,err:&quot;, err)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	s := grpc.NewServer()</span><br><span class="line">	pb.RegisterAddMethodServer(s, &amp;server&#123;&#125;)</span><br><span class="line">	err = s.Serve(l)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		fmt.Println(&quot;failed to server,err:&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>proto文件应该在客户端和服务端都有一份</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">syntax=&quot;proto3&quot;;</span><br><span class="line">option go_package=&quot;server/pb&quot;;</span><br><span class="line">package pb;</span><br><span class="line"></span><br><span class="line">service AddMethod &#123;</span><br><span class="line">   rpc Add(AddRequest) returns (AddResponse) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message AddRequest &#123;</span><br><span class="line">  int32 args1 =1;</span><br><span class="line">  int32 args2 =2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message AddResponse &#123;</span><br><span class="line">  int32 number =1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">func main() &#123;</span><br><span class="line">	conn, err := grpc.Dial(&quot;127.0.0.1:9999&quot;, grpc.WithTransportCredentials(insecure.NewCredentials()))</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		fmt.Println(&quot;grpc dail failed,err:&quot;, err)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	defer conn.Close()</span><br><span class="line">	c := pb.NewAddMethodClient(conn)</span><br><span class="line">	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)</span><br><span class="line">	defer cancel()</span><br><span class="line">	var args1, args2 int32</span><br><span class="line">	args1 = 1</span><br><span class="line">	args2 = 2</span><br><span class="line">	resp, err := c.Add(ctx, &amp;pb.AddRequest&#123;Args1: args1, Args2: args2&#125;)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		fmt.Println(&quot;c.Add failed,err:&quot;, err)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	log.Println(&quot;Add Response:&quot;, resp)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="protobuf语法"><a href="#protobuf语法" class="headerlink" title="protobuf语法"></a>protobuf语法</h3><p><strong>protobuf为什么体积小、解析快</strong></p>
+<p>protobuf是google提出的数据交换格式，同一条消息数据，使用Protobuf序列化之后占用空间是json的1&#x2F;10，但是性能却是几十倍</p>
+<p>原因</p>
+<ul>
+<li>编解码大多采用位运算，比JSON&#x2F;XML的字符匹配效率更高</li>
+<li>pb定义了varint类型，使用变长编码压缩数值类型。值越小的数字，使用的字节数就越少</li>
+<li>采用Tag-value类型，没有冗余字符</li>
+</ul>
+<p><strong>定义一个消息类型</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">syntax=&quot;proto3&quot;;</span><br><span class="line"></span><br><span class="line">message SearchRequest &#123;</span><br><span class="line">	string query =1;</span><br><span class="line">	int32 page_number=2; </span><br><span class="line">&#125;</span><br><span class="line">//文件的第一行指定使用proto3语法，如果不这么写</span><br><span class="line">//pb的编译器默认使用proto2</span><br><span class="line"></span><br><span class="line">//SearchRequest定义了一个消息，使用了两个字段</span><br><span class="line">//每个字段需要定义类型 名字 和编号</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>字段编号</strong></p>
+<p>消息定义中的每个字段都要有一个唯一的编号，这些编号用来在消息二进制格式中标识字段，<strong>在消息类型使用后就不能更改</strong>。在范围1到15中的字段需要一个字节进行编码，而16-2047的字段采用两个字节。所以应该为经常使用的消息元素保留数字1到15的编号，也要为将来可能添加的经常使用的元素留出一些编号</p>
+<p><strong>指定字段规则</strong></p>
+<p>消息字段可以是下列字段之一</p>
+<ul>
+<li>singular：格式正确的消息可以有这个字段的0个或者一个，默认使用singular字段</li>
+<li>repeated：该字段可以在格式正确的消息中重复任意次数（包括0次），重复值的顺序将被保留</li>
+<li>optional：该字段在传递的时候可选也可不选</li>
+</ul>
+<p><strong>保留字段</strong></p>
+<p>如果你通过完全删除字段或者将其注释来<strong>更新消息类型，</strong>那么未来的用户在对该类型进行自己的更新的时候就可以重用字段号，如果其他人以后加载旧版本的相同<code>.proto</code>文件，这可能就会导致严重的问题，比如数据损坏、隐私漏洞等等。</p>
+<p>解决方法是指定已经删除的字段的字段编号，如果将来有用户尝试使用这些字段标识符，protocol buffer编译器将发出提示</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">message Foo &#123;</span><br><span class="line">reserved 2,15,9 to 11;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>值类型</strong></p>
+<table>
+<thead>
+<tr>
+<th>.proto Type</th>
+<th>Notes</th>
+<th>C++ Type</th>
+<th>Java&#x2F;Kotlin Type[1]</th>
+<th>Python Type[3]</th>
+<th>Go Type</th>
+<th>PHP Type</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>double</td>
+<td></td>
+<td>double</td>
+<td>double</td>
+<td>float</td>
+<td>float64</td>
+<td>float</td>
+</tr>
+<tr>
+<td>float</td>
+<td></td>
+<td>float</td>
+<td>float</td>
+<td>float</td>
+<td>float32</td>
+<td>float</td>
+</tr>
+<tr>
+<td>int32</td>
+<td>使用可变长度编码。编码负数效率低下——如果你的字段可能有负值，则使用 sint32代替。</td>
+<td>int32</td>
+<td>int</td>
+<td>int</td>
+<td>int32</td>
+<td>integer</td>
+</tr>
+<tr>
+<td>int64</td>
+<td>使用可变长度编码。编码负数效率低下——如果你的字段可能有负值，则使用 sint64代替。</td>
+<td>int64</td>
+<td>long</td>
+<td>int&#x2F;long[4]</td>
+<td>int64</td>
+<td>integer&#x2F;string[6]</td>
+</tr>
+<tr>
+<td>uint32</td>
+<td>使用变长编码。</td>
+<td>uint32</td>
+<td>int[2]</td>
+<td>int&#x2F;long[4]</td>
+<td>uint32</td>
+<td>integer</td>
+</tr>
+<tr>
+<td>uint64</td>
+<td>使用变长编码。</td>
+<td>uint64</td>
+<td>long[2]</td>
+<td>int&#x2F;long[4]</td>
+<td>uint64</td>
+<td>integer&#x2F;string[6]</td>
+</tr>
+<tr>
+<td>sint32</td>
+<td>使用可变长度编码。带符号的 int 值。这些编码比普通的 int32更有效地编码负数。</td>
+<td>int32</td>
+<td>int</td>
+<td>int</td>
+<td>int32</td>
+<td>integer</td>
+</tr>
+<tr>
+<td>sint64</td>
+<td>使用可变长度编码。带符号的 int 值。这些编码比普通的 int64更有效地编码负数。</td>
+<td>int64</td>
+<td>long</td>
+<td>int&#x2F;long[4]</td>
+<td>int64</td>
+<td>integer&#x2F;string[6]</td>
+</tr>
+<tr>
+<td>fixed32</td>
+<td>总是四个字节。如果值经常大于228，则比 uint32更有效率。</td>
+<td>uint32</td>
+<td>int[2]</td>
+<td>int&#x2F;long[4]</td>
+<td>uint32</td>
+<td>integer</td>
+</tr>
+<tr>
+<td>fixed64</td>
+<td>总是8字节。如果值经常大于256，则比 uint64更有效率。</td>
+<td>uint64</td>
+<td>integer&#x2F;string[6]</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>sfixed32</td>
+<td>总是四个字节。</td>
+<td>int32</td>
+<td>int</td>
+<td>int</td>
+<td>int32</td>
+<td>integer</td>
+</tr>
+<tr>
+<td>sfixed64</td>
+<td>总是八个字节。</td>
+<td>int64</td>
+<td>integer&#x2F;string[6]</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>bool</td>
+<td></td>
+<td>bool</td>
+<td>boolean</td>
+<td>bool</td>
+<td>bool</td>
+<td>boolean</td>
+</tr>
+<tr>
+<td>string</td>
+<td>字符串必须始终包含 UTF-8编码的或7位 ASCII 文本，且不能长于232。</td>
+<td>string</td>
+<td>String</td>
+<td>str&#x2F;unicode[5]</td>
+<td>string</td>
+<td>string</td>
+</tr>
+<tr>
+<td>bytes</td>
+<td>可以包含任何不超过232字节的任意字节序列。</td>
+<td>string</td>
+<td>ByteString</td>
+<td>str (Python 2) bytes (Python 3)</td>
+<td>[]byte</td>
+<td>string</td>
+</tr>
+</tbody></table>
+<p><strong>枚举</strong></p>
+<p>在定义消息类型的时候，可能希望其中的一个字段只能是预定义的值列表中的一个值。下面是一个栗子，Conrpus字段的值只能是其中的一个</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">message SearchRequest &#123;</span><br><span class="line">string query = 1;</span><br><span class="line">  int32 page_number = 2;</span><br><span class="line">  int32 result_per_page = 3;</span><br><span class="line">  enum Corpus &#123;</span><br><span class="line">    UNIVERSAL = 0;</span><br><span class="line">    WEB = 1;</span><br><span class="line">    IMAGES = 2;</span><br><span class="line">    LOCAL = 3;</span><br><span class="line">    NEWS = 4;</span><br><span class="line">    PRODUCTS = 5;</span><br><span class="line">    VIDEO = 6;</span><br><span class="line">  &#125;</span><br><span class="line">  Corpus corpus = 4;</span><br><span class="line">&#125;</span><br><span class="line">	</span><br></pre></td></tr></table></figure>
+
+<p><strong>嵌套消息类型</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">message SearchResponse &#123;</span><br><span class="line">  repeated Result results = 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message Result &#123;</span><br><span class="line">  string url = 1;</span><br><span class="line">  string title = 2;</span><br><span class="line">  repeated string snippets = 3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Any</strong></p>
+<p>Any类型允许你将消息作为嵌入类型使用，使用Any类型需要导入<code>google/protobuf/any.proto</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">import &quot;google/protobuf/any.proto&quot;;</span><br><span class="line"></span><br><span class="line">message ErrorStatus &#123;</span><br><span class="line">  string message = 1;</span><br><span class="line">  repeated google.protobuf.Any details = 2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>oneof</strong></p>
+<p>如果你有一条包含多个字段的消息，并且同时最多设置其中的一个字段，那么可以通过oneof来实现并节省内存，可以通过<code>case()</code>或者<code>WihchOneOf()</code>来检查one  of 中的哪个值被设置（如果有）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">message SampleMessage &#123;</span><br><span class="line">  oneof test_oneof &#123;</span><br><span class="line">    string name = 4;</span><br><span class="line">    SubMessage sub_message = 9;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"> SampleMessage message;</span><br><span class="line">  message.set_name(&quot;name&quot;);</span><br><span class="line">  CHECK(message.has_name());</span><br><span class="line">  message.mutable_sub_message();   // Will clear name field.</span><br><span class="line">  CHECK(!message.has_name());</span><br></pre></td></tr></table></figure>
+
+<p><strong>Maps</strong></p>
+<p>如果想创建一个关联映射作为数据定义的一部分，可以使用这个map</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">map&lt;key_type, value_type&gt; map_field = N;</span><br></pre></td></tr></table></figure>
+
+<h3 id="protobuf实战"><a href="#protobuf实战" class="headerlink" title="protobuf实战"></a>protobuf实战</h3><p><strong>oneof字段</strong></p>
+<p>oneof中的值只能选择其中的一个  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">message NoticeReaderRequest &#123;</span><br><span class="line">  string msg=1;</span><br><span class="line">  oneof notice_way&#123;</span><br><span class="line">    string email=2;</span><br><span class="line">    string phone=3;</span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对应的服务端代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">func oneofDemo() &#123;</span><br><span class="line">	req := &amp;book.NoticeReaderRequest&#123;</span><br><span class="line">		Msg: &quot;here is chengxisheng&quot;,</span><br><span class="line">		NoticeWay: &amp;book.NoticeReaderRequest_Email&#123;</span><br><span class="line">			Email: &quot;xxx&quot;,</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	req2 := &amp;book.NoticeReaderRequest&#123;</span><br><span class="line">		Msg: &quot;here is xishengcheng&quot;,</span><br><span class="line">		NoticeWay: &amp;book.NoticeReaderRequest_Phone&#123;</span><br><span class="line">			Phone: &quot;1008611&quot;,</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	switch v := req.NoticeWay.(type) &#123;</span><br><span class="line">	case *book.NoticeReaderRequest_Email:</span><br><span class="line">		noticeWithEmail(v)</span><br><span class="line">	case *book.NoticeReaderRequest_Phone:</span><br><span class="line">		noticeWithPhone(v)</span><br><span class="line">	&#125;</span><br><span class="line">	switch v := req2.NoticeWay.(type) &#123;</span><br><span class="line">	case *book.NoticeReaderRequest_Email:</span><br><span class="line">		noticeWithEmail(v)</span><br><span class="line">	case *book.NoticeReaderRequest_Phone:</span><br><span class="line">		noticeWithPhone(v)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">func noticeWithEmail(in *book.NoticeReaderRequest_Email) &#123;</span><br><span class="line">	fmt.Printf(&quot;notice reader by email:%v\n&quot;, in.Email)</span><br><span class="line">&#125;</span><br><span class="line">func noticeWithPhone(in *book.NoticeReaderRequest_Phone) &#123;</span><br><span class="line">	fmt.Printf(&quot;notice reader by phone:%v\n&quot;, in.Phone)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//这里必须使用类型断言+switch case </span><br><span class="line">//来进行one of 字段的确认</span><br></pre></td></tr></table></figure>
+
+<p><strong>wrapvalue类型</strong></p>
+<p>首先让我们想一想Go中区分一个MySQL的int类型是默认值还是0值该怎么做？</p>
+<p>其实就只有以下两种方法</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">price sql.NullInt64</span><br><span class="line">price *int64</span><br><span class="line">//第一种方式是一个定义好的结构体 </span><br><span class="line">//里面有一个字段是 该结构体是否被赋值</span><br><span class="line">//第二种方式是直接用指针来做</span><br><span class="line">//对指针解引用，如果为0则赋值，如果为Nil则是默认值</span><br><span class="line">func wrapValueDemo() &#123;</span><br><span class="line">	// client</span><br><span class="line">	 book:=book.Book&#123;</span><br><span class="line">		 Title: &quot;learning go language&quot;,</span><br><span class="line">		 Price: &amp;wrapperspb.Int64Value&#123;Value: 600&#125;,</span><br><span class="line">		 Memo: &amp;wrapperspb.StringValue&#123;Value: &quot;学&quot;&#125;,</span><br><span class="line">	 &#125;</span><br><span class="line">	 // server </span><br><span class="line">	 if book.GetPrice()==nil &#123;</span><br><span class="line">		 fmt.Println(&quot;is not assigned&quot;)</span><br><span class="line">	 &#125; else &#123;</span><br><span class="line">		 fmt.Println(book.GetPrice().GetValue())</span><br><span class="line">	 &#125;</span><br><span class="line">	 if book.GetMemo()==nil &#123;</span><br><span class="line">		 fmt.Println(&quot;is not assigned&quot;)</span><br><span class="line">	 &#125; else &#123;</span><br><span class="line">		 fmt.Println(book.GetMemo().GetValue())</span><br><span class="line">	 &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>FieldMask类型</strong></p>
+<p>当我们更新的时候，定义了很多字段，不可能全部进行全量更新Book的每个字段，因为通常操作只会更新1到2个字段。</p>
+<p>当我们想知道更新操作涉及到的具体字段，就需要使用到filedmask类型</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">message UpdateBookRequest &#123;</span><br><span class="line">  // 操作人</span><br><span class="line">  string op =1;</span><br><span class="line">  // 要更新的书籍信息</span><br><span class="line">  Book book=2;</span><br><span class="line">  // 要更新的字段</span><br><span class="line">  google.protobuf.FieldMask update_mask=3;</span><br><span class="line">&#125;</span><br><span class="line">func fieldMaskDemo() &#123;</span><br><span class="line">	//client</span><br><span class="line">	paths := []string&#123;&quot;price&quot;&#125;</span><br><span class="line">	req := &amp;book.UpdateBookRequest&#123;</span><br><span class="line">		Op: &quot;chengxisheng&quot;,</span><br><span class="line">		Book: &amp;book.Book&#123;</span><br><span class="line">			Price: &amp;wrapperspb.Int64Value&#123;Value: 8800&#125;,</span><br><span class="line">		&#125;,</span><br><span class="line">		UpdateMask: &amp;fieldmaskpb.FieldMask&#123;Paths: paths&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	mask, _ := fieldmask_utils.MaskFromProtoFieldMask(req.UpdateMask, generator.CamelCase)</span><br><span class="line">	var bookDst = make(map[string]interface&#123;&#125;)</span><br><span class="line">	fieldmask_utils.StructToMap(mask, book.UpdateBookRequest&#123;&#125;.Book, bookDst)</span><br><span class="line">	fmt.Printf(&quot;bookDst:%#v\n&quot;, bookDst)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="服务端流式RPC"><a href="#服务端流式RPC" class="headerlink" title="服务端流式RPC"></a>服务端流式RPC</h3><p>对应的proto（client和server）中添加一个流式方法</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc LotsOfReplies(HelloRequest) returns (stream HelloResponse);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>Server添加一个新的方法</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">func (s *server) LotsOfReplies(in *pb.HelloRequest, stream pb.Greeter_LotsOfRepliesServer) error &#123;</span><br><span class="line">	words := []string&#123;</span><br><span class="line">		&quot;你好&quot;,</span><br><span class="line">		&quot;hello&quot;,</span><br><span class="line">		&quot;こんにちは&quot;,</span><br><span class="line">		&quot;안녕하세요&quot;,</span><br><span class="line">	&#125;</span><br><span class="line">	for _, word := range words &#123;</span><br><span class="line">		data := &amp;pb.HelloResponse&#123;</span><br><span class="line">			Reply: word + in.GetName(),</span><br><span class="line">		&#125;</span><br><span class="line">		// 使用Send方法发送多个数据 每当有一个data就send一次数据</span><br><span class="line">		if err := stream.Send(data); err != nil &#123;</span><br><span class="line">			return err</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return nil</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Client端添加一个新的函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">func callLotsOfReplies(c proto.GreeterClient) &#123;</span><br><span class="line">	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)</span><br><span class="line">	defer cancel()</span><br><span class="line">	stream, err := c.LotsOfReplies(ctx, &amp;proto.HelloRequest&#123;Name: *name&#125;)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatalf(&quot;c.LotsOfReplies failed,err:%v&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">	for &#123;</span><br><span class="line">		//依次从流式响应中读取返回的响应数据</span><br><span class="line">		res, err := stream.Recv()</span><br><span class="line">		if err == io.EOF &#123;</span><br><span class="line">			break</span><br><span class="line">		&#125;</span><br><span class="line">		if err != nil &#123;</span><br><span class="line">			log.Fatalf(&quot;c.LotsOfReplies failed,err:%v&quot;, err)</span><br><span class="line">		&#125;</span><br><span class="line">		log.Printf(&quot;got reply: %q\n&quot;, res.GetReply())</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="客户端流式RPC"><a href="#客户端流式RPC" class="headerlink" title="客户端流式RPC"></a>客户端流式RPC</h3><p>在<code>hello.proto</code>中添加这么一个新的方法</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc LotsOfGreetings(stream HelloRequest) returns (HelloResponse);</span><br></pre></td></tr></table></figure>
+
+<p>在server端添加</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">func (s *server) LotsOfGreetings(stream pb.Greeter_LotsOfGreetingsServer) error &#123;</span><br><span class="line">   reply := &quot;你好:&quot;</span><br><span class="line">   for &#123;</span><br><span class="line">      //接受客户端发来的流式数据</span><br><span class="line">      res, err := stream.Recv()</span><br><span class="line">      if err == io.EOF &#123;</span><br><span class="line">         return stream.SendAndClose(&amp;pb.HelloResponse&#123;</span><br><span class="line">            Reply: reply,</span><br><span class="line">         &#125;)</span><br><span class="line">      &#125;</span><br><span class="line">      if err != nil &#123;</span><br><span class="line">         return err</span><br><span class="line">      &#125;</span><br><span class="line">      reply += res.GetName()</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在Client端中添加</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">func runLotsOfGreeting(c proto.GreeterClient) &#123;</span><br><span class="line">	ctx, cancel := context.WithTimeout(context.Background(), time.Second)</span><br><span class="line">	defer cancel()</span><br><span class="line">	// 客户端要流式的发送请求消息</span><br><span class="line">	stream, err := c.LotsOfGreetings(ctx)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Printf(&quot;c.LotsOfGreetings failed,err:%v\n&quot;, err)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	names := []string&#123;&quot;张三&quot;, &quot;李四&quot;, &quot;王五&quot;&#125;</span><br><span class="line">	for _, name := range names &#123;</span><br><span class="line">		stream.Send(&amp;proto.HelloRequest&#123;Name: name&#125;)</span><br><span class="line">		time.Sleep(200 * time.Millisecond)</span><br><span class="line">	&#125;</span><br><span class="line">	//关闭流</span><br><span class="line">	res, err := stream.CloseAndRecv()</span><br><span class="line">	log.Printf(&quot;res:%v\n&quot;, res)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="双向流式RPC"><a href="#双向流式RPC" class="headerlink" title="双向流式RPC"></a>双向流式RPC</h3><p>在proto中添加</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc BidiHello(stream HelloRequest) returns(stream HelloResponse);</span><br></pre></td></tr></table></figure>
+
+<p>在client中添加</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">func (s *server) BidiHello(stream pb.Greeter_BidiHelloServer) error &#123;</span><br><span class="line">	for &#123;</span><br><span class="line">		//接受流式请求</span><br><span class="line">		in, err := stream.Recv()</span><br><span class="line">		if err == io.EOF &#123;</span><br><span class="line">			return nil</span><br><span class="line">		&#125;</span><br><span class="line">		if err != nil &#123;</span><br><span class="line">			return err</span><br><span class="line">		&#125;</span><br><span class="line">		reply := magic(in.GetName())</span><br><span class="line">		//返回流式响应</span><br><span class="line">		if err := stream.SendAndClose(&amp;pb.HelloResponse&#123;Reply: reply&#125;); err != nil &#123;</span><br><span class="line">			return err</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>在Server端中添加</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">func (s *server) BidiHello(stream pb.Greeter_BidiHelloServer) error &#123;</span><br><span class="line">	for &#123;</span><br><span class="line">		//接受流式请求</span><br><span class="line">		in, err := stream.Recv()</span><br><span class="line">		if err == io.EOF &#123;</span><br><span class="line">			return nil</span><br><span class="line">		&#125;</span><br><span class="line">		if err != nil &#123;</span><br><span class="line">			return err</span><br><span class="line">		&#125;</span><br><span class="line">		reply := magic(in.GetName())</span><br><span class="line">		//返回流式响应</span><br><span class="line">		if err := stream.SendAndClose(&amp;pb.HelloResponse&#123;Reply: reply&#125;); err != nil &#123;</span><br><span class="line">			return err</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// magic 一段价值连城的“人工智能”代码</span><br><span class="line">func magic(s string) string &#123;</span><br><span class="line">	s = strings.ReplaceAll(s, &quot;吗&quot;, &quot;&quot;)</span><br><span class="line">	s = strings.ReplaceAll(s, &quot;吧&quot;, &quot;&quot;)</span><br><span class="line">	s = strings.ReplaceAll(s, &quot;你&quot;, &quot;我&quot;)</span><br><span class="line"></span><br><span class="line">	s = strings.ReplaceAll(s, &quot;？&quot;, &quot;!&quot;)</span><br><span class="line">	s = strings.ReplaceAll(s, &quot;?&quot;, &quot;!&quot;)</span><br><span class="line">	return s</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="MetaData元数据"><a href="#MetaData元数据" class="headerlink" title="MetaData元数据"></a>MetaData元数据</h3><p>metadata是指在处理RPC请求和响应过程中需要但又不属于具体业务（例如身份验证详细信息）的信息，采用的是键值对列表 的形式，其中键是string类型，值通常是[]string类型，但也可以是二进制数据。gRPC中的metadata类似于我们在HTTP headers中的键值对，元数据可以包含认真token、请求标识和监控标签等等</p>
+<p>metadata中的键是大小写不敏感的，不能以grpc-开头，并且二进制的简明必须以-bin结尾，元数据对gRPC本身是不可见的，通常在应用程序代码或者中间件中处理元数据，我们不需要再.proto中指定元数据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">type MD map[string][]string</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/24/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1542,129 +1933,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/22/RSA%E8%AF%A6%E8%A7%A3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="安妮的心动录">
-      <meta itemprop="description" content="永远不要高估自己">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="安妮的心动录的园子">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/10/22/RSA%E8%AF%A6%E8%A7%A3/" class="post-title-link" itemprop="url">RSA详解</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-10-22 11:07:45 / 修改时间：11:11:34" itemprop="dateCreated datePublished" datetime="2022-10-22T11:07:45+08:00">2022-10-22</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">密码学</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="RSA详解"><a href="#RSA详解" class="headerlink" title="RSA详解"></a>RSA详解</h1><h2 id="1-RSA思想"><a href="#1-RSA思想" class="headerlink" title="1.RSA思想"></a>1.RSA思想</h2><p>  RSA公开密钥密码体制是一种使用不同的加密密钥和解密密钥，由“已知加密密钥推导出解密密钥在计算上是不可行的”密码体制。</p>
-<p>  在这种体制中，加密秘钥（公钥）PK是公开信息，而解密密钥（私钥）SK是需要保密的，加密算法E和解密算法D也都是公开的，这样的话虽然SK是由PK决定的，但是不能通过PK计算出SK。</p>
-<p>​	基于这种思想，在1978年出现了著名的RSA算法。</p>
-<ol>
-<li>通常是先生成一对RSA密钥</li>
-<li>其中的一个是私钥，用户保存，另一个是公钥，可对外公开，甚至可以在网络服务器中注册</li>
-<li>为了提高保密强度，密钥至少为500位，一般推荐1024位</li>
-<li>为了减少计算量，传送信息的时候通常采用传统加密与公开密钥加密结合的方式</li>
-</ol>
-<p>算法原理：根据数论的理论，找两个大素数比较简单，对他们的乘积进行因式分解却很困难，因此可以将乘积公开作为加密秘钥</p>
-<h2 id="2-算法描述"><a href="#2-算法描述" class="headerlink" title="2.算法描述"></a>2.算法描述</h2><ol>
-<li>任意选两个不同的大素数p和q计算乘积n&#x3D;pq，欧拉函数n&#x3D;p-1 * q-1 </li>
-<li>任意选一个大整数e，满足 gcd (e,欧拉n)&#x3D;1，整数e用作加密钥</li>
-<li>确定的解密要d 满足(de) mod 欧拉n &#x3D;1 很容易计算出d </li>
-<li>公开n和e 保存d</li>
-<li>将明文m(m&lt;n)加密成c 加密算法为 c&#x3D;m^e mod n </li>
-<li>将密文c解密为明文m  解密算法为 m&#x3D;c^d mod n</li>
-</ol>
-<p>通俗易懂的解释：</p>
-<p>1.第一步 随机选择两个不相同的质数 p 和 q  比如61和53，在实际应用中，这两个质数越大，就越难破解</p>
-<p>2.第二步 计算p和q的乘积n  上面的栗子 n&#x3D;61*53&#x3D;3233</p>
-<p>这个n就是密钥，写成二进制位110010100001，一共12位，那么这个密钥长度就是12位，在实际应用中,RSA密钥长度要到1024位，才具有足够的保密性</p>
-<p>3.第三步，计算n的φ(n)</p>
-<p>欧拉n&#x3D;p-1* q-1 上面的栗子为3120</p>
-<p>4.第四步 随机选择一个整数e 条件为1&lt;e&lt;φ(n)，且e与欧拉n互质，实际应用中常用65537，我们这边随便选个17</p>
-<p>5.计算e对于φ(n)的模反元素d </p>
-<p>所谓模反元素就是指有一个整数d 可以让ed 被 φ(n) 除的余数为1</p>
-<p>可以通过扩展欧几里得算法求解 </p>
-<p>6.将n和e封装成公钥，n和d封装成私钥</p>
-<p>可靠性：能不能在已知n和e的情况下，推出d，也就是能不能在已知公钥的情况下，推出私钥？</p>
-<p>结论：不行，需要对大整数进行因式分解，这个过程很困难，目前被破解的最长RSA密钥为768位</p>
-<p>7.加密过程：</p>
-<p>通过公钥(n,e)对m进行加密，m必须为整数，且m必须小于n</p>
-<p>加密过程</p>
-<p>m ^ e ≡ c (mod n)</p>
-<p>8.解密过程</p>
-<p>c ^ d ≡ m (mod n)</p>
-<h2 id="3-安全性描述"><a href="#3-安全性描述" class="headerlink" title="3.安全性描述"></a>3.安全性描述</h2><ul>
-<li>保密强度随着密钥的长度增加而增强，但是密钥越长，加解密的时间也就夜场</li>
-<li>RSA安全性依赖于大数分解</li>
-<li>因为进行的都是大数计算，使得RSA的速度比DES慢上好几倍甚至好几十倍，因为AES这类算法通常厂商会在硬件方面进行优化，RSA一般只用于少量的数据加密，RSA的速度比对应同样安全级别的对称密码算法要慢1000倍左右</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1736,7 +2004,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-count">32</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1796,12 +2064,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">100k</span>
+    <span title="站点总字数">102k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:31</span>
+    <span title="站点阅读时长">1:33</span>
 </div>
 
 

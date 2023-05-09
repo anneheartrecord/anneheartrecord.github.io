@@ -22,20 +22,24 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="为什么我会持续写面经？从我去年投出第一份简历，经历第一场面试，到现在应该已经陆陆续续面了好几十场了，小厂、中厂、大厂都有，基本上每一场面试我都有做记录并且review，我觉得这是一件很有意义并且回报很高的事情 提升专业技能我认为在技术岗方面，对于在校生来说，不论是实习还是秋招、春招，对于你的专业技能硬性要求大概只有这些  工程方面的能力：你写了什么项目，你对自己的项目理解的程度深不深，常用的技术栈">
+  <meta name="description" content="博客:cbb777.fun 全平台账号:安妮的心动录 github: https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord 下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论 什么是视频资源所谓视频资源，在播放和底层存储的时候其实就是一张一张图，30帧为一秒三十张图，60帧为一秒60张图等。一连串的图片按照一定帧率播放出来，刚开始的时候没有声音，所以">
 <meta property="og:type" content="article">
-<meta property="og:title" content="为什么我会持续写面经">
-<meta property="og:url" content="http://example.com/2023/03/27/%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%91%E4%BC%9A%E6%8C%81%E7%BB%AD%E5%86%99%E9%9D%A2%E7%BB%8F/index.html">
+<meta property="og:title" content="流媒体技术初识">
+<meta property="og:url" content="http://example.com/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/index.html">
 <meta property="og:site_name" content="安妮的心动录的园子">
-<meta property="og:description" content="为什么我会持续写面经？从我去年投出第一份简历，经历第一场面试，到现在应该已经陆陆续续面了好几十场了，小厂、中厂、大厂都有，基本上每一场面试我都有做记录并且review，我觉得这是一件很有意义并且回报很高的事情 提升专业技能我认为在技术岗方面，对于在校生来说，不论是实习还是秋招、春招，对于你的专业技能硬性要求大概只有这些  工程方面的能力：你写了什么项目，你对自己的项目理解的程度深不深，常用的技术栈">
+<meta property="og:description" content="博客:cbb777.fun 全平台账号:安妮的心动录 github: https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord 下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论 什么是视频资源所谓视频资源，在播放和底层存储的时候其实就是一张一张图，30帧为一秒三十张图，60帧为一秒60张图等。一连串的图片按照一定帧率播放出来，刚开始的时候没有声音，所以">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-03-27T14:19:07.000Z">
-<meta property="article:modified_time" content="2023-03-27T14:23:43.747Z">
+<meta property="og:image" content="http://example.com/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/1.png">
+<meta property="og:image" content="http://example.com/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/2.png">
+<meta property="og:image" content="http://example.com/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/3.png">
+<meta property="article:published_time" content="2023-05-09T00:06:36.000Z">
+<meta property="article:modified_time" content="2023-05-09T00:12:38.112Z">
 <meta property="article:author" content="安妮的心动录">
-<meta property="article:tag" content="感悟及认知">
+<meta property="article:tag" content="计算机基础">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/1.png">
 
-<link rel="canonical" href="http://example.com/2023/03/27/%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%91%E4%BC%9A%E6%8C%81%E7%BB%AD%E5%86%99%E9%9D%A2%E7%BB%8F/">
+<link rel="canonical" href="http://example.com/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/">
 
 
 <script id="page-configurations">
@@ -48,7 +52,7 @@
   };
 </script>
 
-  <title>为什么我会持续写面经 | 安妮的心动录的园子</title>
+  <title>流媒体技术初识 | 安妮的心动录的园子</title>
   
 
 
@@ -173,7 +177,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/27/%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%91%E4%BC%9A%E6%8C%81%E7%BB%AD%E5%86%99%E9%9D%A2%E7%BB%8F/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -186,7 +190,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          为什么我会持续写面经
+          流媒体技术初识
         </h1>
 
         <div class="post-meta">
@@ -197,7 +201,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2023-03-27 22:19:07 / 修改时间：22:23:43" itemprop="dateCreated datePublished" datetime="2023-03-27T22:19:07+08:00">2023-03-27</time>
+              <time title="创建时间：2023-05-09 08:06:36 / 修改时间：08:12:38" itemprop="dateCreated datePublished" datetime="2023-05-09T08:06:36+08:00">2023-05-09</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -205,7 +209,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%84%9F%E6%82%9F%E5%8F%8A%E8%AE%A4%E7%9F%A5/" itemprop="url" rel="index"><span itemprop="name">感悟及认知</span></a>
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">计算机基础</span></a>
                 </span>
             </span>
 
@@ -222,14 +226,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.5k</span>
+              <span>2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -241,27 +245,47 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="为什么我会持续写面经？"><a href="#为什么我会持续写面经？" class="headerlink" title="为什么我会持续写面经？"></a>为什么我会持续写面经？</h1><p>从我去年投出第一份简历，经历第一场面试，到现在应该已经陆陆续续面了好几十场了，小厂、中厂、大厂都有，基本上每一场面试我都有做记录并且review，我觉得这是一件很有意义并且回报很高的事情</p>
-<h2 id="提升专业技能"><a href="#提升专业技能" class="headerlink" title="提升专业技能"></a>提升专业技能</h2><p>我认为在技术岗方面，对于在校生来说，不论是实习还是秋招、春招，对于你的专业技能硬性要求大概只有这些</p>
-<ul>
-<li>工程方面的能力：你写了什么项目，你对自己的项目理解的程度深不深，常用的技术栈你学的怎么样，你的debug能力，把你招进来是不是真的能有产出，一些常用的框架、命令、工具你会不会用，会不会协同合作等等</li>
-<li>基础方面的能力：比如MySQL、Redis、MQ、Linux命令的使用，设计模式的理解，再到八股文（操作系统、计网、数据结构、计算机组成、编译原理、MySQL底层、Redis底层、MQ底层、一些工具的底层比如Docker等等）</li>
-<li>做题的能力：目前来看算法题能不能写出来越来越重要了，写不出题面试过的概率微乎其微</li>
-<li>知识的深度和广度：这些就属于随缘考察了，面试官问什么都可能，可能是智力题、逻辑题，也有可能是云原生、分布式、微服务这种比较新的东西</li>
-</ul>
-<p>而做好面试记录，编写面经的过程中你就能很清楚的知道，在面试过程中你哪些点答的好，哪些点答的不好，你可以听面试官的语气来察觉出你给出的答案是不是他想听到的，然后对自己的整个知识框架进行查漏补缺</p>
-<p>注意：<strong>这里的查漏补缺不是一有答不上来的问题就去学</strong>，这样成本太大了，挑你觉得你需要会的东西去学。</p>
-<p>比如你从来没用过某个技术栈，所以答不上来某个问题，这个技术栈你目前用不到，也不是必会的技能，那就完全没必要去学。</p>
-<p>但是如果你是某个很重要的点，比如设计模式不会，那我强烈建议你去好好学一学。</p>
-<h2 id="提升软素质"><a href="#提升软素质" class="headerlink" title="提升软素质"></a>提升软素质</h2><p>除了专业技能之外，面试也会考察候选人的软素质，比如语言表达能力、抗压能力等等。我觉得逻辑清晰，语句通顺，面试官能听懂你说的东西，并且觉得你说的有道理，这是很重要的一个能力。</p>
-<p>比如说某个八股文的点，你和面试官的理解可能不一样，但是你能把自己的逻辑讲清楚，为什么会是这样，能够自圆其说，说出来的逻辑能够闭环，哪怕你说的东西是错的，都会比卡在那里好很多。</p>
-<p>及时做面经能够很明显的感觉出来自己刚刚哪里表述有问题，哪里逻辑不清晰，哪里口误，哪里明明心里是会的，但是说出来很混乱，这样就能尽量避免下次再犯类似的错误。</p>
-<h2 id="正向反馈"><a href="#正向反馈" class="headerlink" title="正向反馈"></a>正向反馈</h2><p>不得不承认，真正热爱技术的人绝对是少之又少，大部分人投身技术领域主要还是为了一口饭吃。讨厌技术和热爱技术在学习和工作中绝对是两种不同的心态，并且成长速度也是绝对不一样的。</p>
-<p>那么该怎么让自己不讨厌技术，甚至爱上技术呢？</p>
-<p>引入开源思想，写面经、写博客，绝对是一个很好的方法。当我写出来的东西能帮他人解决问题，能够获得别人的赞同，能起到哪怕一点点微小的帮助，对我来说也是一种认同+满足，不断的重复这个过程，慢慢的去影响越来越多的人，帮助到越来越多的人，是一件很快乐的事情，至少对于我来说是这样。</p>
-<h2 id="养成review的习惯"><a href="#养成review的习惯" class="headerlink" title="养成review的习惯"></a>养成review的习惯</h2><p>及时复习，及时review绝对是帮助你提升效率的一大杀器，但是很遗憾的是大部分人都没有这个能力。从小我们接受的学习模式应该是：预习-正式学习-复习这么一个过程，上了大学之后基本没有预习这一说了，学习模式变成了：学习-复习这个过程。</p>
-<p>不讨论这个模式是否正确，但是从记忆曲线来说，复习、及时复习、多次复习，这个过程的回报率是比只学习、不复习的模式强很多很多的，review一次的时间一般不会超过正式学习的20%，而效果会比只学习一次强很多很多。</p>
-<p>所以不管是刷题、学技术、还是学知识，我都建议大家可以试着去review，如果不知道该如何踏出第一步，也许你可以试试从写一份面经开始。</p>
+        <p>博客:cbb777.fun</p>
+<p>全平台账号:安妮的心动录</p>
+<p>github: <a target="_blank" rel="noopener" href="https://github.com/anneheartrecord">https://github.com/anneheartrecord</a></p>
+<p>下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论</p>
+<h2 id="什么是视频资源"><a href="#什么是视频资源" class="headerlink" title="什么是视频资源"></a>什么是视频资源</h2><p>所谓视频资源，在播放和底层存储的时候其实就是一张一张图，30帧为一秒三十张图，60帧为一秒60张图等。一连串的图片按照一定帧率播放出来，刚开始的时候没有声音，所以音频信息就需要在各个帧进行精确设置，播放才能够音画同步。</p>
+<h2 id="流"><a href="#流" class="headerlink" title="流"></a>流</h2><p>流媒体：</p>
+<p>计算机科技在历经了文件（File）、页面（Web）时代之后，今天来到了以流（Streams）为单位的时代，而这个流的最典型的应用就是“流媒体”技术，它指的是在网络上采用流式传输技术来发布音频、视频以及其他多媒体文件。</p>
+<p>所谓的流式传输就是将音频、视频多媒体文件经过一定的算法，编码压缩成一个个很小的压缩包，流媒体服务器通过特定网络协议进行连续、实时的传送，用户端接受到压缩包后由播放软件实时解压缩实现播放的过程。而所谓的流媒体则特指一切采用这种流式传输的媒体文件。</p>
+<p>今天我们通过互联网看视频、直播、盒子看电视算如此方便，背后就有着流媒体系统的支撑。</p>
+<p>在对于音视频的传输分发上，我们会经常听到HTTP渐进式、HTTP流、文件下载、实时流式传输等等专业术语，下表总结了不同传输方式的特点</p>
+<p><img src="/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/1.png" alt="image.png"></p>
+<p>需要完成一个支撑高体验大规模的流媒体系统，需要考虑的技术层面有</p>
+<ol>
+<li><p>云计算基础服务相关技术：基于云架构的计算、网络、存储、CDN等底层基础服务已经变成了必须。硬件虚拟化、网络虚拟化能够最大程度保障音视频播放的稳定性；同时CDN内容分发网络能够有效应对高并发和徒增流量的需求，对流媒体传输的所有环节进行针对性优化，大幅度降低延时，对象存储满足了流媒体数据的大规模存储要求</p>
+</li>
+<li><p>音视频相关技术：音视频的编解码、4K、VR等音视频核心技术能力</p>
+</li>
+<li><p>场景化需求：秀场娱乐直播的实时录制，实时水印，实时鉴黄；连麦，版权保护等等</p>
+</li>
+</ol>
+<h2 id="Youtube"><a href="#Youtube" class="headerlink" title="Youtube"></a>Youtube</h2><p>Youtube是如何存储海量音视频数据的？</p>
+<p>Youtube是仅次于谷歌的第二大热门网站，在19年5月，每分钟会有500小时的视频内容上传到该平台</p>
+<p>架构</p>
+<p><img src="/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/2.png" alt="image.png"></p>
+<p>Youtube的后端微服务是由Python Java 和Go 写的，而前端是使用JS写的，主要的数据库是由Vitess支持的MySQL，另外使用Memcache实现了缓存，并使用Zookeeper进行节点的协调</p>
+<p>流行的视频通过CDN来提供，而一般的、较少播放的视频则从数据库中获取</p>
+<p>视频压缩：能够使用其他编码器一半的带宽来编码视频</p>
+<p>视频流：使用基于HTTP协议的动态自适应流，可以按照不同的速率提供给观众，客户端通过观看者的互联网速度自动适应视频渲染，从而尽可能少的减少缓冲时间</p>
+<p>Vitess的诞生</p>
+<p>随着网站越来越大，请求量越来越多，不得不对数据库进行水平拓展</p>
+<h3 id="主-从副本"><a href="#主-从副本" class="headerlink" title="主-从副本"></a>主-从副本</h3><p>副本会添加到数据库实例中，读取请求会被路由到主数据库和副本上，其中主节点可写又可读，从节点只可读。</p>
+<p>但是这种场景中，有可能会从副本中读取到陈旧的数据，如果在主节点将信息更新到副本之前，一个请求读取了副本的数据，那么观看者就会得到陈旧的数据。但是一般没什么大问题，因为在一段时间的运行后，不同节点的数据会答到最终一致</p>
+<h3 id="分片"><a href="#分片" class="headerlink" title="分片"></a>分片</h3><p>当QPS继续增大，就该对数据库进行分片了，分片并不是一个简单的过程，它大大的增加了系统的复杂性</p>
+<p>数据库分片之后，数据被分散到多台机器上，这增加了系统写入的吞吐量，不再是只有一个主节点能承担写的任务，同时，每台机器都创建了单独的副本，以实现冗余和吞吐</p>
+<h3 id="灾难管理"><a href="#灾难管理" class="headerlink" title="灾难管理"></a>灾难管理</h3><p>为了防止突然掉电、火灾等情况，需要对数据进行冗余，将用户数据备份到世界不同地理区域的数据中心。丢失用户数据和服务不可用算不允许的。同时拥有多个数据中心也有助于Youtube减少系统延迟，因为用户请求会被路由到最近的数据中心</p>
+<h2 id="Vitess"><a href="#Vitess" class="headerlink" title="Vitess"></a>Vitess</h2><p>是一个运行在MySQL之上的数据库集群方案，能够使MySQL进行水平拓展。它具有内置的分片特性，能够让开发人员拓展数据库，而不必再应用中添加任何的分片逻辑。类似于nosql的做法</p>
+<p><img src="/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/3.png" alt="image.png"></p>
+<p>vitess会自动处理故障转移与备份，除了youtube，vitess还被业界的其他知名厂商使用，如github等</p>
+<p>当你需要acid事务和强一致性的支持，同时又希望像NoSQL一样快速拓展关系型数据库的时候，Vitess就会大显身手，通过基于go编程提供的连接池，Vitess能够以很低的成本管理大量连接</p>
+<p>部署到云中：vitess是云原生的，并且容量是逐步添加到数据库中的。它可以作为一个K8S感知的云原生分布式数据库运行</p>
+<h2 id="如何存储"><a href="#如何存储" class="headerlink" title="如何存储"></a>如何存储</h2><p>视频会存储在谷歌数据中心的硬盘里，由GFS和BigTbale管理， GFS是谷歌开发的一个分布式文件系统，用于管理分布式环境中的大规模数据，而BigTable是建立在GFS上的低延迟分布式数据存储系统，用于处理分布在千万台机器上的PB级别的数据</p>
 
     </div>
 
@@ -271,7 +295,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E6%84%9F%E6%82%9F%E5%8F%8A%E8%AE%A4%E7%9F%A5/" rel="tag"># 感悟及认知</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" rel="tag"># 计算机基础</a>
           </div>
 
         
@@ -280,13 +304,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2023/03/27/limit%E4%B8%8E%E5%88%86%E9%A1%B5%E9%94%AE/" rel="prev" title="limit与分页键">
-      <i class="fa fa-chevron-left"></i> limit与分页键
+    <a href="/2023/05/08/%E9%80%86%E5%90%91%E5%88%9D%E8%AF%86/" rel="prev" title="逆向初识">
+      <i class="fa fa-chevron-left"></i> 逆向初识
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2023/04/03/Gin%E5%A4%8D%E4%B9%A0/" rel="next" title="Gin复习">
-      Gin复习 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -350,7 +371,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%91%E4%BC%9A%E6%8C%81%E7%BB%AD%E5%86%99%E9%9D%A2%E7%BB%8F%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">为什么我会持续写面经？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E5%8D%87%E4%B8%93%E4%B8%9A%E6%8A%80%E8%83%BD"><span class="nav-number">1.1.</span> <span class="nav-text">提升专业技能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E5%8D%87%E8%BD%AF%E7%B4%A0%E8%B4%A8"><span class="nav-number">1.2.</span> <span class="nav-text">提升软素质</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E5%90%91%E5%8F%8D%E9%A6%88"><span class="nav-number">1.3.</span> <span class="nav-text">正向反馈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%BB%E6%88%90review%E7%9A%84%E4%B9%A0%E6%83%AF"><span class="nav-number">1.4.</span> <span class="nav-text">养成review的习惯</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%A7%86%E9%A2%91%E8%B5%84%E6%BA%90"><span class="nav-number">1.</span> <span class="nav-text">什么是视频资源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%81"><span class="nav-number">2.</span> <span class="nav-text">流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Youtube"><span class="nav-number">3.</span> <span class="nav-text">Youtube</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB-%E4%BB%8E%E5%89%AF%E6%9C%AC"><span class="nav-number">3.1.</span> <span class="nav-text">主-从副本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%89%87"><span class="nav-number">3.2.</span> <span class="nav-text">分片</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%81%BE%E9%9A%BE%E7%AE%A1%E7%90%86"><span class="nav-number">3.3.</span> <span class="nav-text">灾难管理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vitess"><span class="nav-number">4.</span> <span class="nav-text">Vitess</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%AD%98%E5%82%A8"><span class="nav-number">5.</span> <span class="nav-text">如何存储</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
