@@ -22,22 +22,22 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Map详解什么是Map基本上每种计算机语言里面都会内置一个map类型，map是一个由一组key,value组成的数据类型，并且同一个key只会出现一次。同时map支持增删改查四种操作，map的主要实现方式有两种，分别是哈希查找表(hash table)和搜索树(search tree) 哈希表：使用一个哈希函数将key分配到不同的bucket(桶，可以理解成数组中的索引)，开销主要是在哈希函数的计">
+  <meta name="description" content="CAP理论CAP是分布式系统方向中的一个非常重要的理论，可以粗略的将它看成是分布式系统的起点，CAP分别代表的是分布式系统中的三种性质，分别是Consistency（可用性）、Availability（一致性）、Partition tolerance（网络分区容忍性），它们的第一个字母分别是C A P，于是这个理论被称为CAP理论 理论上来说，CAP三者同时最多满足两者，但是并不是必须满足两个，许">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Map详解">
-<meta property="og:url" content="http://example.com/2022/11/15/Map%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:title" content="分布式理论基础">
+<meta property="og:url" content="http://example.com/2023/05/10/%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80/index.html">
 <meta property="og:site_name" content="安妮的心动录的园子">
-<meta property="og:description" content="Map详解什么是Map基本上每种计算机语言里面都会内置一个map类型，map是一个由一组key,value组成的数据类型，并且同一个key只会出现一次。同时map支持增删改查四种操作，map的主要实现方式有两种，分别是哈希查找表(hash table)和搜索树(search tree) 哈希表：使用一个哈希函数将key分配到不同的bucket(桶，可以理解成数组中的索引)，开销主要是在哈希函数的计">
+<meta property="og:description" content="CAP理论CAP是分布式系统方向中的一个非常重要的理论，可以粗略的将它看成是分布式系统的起点，CAP分别代表的是分布式系统中的三种性质，分别是Consistency（可用性）、Availability（一致性）、Partition tolerance（网络分区容忍性），它们的第一个字母分别是C A P，于是这个理论被称为CAP理论 理论上来说，CAP三者同时最多满足两者，但是并不是必须满足两个，许">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2022/11/15/Map%E8%AF%A6%E8%A7%A3/1.png">
-<meta property="article:published_time" content="2022-11-15T14:12:30.000Z">
-<meta property="article:modified_time" content="2022-11-15T14:15:37.845Z">
+<meta property="og:image" content="http://example.com/2023/05/10/%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80/1.png">
+<meta property="article:published_time" content="2023-05-10T14:48:44.000Z">
+<meta property="article:modified_time" content="2023-05-10T14:51:20.898Z">
 <meta property="article:author" content="安妮的心动录">
-<meta property="article:tag" content="Go">
+<meta property="article:tag" content="分布式">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2022/11/15/Map%E8%AF%A6%E8%A7%A3/1.png">
+<meta name="twitter:image" content="http://example.com/2023/05/10/%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80/1.png">
 
-<link rel="canonical" href="http://example.com/2022/11/15/Map%E8%AF%A6%E8%A7%A3/">
+<link rel="canonical" href="http://example.com/2023/05/10/%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80/">
 
 
 <script id="page-configurations">
@@ -50,7 +50,7 @@
   };
 </script>
 
-  <title>Map详解 | 安妮的心动录的园子</title>
+  <title>分布式理论基础 | 安妮的心动录的园子</title>
   
 
 
@@ -175,7 +175,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/15/Map%E8%AF%A6%E8%A7%A3/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/10/%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -188,7 +188,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Map详解
+          分布式理论基础
         </h1>
 
         <div class="post-meta">
@@ -199,7 +199,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2022-11-15 22:12:30 / 修改时间：22:15:37" itemprop="dateCreated datePublished" datetime="2022-11-15T22:12:30+08:00">2022-11-15</time>
+              <time title="创建时间：2023-05-10 22:48:44 / 修改时间：22:51:20" itemprop="dateCreated datePublished" datetime="2023-05-10T22:48:44+08:00">2023-05-10</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -207,7 +207,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Go/" itemprop="url" rel="index"><span itemprop="name">Go</span></a>
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
                 </span>
             </span>
 
@@ -224,7 +224,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3.3k</span>
+              <span>2.9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -243,61 +243,55 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="Map详解"><a href="#Map详解" class="headerlink" title="Map详解"></a>Map详解</h1><h3 id="什么是Map"><a href="#什么是Map" class="headerlink" title="什么是Map"></a>什么是Map</h3><p>基本上每种计算机语言里面都会内置一个map类型，map是一个由一组key,value组成的数据类型，并且同一个key只会出现一次。同时map支持增删改查四种操作，map的主要实现方式有两种，分别是哈希查找表(hash table)和搜索树(search tree)</p>
-<p>哈希表：使用一个哈希函数将key分配到不同的bucket(桶，可以理解成数组中的索引)，开销主要是在哈希函数的计算和数组的常数访问时间，很多场景下，我们可以简单的把哈希表的时间复杂度看成O(1)。哈希表通常还会有一个碰撞的问题，所谓的哈希碰撞就是多个key被哈希函数分配到了同一个bucket。一般有两种解决方法：链表法和开放地址法。链表法是将一个bucket实现程一个链表，落在同一个bucket中的key会插入这个链表。而开发地址法则是在发生碰撞之后，通过一定的规律，在空着的bucket里面挑选，用来放置新的key </p>
-<p>搜索树：一般使用自平衡二叉树，比如AVL树和红黑树</p>
-<p>二者的区别是，自平衡搜索树的时间复杂度最低为O(logN)，而哈希表的最差情况是O(N)，哈希表平均查找效率是O(1)。 还有一个区别是，遍历自平衡搜索树，返回的key是有序的，而哈希表则是乱序的</p>
-<h3 id="Go-Map"><a href="#Go-Map" class="headerlink" title="Go Map"></a>Go Map</h3><p>Go中的Map使用的是哈希表，并且使用链表的方式解决哈希冲突</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A header for a Go map.</span></span><br><span class="line"><span class="keyword">type</span> hmap <span class="keyword">struct</span> &#123;</span><br><span class="line">    <span class="comment">// 元素个数，调用 len(map) 时，直接返回此值</span></span><br><span class="line">	count     <span class="type">int</span></span><br><span class="line">	flags     <span class="type">uint8</span></span><br><span class="line">	<span class="comment">// buckets 的对数 log_2</span></span><br><span class="line">	B         <span class="type">uint8</span></span><br><span class="line">	<span class="comment">// overflow 的 bucket 近似数</span></span><br><span class="line">	noverflow <span class="type">uint16</span></span><br><span class="line">	<span class="comment">// 计算 key 的哈希的时候会传入哈希函数</span></span><br><span class="line">	hash0     <span class="type">uint32</span></span><br><span class="line">    <span class="comment">// 指向 buckets 数组，大小为 2^B</span></span><br><span class="line">    <span class="comment">// 如果元素个数为0，就为 nil</span></span><br><span class="line">	buckets    unsafe.Pointer</span><br><span class="line">	<span class="comment">// 等量扩容的时候，buckets 长度和 oldbuckets 相等</span></span><br><span class="line">	<span class="comment">// 双倍扩容的时候，buckets 长度会是 oldbuckets 的两倍</span></span><br><span class="line">	oldbuckets unsafe.Pointer</span><br><span class="line">	<span class="comment">// 指示扩容进度，小于此地址的 buckets 迁移完成</span></span><br><span class="line">	nevacuate  <span class="type">uintptr</span></span><br><span class="line">	extra *mapextra <span class="comment">// optional fields</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <h2 id="CAP理论"><a href="#CAP理论" class="headerlink" title="CAP理论"></a>CAP理论</h2><p>CAP是分布式系统方向中的一个非常重要的理论，可以粗略的将它看成是分布式系统的起点，CAP分别代表的是分布式系统中的三种性质，分别是Consistency（可用性）、Availability（一致性）、Partition tolerance（网络分区容忍性），它们的第一个字母分别是C A P，于是这个理论被称为CAP理论</p>
+<p>理论上来说，CAP三者同时最多满足两者，但是并不是必须满足两个，许多系统最多只能同时满足0、1个</p>
+<p><strong>为什么CAP最多只能满足两个呢?</strong></p>
+<p>我们可以以电商系统的两个集群来当做例子</p>
+<p>C: 追求的是数据一致性 当有一个请求来了之后 它会等待网络隔离的情况结束之后 向另一个机器进行数据的同步</p>
+<p>A: 追求的是可用性 也就是尽可能提供有效服务 当一个请求来了之后 它会立即返回 哪怕数据是陈旧的 也得优先提供服务，其他分区的节点返回的结果（数据）可能是不一样</p>
+<p>注意：这里的AP不可同时满足指的是当整个分布式系统中出现网络隔离的时候，我们不能既想着保证数据的实时强一致性，又去追求服务的可用性。</p>
+<p>但是当没有网络隔离的时候，其实这两个性质是可以同时满足的，因为『同步数据』和『返回结果』这两个操作都是在同一个网络中，只有先后关系，不会因为某个操作导致另一个操作的『死等』</p>
+<p>在分布式系统中，P是会必然发生的，造成P的原因可能是网络隔离，也可能是节点宕机。我们无法保证分布式系统每一时刻都不出现网络隔离，如果不满足P的特性，一旦发生分区错误，那么分布式系统就无法工作，这显然违背了分布式的理念，连最基本的分布式系统条件都没有满足</p>
+<p>典型的CP和AP的产品</p>
+<p>CP：Zookeeper 当系统在发生分区故障之后 客户端的所有请求都会被卡死或者超时 但是系统总会返回一致的数据</p>
+<p>AP：Eureka 分区发生故障之后 客户端依然可以访问系统 但是获取的数据有的是新数据 有的是老数据</p>
+<p>当然  CAP这几个特性不是BOOL类型的，而是一个范围类型，完全是看系统具体需要什么样的要求。</p>
+<p>比如分区容错，有的系统一台机器出错，系统会认为不影响业务的话，认为分区不存在。只有多台机器都出问题了，系统受到严重影响才认为出现分区</p>
+<h2 id="PACELC理论"><a href="#PACELC理论" class="headerlink" title="PACELC理论"></a>PACELC理论</h2><p>PACELC理论是对CAP理论的扩展，在维基百科上的定义是</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">It states that in case of network partitioning (P) in a distributed computer system, one has to choose between availability (A) and consistency (C) (as per the CAP theorem), but else (E), even when the system is running normally in the absence of partitions, one has to choose between latency (L) and consistency (C).</span><br></pre></td></tr></table></figure>
 
-<p>B就是buckets数组的长度对数，也就是buckets数组长度为2^B，buckets里面存放着key-value对，buckets也是一个指针，类似于slice中指向数组的指针。</p>
-<p>buckets指向的是下面这个东西</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> bmap <span class="keyword">struct</span> &#123;</span><br><span class="line">	tophash [bucketCnt]<span class="type">uint8</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>编译之后就变成了</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> bmap <span class="keyword">struct</span> &#123;</span><br><span class="line">    topbits  [<span class="number">8</span>]<span class="type">uint8</span></span><br><span class="line">    keys     [<span class="number">8</span>]keytype</span><br><span class="line">    values   [<span class="number">8</span>]valuetype</span><br><span class="line">    pad      <span class="type">uintptr</span></span><br><span class="line">    overflow <span class="type">uintptr</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
-
-
-
-<p>其中bmap就是我们所说的哈希桶，每个桶里面最多装下8个key-value对，这些key之所以会落入同一个桶中，是因为他们经过哈希计算之后，得到的结果是一类的(哈希结果得到的后八位相同)，之后会根据key计算出来的hash值的高8位来决定key到底落入桶内的那个位置(哪个槽)</p>
-<p><img src="/2022/11/15/Map%E8%AF%A6%E8%A7%A3/1.png"></p>
-<p>其中每个bmap的key1…key8是存放在一起的，value1….value8是存放在一起的，这样的目的是为了节省因为内存对齐造成的空间浪费。</p>
-<p>每个bucket设计成最多只能存放8个key-value对，如果有第九个key-value落入当前的bucket，则需要再构建一个bucket,然后通过overflow指针连接起来。</p>
-<p><strong>创建map</strong></p>
-<p>底层调用的是makemap函数，主要做的工作就是初始化hamp结构体的各种字段，比如计算B的大小，设置哈西种子hash0等等</p>
-<p><strong>哈希函数</strong></p>
-<p>map的一个关键点在于哈希函数的选择，在程序启动时会检测cpu是否支持aes，如果支持则使用aes hash，否则使用memhash。hash函数有加密型和非加密型，加密型的一般用于加密数据、数字摘要等，典型代表就是md5 sha1 sha256 aes256这种，非加密型的就是查找，而map就是使用的查找hash函数</p>
-<p><strong>key定位过程</strong></p>
-<p>key经过哈希计算后得到哈希值，共64bit，计算它落到那个桶的时候，会用到最后B个bit位，最后B个bit位的值，就是落入桶的序号、当两个不同的key落在同一个桶中，也就是发生了哈希冲突，解决手段是链表法，从前往后找到第一个空位，这样，在查找某个key的时候先找到对应的桶，然后再去遍历bucket里的key。</p>
-<p>在槽内的查找过程：使用高八位的bit值，高八位的值就是槽位，如果在bucket中没找到，并且overflow不为空，还要继续去overflow bucket中查找，直到找到或是所有的key槽位都遍历完</p>
-<p>综上，这是一个双重循环的过程，外层循环查找所有bucket和overflow bucket，内层循环遍历单个bucket的所有槽位</p>
-<p><strong>get</strong></p>
-<p>Go中读取map有两种语法，带comma和不带comma，当要查询的key不在map里，带comma的用法会返回一个bool型变量提示key是否在map中，而不带comma的语法则会返回一个对应类型的零值</p>
-<p><strong>遍历</strong></p>
-<p>本来map的遍历过程比较简单：遍历所有的bucket以及它后面挂的overflow bucket(第一层遍历)，然后挨个遍历bucket中的所有cell(槽)，每个bucket包含8个cell，从有key的cell中取出key value </p>
-<p>但是现实并没有这么简单，因为扩容并不是一个原子的操作，每次最多只搬运两个bucket，所以如果触发了扩容操作，那么很长时间内，map状态都是处于一种中间态，有些bucket已经搬迁到新家，有些bucket还呆在老地方</p>
-<p>因此，遍历如果发生在扩容的过程中，就会涉及到遍历新老bucket的过程</p>
-<p>具体是遍历老的bucket，然后再遍历老的bucket裂变到新的bucket里的元素</p>
-<p><strong>赋值</strong></p>
-<p>调用的是mapassign函数，语法和插入key的过程一样，只不过前者的key在map在不存在，后者存在</p>
-<p>具体过程</p>
-<p>1.检查map标志位flgas,如果为1则说明其他协程在执行写操作，导致程序panic</p>
-<p>2.如果map正在扩容，那么当key定位到了某个bucket后，需要确保这个bucket对应的老bucket完成了迁移，即老bucket的key都要迁移到新的bucket中之后，才能在新的bucket中进行插入或者更新的操作</p>
-<p><strong>删除</strong></p>
-<p>调用的是底层的mapdelete函数</p>
-<p>1.检查标志位flags，如果发现标志位为1，说明其他协程在执行写操作，直接panic </p>
-<p>2.计算key的哈希，找到落入的bucket，如果正在扩容中，直接完成一次扩容</p>
-<p>3.同样是两层循环，找到key的具体位置，然后删掉</p>
-<p><strong>扩容</strong></p>
-<p>使用哈希表的目的是快速找到目标key，随着map中添加的key越来越多,key发生碰撞的概率也越来越大，当bucket中的8个cell倍塞满的时候，效率就是最低的，最理想的情况是一个bucket只装一个key，这样就能达到o1的效率，当然这样空间消耗太多了</p>
-<p>触发扩容的条件</p>
-<p>1.装载因子超过阈值6.5</p>
-<p>2.overflow的bucket数量过多，当B&lt;15如果overflow的数量大于2^B,当B&gt;&#x3D;15，如果overflow的数量大于2^15(装载因子比较小，map的插入和查找效率也很低，但是bucket的数量很多)</p>
-<p>两种扩容方式</p>
-<p>1.元素太多，bucket太少，将B+1，让bucket的数量翻倍</p>
-<p>2.元素不多，但overflow bucket很多，说明很多bucket都没满，开辟一个新的bucket空间，将老bucket中的元素移动到移动到新的bucket，是的一个bucket中的key排列更加紧密</p>
+<p>如果有分区（P），那么系统就必须在可用性（A）和一致性（C）之间取得平衡，否则（E），当系统运行在无分区的情况下，系统需要在延迟（L）和一致性（C）之间取得平衡</p>
+<p>它相比于CAP，多引入了一个延迟Latency的概念，在出现分区错误的时候，取前半部分PAC，理论和CAP的内容一致。没有出现分区错误的时候取LC，也就是Latency与Consistency</p>
+<p>当前分布式系统指导理论更替代CAP理论，理由如下</p>
+<ul>
+<li>PACELC更能满足实际操作中分布式系统的工作场景，是更好的工程实现策略</li>
+<li>当P存在的场景下，需要在A C之间做取舍，但是实际上分布式系统大部分时间里P是不存在的，那么在L和C之间做取舍是一个更好的选择</li>
+<li>PACELC可以在latency与consistency之间获得平衡</li>
+</ul>
+<p>要保证系统的高可用，那么就得采用冗余的思想，我的其他博文有提到4个9的异地多活策略，也是采用的数据冗余思想，而一旦涉及到了复制数据，在分布式中就一定会在Consistency和Latency之间做一个取舍</p>
+<p><img src="/2023/05/10/%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80/1.png" alt="img"></p>
+<p>举个例子</p>
+<p>在强一致性的场景下，需要三个从节点都落盘数据，才能给客户端返回OK，这个时候当master向slave同步数据的时候，超过20ms触发超时了，整个系统还是会不断的重试这个过程，这显然造成了系统的可用性比较低</p>
+<p>所以我们一般都会在数据一致性和请求时延之间做一个balance </p>
+<p>当同步超过五次之后，认为这个节点故障，选择直接返回，可以消除写时的长尾抖动，同时给节点打上故障标签，进行后续的处理</p>
+<h2 id="BASE理论"><a href="#BASE理论" class="headerlink" title="BASE理论"></a>BASE理论</h2><p>base理论是Basically Avaliable(基本可用)、Soft State（软状态）、Eventually Consistent（最终一致性）三个短语的缩写，核心思想如下</p>
+<p>即使无法做到强一致性，但每个应用都可以根据自身的业务特点，采用适当的方式来使系统达到最终一致性</p>
+<p>BA：基本可用指的是当系统出现了不可预知的故障，系统依旧可用，不过可用度也许会降低，比如响应时间上出现损失，功能上只能满足基本功能等等</p>
+<p>S：基于原子性而言的话，当要求多个节点数据一致时，我们认为这是一种『硬』状态，而允许系统中的数据存在中间状态，并认为其不影响系统的整体可用性，即允许系统在多个不同节点的数据副本存在数据时延</p>
+<p>E：最终一致性，系统不可能一直都处于一个软状态中，必须有个时间期限。在期限过后，应该保证所有副本保持数据一致性，从而达到数据的最终一致性。这个时间期限取决于时延、负载、方案等等</p>
+<p>在工程实践中，有这么几种最终一致性的实现策略，通常都是多种策略混合实现</p>
+<ul>
+<li>因果一致性：如果节点A在更新完某个数据后通知了节点B，那么节点B之后对该数据的访问和修改都是基于A更新后的值。与此同时，与节点A无因果关系的节点C的数据访问没有这样的限制</li>
+<li>读已知所写：节点A更新一个数据之后，自身总是能访问到更新过的最新值，而不会访问旧值</li>
+<li>会话一致性：将对系统数据的访问过程框定在了一个会话当中，系统能保证同一个有效的会话中实现客户端在一个会话中读取到该数据项永远是最新值</li>
+<li>单调读一致性：如果一个节点从系统中读取出一个数据项的某个值之后，那么系统对于该节点后续的任何数据访问都不该返回更旧的值</li>
+<li>单调写一致性：一个系统要能够保证来自同一个节点的写操作被顺序的执行。</li>
+</ul>
+<h2 id="NWR多数派理论"><a href="#NWR多数派理论" class="headerlink" title="NWR多数派理论"></a>NWR多数派理论</h2><p>NWR多数派理论指的是在多数副本的一致性模型中，只有大多数副本确认了某个操作，才认为这个操作已经完成。这个理论是分布式系统中一种常见的一致性模型，被广泛应用于保证数据的一致性和可靠性，以及系统的可用性。</p>
+<p>NWR中N代表的是副本数量，W代表写入的副本数量，R则为读取的副本数量。在多数的一致性模型中，一般要求W+R&gt;N，以保证读写操作的一致性。在写入操作的时候，只有W个副本被成功写入才返回成功，而在读取操作时，只有R个副本成功返回相同的数据才返回成功。这样，只要大多数副本成功确认了操作，就可以认为这个操作已经完成。</p>
+<p>NWR在现有组件的应用还是很广泛的，比如Raft选主判断逻辑为投票数量&gt;&#x3D;n&#x2F;2则成功选主，比如Redis的哨兵机制，有哨兵标记下线则为主观下线，&gt;&#x3D;n&#x2F;2标记下线则为客观下线。</p>
 
     </div>
 
@@ -307,7 +301,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Go/" rel="tag"># Go</a>
+              <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag"># 分布式</a>
           </div>
 
         
@@ -316,13 +310,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/11/03/Slice%E8%AF%A6%E8%A7%A3/" rel="prev" title="Slice详解">
-      <i class="fa fa-chevron-left"></i> Slice详解
+    <a href="/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/" rel="prev" title="流媒体技术初识">
+      <i class="fa fa-chevron-left"></i> 流媒体技术初识
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2022/11/15/toms%E5%88%9D%E8%AF%86/" rel="next" title="toms初识">
-      toms初识 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -386,7 +377,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Map%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">Map详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFMap"><span class="nav-number">1.0.1.</span> <span class="nav-text">什么是Map</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Go-Map"><span class="nav-number">1.0.2.</span> <span class="nav-text">Go Map</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#CAP%E7%90%86%E8%AE%BA"><span class="nav-number">1.</span> <span class="nav-text">CAP理论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PACELC%E7%90%86%E8%AE%BA"><span class="nav-number">2.</span> <span class="nav-text">PACELC理论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BASE%E7%90%86%E8%AE%BA"><span class="nav-number">3.</span> <span class="nav-text">BASE理论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NWR%E5%A4%9A%E6%95%B0%E6%B4%BE%E7%90%86%E8%AE%BA"><span class="nav-number">4.</span> <span class="nav-text">NWR多数派理论</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

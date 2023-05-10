@@ -169,6 +169,189 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/09/shell%E5%88%9D%E8%AF%86%E5%8F%8A%E6%89%A9%E5%B1%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/10/09/shell%E5%88%9D%E8%AF%86%E5%8F%8A%E6%89%A9%E5%B1%95/" class="post-title-link" itemprop="url">shell初识及扩展</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-10-09 19:30:35 / 修改时间：22:53:42" itemprop="dateCreated datePublished" datetime="2022-10-09T19:30:35+08:00">2022-10-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="SHELL初始和扩展"><a href="#SHELL初始和扩展" class="headerlink" title="SHELL初始和扩展"></a>SHELL初始和扩展</h1><p>在国庆期间我把Linux命令再系统的过了一遍，作为后端开发人员必备的技能，我感觉自己不论是对Linux命令的掌握，还是对Linux内核设计、实现的理解都很薄弱，所以国庆特意加班加点再过了一遍，回忆起了很多之前淡忘的命令。</p>
+<p>言归正传，什么是SHELL编程呢，我们一般把shell编程得到的结果称为shell脚本，同时，现在使用的最多的shell是bash，所以shell脚本也被称为bash脚本。shell脚本是一种格式非常规整、严格的脚本语言，有时多打一个空格或者少打一个符号可能都会导致很多问题，这也意味着shell开发人员不仅要对语法、对命令很熟悉，同时也要非常非常细心。</p>
+<p>shell为什么是一门脚本语言，其实虽然它被称为语言，但是说到底就是命令的集合加上特定的格式就变成了shell脚本。比起一门语言，我更将它认为是一种批处理文本，类似于声明式API，将命令写入到文件中，再执行这个文件。之所以将它称之为脚本，因为它是一行一行由解释器解释执行的，具有这种性质的语言，都称之为脚本语言。</p>
+<h4 id="shell初识"><a href="#shell初识" class="headerlink" title="shell初识"></a>shell初识</h4><p>什么是shell?翻译过来就是“壳”，指的是操作系统的表层，与操作系统的内核（kernel）对应，是用户和内核交互的界面。这里要区分shell terminal和consule之间的区别。shell特指命令行，而terminal是终端，很多应用软件都有中断，比如你打开Goland敲代码，是不是也可以输入命令操控程序？输入命令的那个平台就是terminal。同时我们的输入输出设备也可以看做是terminal。而console是控制台，早期电脑是很大的，电脑基本都配有console，console就是一个有很多开关、按钮的机器，用于控制电脑。</p>
+<p>shell是一个程序。当你输入命令的时候，它会将命令传给内核执行，并把结果返回给用户。所以shell被称作命令行，类似于windows中的cmd和powershell。</p>
+<p>同时，shell还是一个命令解释器，解释用户输入的命令，支持变量、条件判断、循环等语法，这些语句被解释器执行。</p>
+<p>然后，shell还内置了很多工具，可以看成一个工具箱，提供了很多方便我们操作的API。</p>
+<p>shell有很多种，只要能提供命令行环境的程序，我们都可以看做shell</p>
+<p>现在Bash就是最常用的Shell</p>
+<p><code>#查看当前设备默认的shell</code></p>
+<p><code>echo $SHELL</code></p>
+<p><code>#查看当前系统的所有shell</code> </p>
+<p> <code>cat /etc/shells</code> </p>
+<p><code>#查看bash版本</code></p>
+<p><code>bash --version</code> </p>
+<h4 id="简单命令"><a href="#简单命令" class="headerlink" title="简单命令"></a>简单命令</h4><h5 id="echo"><a href="#echo" class="headerlink" title="echo"></a>echo</h5><p>echo就是一个输出命令，可以看成Go语言的Println，自带换行</p>
+<p>标签：</p>
+<ul>
+<li>-n 取消换行</li>
+<li>-e 解释转义字符 比如\n \r</li>
+</ul>
+<p>这里学习了一下\r \n的区别</p>
+<p>\r:光标回到行首 </p>
+<p>\n:光标回到行首，光标进行换行</p>
+<p>用例子来看就是</p>
+<p><code>echo -e &quot;hello -n world&quot;</code></p>
+<p><code>hello</code> </p>
+<p><code>world</code></p>
+<p><code>echo -e &quot;hello \r world&quot;</code></p>
+<p><code>world</code></p>
+<p><code>#因为已经将hello给覆盖掉了，\r回到行首，world将hello覆盖</code></p>
+<p><code>echo -e &quot;lll\rss&quot;</code></p>
+<p><code>ssl</code></p>
+<p><code>#覆盖前两个</code> </p>
+<h5 id="命令格式与逻辑"><a href="#命令格式与逻辑" class="headerlink" title="命令格式与逻辑"></a>命令格式与逻辑</h5><p><strong>空格</strong>：我们通过空格来区分不同的参数，每个参数之间必须有一个或多个空格，如果是多个空格，解释器会自动缩忽略多余的空格</p>
+<p><strong>分号</strong>：命令的结束符，可以使得一行执行多个命令，在上一个命令结束后，执行下一个命令</p>
+<p>**&amp;&amp;**：当上一个命令执行成功，继续运行第二个命令</p>
+<p>**||**：当上一个命令执行失败，继续运行第二个命令</p>
+<h5 id="type命令"><a href="#type命令" class="headerlink" title="type命令"></a>type命令</h5><p>type命令用来判断命令的来源，因为bash内置了很多命令，我们可以通过type来判断一个命令是内置命令还是外部程序</p>
+<p><code>type type</code> </p>
+<p><code>#这是一个内指命令</code></p>
+<p><code>type ls</code> </p>
+<p><code>#这是 ls --color=auto的别名</code></p>
+<h5 id="快捷键（我不记得的）"><a href="#快捷键（我不记得的）" class="headerlink" title="快捷键（我不记得的）"></a>快捷键（我不记得的）</h5><ul>
+<li>cl+l 清屏并且移动到页面顶部</li>
+<li>cl+u 从光标删除到行首</li>
+<li>cl+k 从光标删除到行尾</li>
+<li>cl+w 删除光标前一个单词</li>
+<li>cl+d 退出shell</li>
+</ul>
+<h4 id="Bash模式扩展"><a href="#Bash模式扩展" class="headerlink" title="Bash模式扩展"></a>Bash模式扩展</h4><p>在shell收到命令之后会根据用户输入，拆分成一个个词元，然后shell会扩展里面的特殊字符，完成这步之后才会调用相应的命令。也就是翻译一些特殊符号。</p>
+<p>其中部分扩展其实就是通配符扩展。</p>
+<p>Bash一共提供八种扩展</p>
+<ul>
+<li>~</li>
+<li>？</li>
+<li><ul>
+<li></li>
+</ul>
+</li>
+<li>[]</li>
+<li>{}</li>
+<li>变量</li>
+<li>子命令</li>
+<li>算术</li>
+</ul>
+<h5 id><a href="#" class="headerlink" title="~"></a>~</h5><p>波浪线会自动扩展成当前用户的主目录，也就是&#x2F;home&#x2F;username，同时~+会扩展成当前目录，和pwd命令等效。</p>
+<h5 id="？"><a href="#？" class="headerlink" title="？"></a>？</h5><p>？代表匹配任意单个字符，不包括空</p>
+<h5 id="-1"><a href="#-1" class="headerlink" title="*"></a>*</h5><p>*代表文件路径里面的任意数量的任意字符，包括0个，且可以匹配空</p>
+<h5 id="【】"><a href="#【】" class="headerlink" title="【】"></a>【】</h5><p>【】匹配方括号中的任意一个元素 比如 [abc] 满足匹配结果的为a b c，【-】，匹配范围之内的任意元素，比如【1-5】，满足匹配条件为1 2 3 4 5 </p>
+<h5 id="-2"><a href="#-2" class="headerlink" title="{}"></a>{}</h5><p>大括号匹配所有值，每个元素之间通过逗号分割，逗号与元素之间不能有空格</p>
+<p><code>echo &#123;1,2,3&#125;</code></p>
+<p><code>1 2 3</code></p>
+<p><code>echo d &#123;a,e,i,u,o&#125;g</code></p>
+<p><code>dag deg dig dug dog</code></p>
+<p><code>#括号还可以嵌套</code></p>
+<p><code>echo &#123;j&#123;p,pe&#125;,ng&#125;</code></p>
+<p><code>jpg jpeg png</code></p>
+<p>{..}表示一个数组。比如{a..z}可以拓展成26个小写字母，同时支持逆序，{z..a}就是从z到a的输出</p>
+<p>{..}可以指定步长 比如 </p>
+<p><code>echo &#123;0..8..2&#125;</code></p>
+<p><code>0 2 4 6 8</code> </p>
+<h5 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h5><p>可以直接$name 或者 ${name}两种方式来扩展变量值，一般推荐第二种方式</p>
+<h5 id="子命令"><a href="#子命令" class="headerlink" title="子命令"></a>子命令</h5><p>比如 $(pwd) $(date)等等 直接拿到命令的值</p>
+<h5 id="算术扩展"><a href="#算术扩展" class="headerlink" title="算术扩展"></a>算术扩展</h5><p>((…))可以扩展成整数的运算结果，比如((2+2))</p>
+<h5 id="字符类"><a href="#字符类" class="headerlink" title="字符类"></a>字符类</h5><p>[[:class:]]表示一个字符类，扩展成某一类特定字符中的一个，常用的字符类有很多，匹配任意英文，数字，大小写等等</p>
+<h5 id="量词语法"><a href="#量词语法" class="headerlink" title="量词语法"></a>量词语法</h5><p>+(pattern) :匹配一次或多次</p>
+<p>@(pattern) 只匹配一次</p>
+<p>!(pattern) 匹配给定内容之外的任何内容</p>
+<h4 id="引号与转义"><a href="#引号与转义" class="headerlink" title="引号与转义"></a>引号与转义</h4><p>在bash中只有一种数据类型，那就是字符串，不管用户输入什么数据，Bash都认为是字符串</p>
+<p>某些字符在Bash中有特殊含义，比如$，你想要原样输出就必须通过转义的方式，比如\ $输出$。同时\还能改写命令，当一条命令过长，就可以在伟航使用\进行改写，使其成为多行。</p>
+<p><code>mv \</code></p>
+<p><code>/path/to/foo \</code></p>
+<p><code>/path/to/bar</code> </p>
+<p><strong>单引号</strong></p>
+<p>Bash允许字符串放在单引号或者双引号中，加以引用。单引号用于保留字符的字面含义，各种特殊字符在单引号里面，都会变为普通字符，比如 * $ \等等。单引号能使Bash扩展，变量引用和子命令都失效。所以在单引号里面用正则是什么呆瓜啊。</p>
+<p><strong>双引号</strong></p>
+<p>双引号比单引号款所，大部分特殊字符在双引号里都会失去特殊含义编程普通字符，只有$ 和 &#96; 和 \仍然会被扩展</p>
+<p><strong>重定向</strong></p>
+<p><code>cat &lt;&lt; name</code> </p>
+<p><code>name</code></p>
+<p>最后的name一定要顶格</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/08/%E4%BA%91%E5%8E%9F%E7%94%9F%E4%B8%8E%E5%BE%AE%E6%9C%8D%E5%8A%A1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -496,20 +679,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">33</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-count">22</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -556,12 +739,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">102k</span>
+    <span title="站点总字数">105k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:33</span>
+    <span title="站点阅读时长">1:35</span>
 </div>
 
 
