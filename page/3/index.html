@@ -169,6 +169,252 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/03/Slice%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/11/03/Slice%E8%AF%A6%E8%A7%A3/" class="post-title-link" itemprop="url">Slice详解</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-11-03 22:10:39 / 修改时间：23:01:35" itemprop="dateCreated datePublished" datetime="2022-11-03T22:10:39+08:00">2022-11-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Go/" itemprop="url" rel="index"><span itemprop="name">Go</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Slice详解"><a href="#Slice详解" class="headerlink" title="Slice详解"></a>Slice详解</h1><h3 id="slice和数组的区别"><a href="#slice和数组的区别" class="headerlink" title="slice和数组的区别"></a>slice和数组的区别</h3><p>众所周知，go是一门强类型的语言，什么是强类型呢？就是对类型要求非常严格(在运算时)，所以go中的float不能和int进行运算，甚至int和int64也不能进行运算。</p>
+<p>数组是指长度固定的数据集合，比如 [3] int 指的就是长度为3的int类型集合，它和[4] int是两个完全不同的类型，所以不能作比较，比较也是一种运算。</p>
+<p>而slice则是动态数组，长度不固定，可以动态扩容，slice的类型和长度没有关系，所以不同的slice可以进行比较(但这个操作通常没有意义)</p>
+<h3 id="slice本质"><a href="#slice本质" class="headerlink" title="slice本质"></a>slice本质</h3><p>slice其实就是一个结构体，里面有着对数组的封装，还有len和cap两个字段来描述数组的长度和容量</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// runtime/slice.go</span></span><br><span class="line"><span class="keyword">type</span> slice <span class="keyword">struct</span> &#123;</span><br><span class="line">	array unsafe.Pointer <span class="comment">// 元素指针 指向的其实是一个底层的数组</span></span><br><span class="line">	<span class="built_in">len</span>   <span class="type">int</span> <span class="comment">// 长度 </span></span><br><span class="line">	<span class="built_in">cap</span>   <span class="type">int</span> <span class="comment">// 容量</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>如果要判断slice是否为空，要使用</p>
+<p><code>len(slice)==0</code></p>
+<p>而不能使用</p>
+<p><code>slice==nil</code></p>
+<p>因为slice&#x3D;0判断的是数组内是否有元素，如果没有元素则为空，而slice&#x3D;&#x3D;nil判断的是一整个结构体是否为Nil 如果我们用var 的方式声明，不会给slice分配内存，那么slice确实&#x3D;nil。但如果我们使用make的方式进行声明，那么就会给slice分配内存，所以slice就!&#x3D;nil了</p>
+<p>同理的 要判断两个slice是否相同，不能简单的通过slice1&#x3D;&#x3D;slice2进行判断，而是要循环切片进行判断</p>
+<h3 id="slice传参"><a href="#slice传参" class="headerlink" title="slice传参"></a>slice传参</h3><p>在我们把slice作为参数传递出去的时候，传的是<strong>值</strong>，这也就是为什么我们在被调函数中对数组进行append，在主调函数中看不到这个变化。但是如果直接通过下标的方式对slice进行修改，那么是可以反映到主调函数中的(因为下标修改是直接对底层的数组进行修改)</p>
+<p>准确的来说，go中所有的参数传递，都是值传递，并没有引用传递，那有的同学可能就疑惑了，我传递map的话不是在被调函数中的改变可以反映到主调函数中吗？</p>
+<p>因为进行函数调用的时候，slice类型会调用runtime.makeslice函数，这个函数的返回值类型是值，而map类型会调用runtime.makemap函数，这个函数的返回值类型是一个指针</p>
+<h3 id="slice的扩容过程"><a href="#slice的扩容过程" class="headerlink" title="slice的扩容过程"></a>slice的扩容过程</h3><p>网上流传的版本是:当slice容量小于1024的时候，每次扩容翻倍，在1024长度之后，每次扩容1.25倍，而在1.18版本之后变为了，当容量小于256的时候，扩容为两倍，超过256，newcap&#x3D;oldcap+(oldcap+3*256) &#x2F;4</p>
+<p>这个说法不对，或者说只对了一半</p>
+<p>go 1.9.5源码</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// go 1.9.5 src/runtime/slice.go:82</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">growslice</span><span class="params">(et *_type, old slice, <span class="built_in">cap</span> <span class="type">int</span>)</span></span> slice &#123;</span><br><span class="line">    <span class="comment">// ……</span></span><br><span class="line">    newcap := old.<span class="built_in">cap</span></span><br><span class="line">	doublecap := newcap + newcap</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">cap</span> &gt; doublecap &#123;</span><br><span class="line">		newcap = <span class="built_in">cap</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> old.<span class="built_in">len</span> &lt; <span class="number">1024</span> &#123;</span><br><span class="line">			newcap = doublecap</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">for</span> newcap &lt; <span class="built_in">cap</span> &#123;</span><br><span class="line">				newcap += newcap / <span class="number">4</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//</span></span><br><span class="line">	<span class="comment">//内存对齐 </span></span><br><span class="line">	capmem = roundupsize(<span class="type">uintptr</span>(newcap) * ptrSize)</span><br><span class="line">	newcap = <span class="type">int</span>(capmem / ptrSize)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>go 1.18源码</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// go 1.18 src/runtime/slice.go:178</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">growslice</span><span class="params">(et *_type, old slice, <span class="built_in">cap</span> <span class="type">int</span>)</span></span> slice &#123;</span><br><span class="line">    <span class="comment">// ……</span></span><br><span class="line">    newcap := old.<span class="built_in">cap</span></span><br><span class="line">	doublecap := newcap + newcap</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">cap</span> &gt; doublecap &#123;</span><br><span class="line">		newcap = <span class="built_in">cap</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">const</span> threshold = <span class="number">256</span></span><br><span class="line">		<span class="keyword">if</span> old.<span class="built_in">cap</span> &lt; threshold &#123;</span><br><span class="line">			newcap = doublecap</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">for</span> <span class="number">0</span> &lt; newcap &amp;&amp; newcap &lt; <span class="built_in">cap</span> &#123;</span><br><span class="line">                <span class="comment">// Transition from growing 2x for small slices</span></span><br><span class="line">				<span class="comment">// to growing 1.25x for large slices. This formula</span></span><br><span class="line">				<span class="comment">// gives a smooth-ish transition between the two.</span></span><br><span class="line">				newcap += (newcap + <span class="number">3</span>*threshold) / <span class="number">4</span></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> newcap &lt;= <span class="number">0</span> &#123;</span><br><span class="line">				newcap = <span class="built_in">cap</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">    </span><br><span class="line">	<span class="comment">//内存对齐</span></span><br><span class="line">	capmem = roundupsize(<span class="type">uintptr</span>(newcap) * ptrSize)</span><br><span class="line">	newcap = <span class="type">int</span>(capmem / ptrSize)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果只看前半部分，那么网上的各种文章说的是对的，现实是，后半部分还对newcap做了一个内存对齐，这个和内存分配策略有关，进行内存对齐之后，新slice的容量&gt;&#x3D;未进行内存对齐之前的cap</p>
+<h3 id="new和make的区别"><a href="#new和make的区别" class="headerlink" title="new和make的区别"></a>new和make的区别</h3><p>首先new和make都是Go内置的用来分配内存的函数，区别是make用来给slice map channel等引用类型分配内存，返回值是一个值类型，而new用来给数组、结构体值类型来分配内存，后者返回值是一个指针</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/03/Go-web%E4%B8%8EContent-Type/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/11/03/Go-web%E4%B8%8EContent-Type/" class="post-title-link" itemprop="url">Go web与Content-Type</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-11-03 22:07:05 / 修改时间：23:01:41" itemprop="dateCreated datePublished" datetime="2022-11-03T22:07:05+08:00">2022-11-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Go/" itemprop="url" rel="index"><span itemprop="name">Go</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Go-web与Content-Type"><a href="#Go-web与Content-Type" class="headerlink" title="Go web与Content-Type"></a>Go web与Content-Type</h1><p>首先要对http的工作方式有一定的了解，这里默认大家都会。这里只是随手写了点东西记录一下Content-Type的类型和内容。</p>
+<h3 id="http请求与响应"><a href="#http请求与响应" class="headerlink" title="http请求与响应"></a>http请求与响应</h3><p>http request的具体组成</p>
+<ul>
+<li>请求行：请求类型+url+协议版本</li>
+<li>请求头:Host(表明请求目的地 主机域名) User-Agent(客户端的信息 由浏览器定义) Content-Type Content-Length等等</li>
+<li>空行</li>
+<li>请求体：实体数据</li>
+</ul>
+<p>http response的具体组成</p>
+<ul>
+<li>状态行：由协议版本号、状态码和状态消息组成</li>
+<li>响应头： 客户端可以使用的一些信息 比如Date Content-Type Connection(是否为长链接) 等等</li>
+<li>空行</li>
+<li>响应体：实体数据</li>
+</ul>
+<h3 id="net-x2F-http"><a href="#net-x2F-http" class="headerlink" title="net&#x2F;http"></a>net&#x2F;http</h3><p>这个库里面主要是与http相关的一些API，可以分为客户端和服务端两个部分</p>
+<ul>
+<li>服务端相关：server serverMux Handler&#x2F;HandlerFunc</li>
+<li>客户端相关: client response header request cookie</li>
+</ul>
+<p>具体过程如下</p>
+<p><img src="/2022/11/03/Go-web%E4%B8%8EContent-Type/1.png"></p>
+<p>首先服务端创建Listen Socket监听指定的端口，等待客户端请求到来，之后Listen socket接受客户端的请求，得到Client Socket，通过这个socket和客户端进行通信；每次处理客户端的请求时，首先从Client Socket读取HTTP协议头，如果是POST可能还要读取数据，然后交给相应的Handler处理，处理完毕之后准备好客户端需要的数据，通过Client Socket写回给客户端。</p>
+<p>ListenAndServe函数的具体流程</p>
+<ul>
+<li>监听某个端口  如果有新连接进来 创建一个goroutine处理新的连接 </li>
+<li>在goroutine中 将请求和响应分别封装为http.Request和http.ResponseWriter对象，将这两个对象作为参数传递给server.Handler的serveHTTP,这个server.handler就是listenandserve函数的参数(http.servemux)</li>
+<li>查找http.Request对象的url(在servemux中的map中进行) 然后执行</li>
+<li>监听之后内部有一个for循环不断接受请求，每个请求创建一个conn,最后创建一个goroutine</li>
+</ul>
+<h3 id="Content-Type初识"><a href="#Content-Type初识" class="headerlink" title="Content-Type初识"></a>Content-Type初识</h3><p>Content-Type 是http的首部字段，用于说明请求或者返回的消息body是以何种方式进行编码，在request header和response header里都存在，网页通过这个类型定义网络文件的类型和网页的编码，决定浏览器将以什么形式、什么编码读取这个文件。</p>
+<p>常见的媒体格式类型如下</p>
+<ul>
+<li>text&#x2F;html html格式</li>
+<li>text&#x2F;plain 纯文本格式</li>
+<li>text&#x2F;xml xml格式</li>
+<li>text&#x2F;gif gif图片格式</li>
+<li>text&#x2F;jpeg jpg图片格式</li>
+<li>text&#x2F;png png图片格式</li>
+</ul>
+<p>以application开头的媒体格式类型</p>
+<ul>
+<li>application&#x2F;xhtml+xml XHTML格式</li>
+<li>application&#x2F;xml XML格式</li>
+<li>application&#x2F;atom+xml Atom XML聚合格式</li>
+<li>application&#x2F;json JSON数据格式</li>
+<li>application&#x2F;pdf pdf格式</li>
+<li>application&#x2F;msword Word文档格式</li>
+<li>application&#x2F;octet-stream 二进制数据流格式</li>
+<li>application&#x2F;x-www-form-unlencoded 表单默认的提交数据格式(被编码为key&#x2F;value的格式)</li>
+</ul>
+<p>另一种常见的媒体格式的上传文件之时使用的</p>
+<ul>
+<li>multipart&#x2F;form-data 需要在表单中进行文件上传时，就需要使用到这个格式</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/31/Go%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1124,230 +1370,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/11/ssh%E7%99%BB%E5%BD%95%E5%8F%8A%E5%8E%9F%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="安妮的心动录">
-      <meta itemprop="description" content="永远不要高估自己">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="安妮的心动录的园子">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/10/11/ssh%E7%99%BB%E5%BD%95%E5%8F%8A%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">ssh登录及原理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-10-11 19:14:16" itemprop="dateCreated datePublished" datetime="2022-10-11T19:14:16+08:00">2022-10-11</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-10-12 21:22:33" itemprop="dateModified" datetime="2022-10-12T21:22:33+08:00">2022-10-12</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="ssh登录及原理"><a href="#ssh登录及原理" class="headerlink" title="ssh登录及原理"></a>ssh登录及原理</h1><p>​	首先我们都知道ssh是一个远程授权的协议，通过ssh可以进行一些远程登录等操作，而scp就是在连接上远端服务器的ssh后有启动了一个scp进程，通过操作系统的stdin和stdout进行数据通信。</p>
-<p>​	而火热的xshell和xftp其实就是对这两个命令的封装，xshell用来远程登录，xftp用来远程传输文件。</p>
-<p>​	在ssh之前，其实就有一些能够实现远程登录的方式了，比如telnet（终端仿真协议），rcp(scp就是对rcp的升级），ftp等，但它们都是不安全的，并且会用明文传输密码，即使在私网上也有篡改和窃取的风险。</p>
-<p>​	传统的远程服务如ftp很容易受到中间人攻击，所谓中间人就是存在另一台机器冒充真正的服务器接收用户传给服务器的数据，然后再冒充用户将</p>
-<p>​	 ssh:secure shell 是由IETF制定的建立在应用层基础上的安全网络协议，专为远程登录会话和其他网络服务提供安全性的协议，通过SSH可以将所有传输的数据进行加密（RSA），同时能防止DNS欺骗和IP欺骗，并且数据经过压缩，可以加快传输的速度。</p>
-<p>​	 </p>
-<h5 id="ssh组成"><a href="#ssh组成" class="headerlink" title="ssh组成"></a>ssh组成</h5><ol>
-<li>传输层协议  【SSH-TRANS】： 这部分提供了服务器认证，保密性及完整性，此外它还能够提供压缩功能，SSH-TRANS通常运行在TCP&#x2F;IP智商，也可能用于其他可靠的数据流上，TRANS提供了强力的加密技术、密码主机认证及完整性保护</li>
-<li>用户认证协议：用于向服务器提供客户端用户鉴别功能，运行在运输层协议上，从低层协议接受会话标识符</li>
-<li>连接协议：将多个加密隧道分成逻辑通道，运行在用户认证智商，提供交互式登录话路、远程命令执行。转发TCP IP连接等</li>
-</ol>
-<h5 id="ssh协议的具体实现："><a href="#ssh协议的具体实现：" class="headerlink" title="ssh协议的具体实现："></a>ssh协议的具体实现：</h5><ul>
-<li>服务器建立公钥，每次启动sshd服务时，sshd会主动去找&#x2F;etc&#x2F;ssh&#x2F;ssh_host*文件，如果系统刚创建还没有这些文件，那么sshd会主动计算出这些公钥，同时也会计算出自己需要的私钥</li>
-<li>客户端主动联机请求，如果客户端想要联机到ssh服务器，需要一个客户端程序，比如已经可以使用ssh的shell或者xshell这种使用了ssh的应用程序</li>
-<li>服务器传输公钥给客户端，在拿到客户端请求之后，服务器把公钥给客户端</li>
-<li>客户端记录并比对服务器公钥的数据，如果是第一次连接，则会把服务器公钥记录下来，如果不是第一次连接，则会去对比之间的记录，查看是否有差异。如果没有问题，客户端会接受这个公钥，然后开始计算客户端自己的公钥和私钥</li>
-<li>客户端计算出自己的公钥和私钥会后回传给服务器，此时服务器就具有了服务器的私钥和客户端的公钥，客户端就有了服务器的公钥和客户端的私钥，开始非对称加密</li>
-</ul>
-<h5 id="ssh两种级别的验证方法"><a href="#ssh两种级别的验证方法" class="headerlink" title="ssh两种级别的验证方法"></a>ssh两种级别的验证方法</h5><ul>
-<li>第一级（基于口令）：只要知道账号和口令，就能够登录到远程主机。所有的传输数据都会被加密，但不能保证连接的服务器是真实想要连接的服务器</li>
-<li>第二级（基于密钥）：客户端需要为自身创建一对密钥，并把公钥放在需要访问的服务器上，如果要连接到ssh服务器，客户端会向服务器发出请求，需要用密钥进行安全验证。服务器收到之后，在目录下寻找保存的客户端公钥，再与现在客户端发过来的公钥进行对比。如果两个密钥一致，服务器就会用这个密钥加密“chanllenge”并发送回客户端，客户端收到之后用自己的私钥解密，然后再发送给服务器完成登录。（显然安全性比第一级高）</li>
-</ul>
-<h5 id="ssh和scp命令格式"><a href="#ssh和scp命令格式" class="headerlink" title="ssh和scp命令格式"></a>ssh和scp命令格式</h5><p>ssh 登录远程服务器</p>
-<p>ssh username@ip</p>
-<p>然后输入密码</p>
-<p>scp从远程复制文件</p>
-<p>&#x2F;&#x2F;传输一个文件</p>
-<p>scp username@ip:remotefile file</p>
-<p>&#x2F;&#x2F;传输一个目录</p>
-<p>scp -r username@ip:remotefile file </p>
-<p>如果需要用scp将本地文件复制到远程 只要将命令格式反过来就行</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/10/09/%E7%A7%81%E7%BD%91%E5%8F%8ANAT%E5%8D%8F%E8%AE%AE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="安妮的心动录">
-      <meta itemprop="description" content="永远不要高估自己">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="安妮的心动录的园子">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/10/09/%E7%A7%81%E7%BD%91%E5%8F%8ANAT%E5%8D%8F%E8%AE%AE/" class="post-title-link" itemprop="url">私网及NAT协议</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-10-09 23:00:51" itemprop="dateCreated datePublished" datetime="2022-10-09T23:00:51+08:00">2022-10-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-10-12 21:20:33" itemprop="dateModified" datetime="2022-10-12T21:20:33+08:00">2022-10-12</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.3k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="私网及NAT协议"><a href="#私网及NAT协议" class="headerlink" title="私网及NAT协议"></a>私网及NAT协议</h1><p>在构建局域网时，通常局域网内部要使用私有IP地址，而管理员可以根据需求，选择一类、二类、三类的私有地址，这种私有地址我们一般称作私网地址，和公网相对，是没有真正连接到互联网上的。A B C三类网络都有一小块地址供全世界各地建设局域网使用，也就是每个企业都可以用私网，不同局域网的私网地址对应的主机是不一样的，这样就能够有效解决IPV4地址不足的问题。</p>
-<p>私网地址分别为：</p>
-<ul>
-<li>A类 10.0.0.0~10.255.255.255</li>
-<li>B类 172.16.0.0~172.31.255.255</li>
-<li>C类 192.168.0.0~192.168.255.255</li>
-</ul>
-<p>不难看出来A类私网网址是B类数量的16倍，而B类又是C类数量的16倍，C类私网网址的数量为2^16，已经足够大部分的公司或企业进行IP地址的分配了，如果是特大型系统，也可以考虑使用A类或者B类，不过现实中这种情况比较少，所以我们看到的私网IP地址通常都是192.168开头的。</p>
-<p>同时我们还要将私网与公网的关系和内网和外网的关系区分开来，</p>
-<p>私网和公网是通过IP地址进行区分的，从特征上看私网IP并没有连接到互联网上，只是通过NAT协议在路由器层面连接到互联网，也就是一个局域网中的所有私网IP，对外看来是一致的，对方并不知道你是私网，也不知道你有多少台主机。而公网就是真正接入到互联网中的，我们可以通过网络对公网资源进行访问。</p>
-<p>而内网和外网对应的是防火墙这个概念，在防火墙内的网络我们称之为内网，防火墙外的网络则为外网。我们常说的梯子，翻墙等就是通过这些工具暴露出来的接口（通常是socks5）的代理接口，翻越了国家防火墙（GFW）的限制，与国家防火墙外的代理服务器进行通讯。</p>
-<p>那么私网中的计算机是如何访问到局域网之外的网络的呢？这就需要利用到NAT协议（网络转换协议）</p>
-<p>NAT；NetWork Address Translation 在IP数据包通过路由器或者防火墙的时候重写来源IP地址或者目的IP地址的技术</p>
-<p>典型情况</p>
-<p>一个私有网络比如192.168.xx.xx和连接在这个网络上的一个路由器，路由器占用这个网络地址空间的一个专有地址，同时通过一个ISP提供的IP地址连接到因特网上，当信息从本地向互联网传递的时候，源地址从私有地址转换成公钥地址</p>
-<p>缺点：一个具有NAT功能的路由器下的主机并没有创建真正的IP地址，因此不能参与某些因特网协议</p>
-<p>优点：NAT能够减少IP地址不足的情况，使用方便。成本较低，并且可以阻止网络上的部分恶意活动</p>
-<p>那么路由器是怎么知道哪个主机发送给外界消息的呢？当路由器接收到响应的时候，它又是怎么知道该转发给哪台主机的呢？</p>
-<p>在一个私网IP的主机发送给NAT路由器消息的时候，路由器记录了它的内网地址和端口，并且分配给他一个全局地址和全局端口，这个地址关系记录在NAT路由表中，之后按照目的地址发送给服务器，一段时间后服务器响应，那么路由器根据目的地址和端口按照路由表转换成对应的主机地址，再发送给主机。简单来说就是有两次映射，针对出境包源地址进行替换，在NAT路由表中记录映射关系，针对入境包进行地址替换，找到对应的主机。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1419,7 +1441,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1432,7 +1454,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-count">23</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1479,12 +1501,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">112k</span>
+    <span title="站点总字数">130k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:42</span>
+    <span title="站点阅读时长">1:58</span>
 </div>
 
 

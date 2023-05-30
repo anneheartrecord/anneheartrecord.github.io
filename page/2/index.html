@@ -169,6 +169,292 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/27/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%BC%82%E5%9C%B0%E5%A4%9A%E6%B4%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/27/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%BC%82%E5%9C%B0%E5%A4%9A%E6%B4%BB/" class="post-title-link" itemprop="url">深入理解异地多活</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-27 22:18:25 / 修改时间：22:22:51" itemprop="dateCreated datePublished" datetime="2023-03-27T22:18:25+08:00">2023-03-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%90%8E%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">后端</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="系统性能三指标"><a href="#系统性能三指标" class="headerlink" title="系统性能三指标"></a>系统性能三指标</h1><p>要想理解异地多活，我们需要从架构设计的原则说起</p>
+<p>现如今，我们开发一个软件系统，对其要求越来越高，一个好的软件架构应该遵循以下3个原则：</p>
+<ol>
+<li>高性能</li>
+<li>高可用</li>
+<li>易扩展</li>
+</ol>
+<ul>
+<li>高性能：系统拥有更大流量的处理能力，同时接口返回的速度应该尽可能的快。</li>
+<li>易扩展：系统在迭代新功能的时候，能够以最小的代价去扩展，系统遇到流量压力的时候，可以在不改动代码的前提下去扩容系统。</li>
+<li>高可用：通常由两个指标来衡量，分别是平均故障时间和故障恢复时间</li>
+</ul>
+<p>不同的软件，不同阶段的公司，产品开发的不同阶段，对这些指标的要求是不一样的：比如一个初创公司，这个时候用户、流量最重要，开发功能，让页面尽可能美观，做产品比其他指标更重要；当流量上来了之后，怎么尽可能缩短响应时间，让系统能处理的QPS更大，就成了至关重要的问题；当产品使用的人数足够多，影响力足够大，可用性的重要就凸现出来了，怎么保证系统尽可能稳定，不出问题，对于公司来说才是最重要的。</p>
+<p>系统发生故障是不可避免的，尤其是规模越大的系统，互相之间的调用也更加复杂，对于硬件的要求也越高，从理论上来说发生问题的概率也越大。这些故障一般提现在3个方面：</p>
+<ol>
+<li>硬件故障：CPU 内存 磁盘 网卡 交换机 路由器</li>
+<li>软件问题：代码BUG 版本迭代 线上故障等等</li>
+<li>不可抗力：地震 水灾 火灾  战争</li>
+</ol>
+<p><img src="/2023/03/27/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%BC%82%E5%9C%B0%E5%A4%9A%E6%B4%BB/1.png" alt="img"></p>
+<p>我们通常用N个9来表示系统的可用性高不高，从数据上能看出来，越到后面系统可用性带来的平均受益是越小的，但是难度是指数级别上升的。我们平常写的小玩具和企业级的应用差别也无非是这几个方面：高并发、高性能、高可用。</p>
+<p>这些风险随时都有可能发生，所以在面对故障的时候，系统能否以【最快】的速度恢复，就成了可用性的关键。</p>
+<p>如何做到快速恢复呢？</p>
+<p><strong>异地多活</strong>就是为了解决这个问题，而提出的高效解决方案</p>
+<h1 id="单机房"><a href="#单机房" class="headerlink" title="单机房"></a>单机房</h1><h2 id="单机"><a href="#单机" class="headerlink" title="单机"></a>单机</h2><p><img src="/2023/03/27/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%BC%82%E5%9C%B0%E5%A4%9A%E6%B4%BB/2.png" alt="img"></p>
+<p>客户端请求先进来，业务应用读写数据库，返回结果</p>
+<p>这里的数据库是单机部署的，所以有一个致命的缺点：一旦遭遇意外，例如磁盘损坏、操作系统异常、误删数据，这意味着所有数据就全部【丢失】了，这个损失是巨大的</p>
+<h2 id="备份"><a href="#备份" class="headerlink" title="备份"></a>备份</h2><p>我们可以对数据做备份，将数据库文件【定期】copy到另一台机器上，这样即使原机器丢失数据，依旧可以通过备份把数据【恢复】回来，以此保证数据安全</p>
+<p>这个方案实施起来虽然比较简单，但存在两个问题</p>
+<ol>
+<li>恢复需要时间：业务需要先停机，在恢复数据，这段时间服务是不可用的，对于一个系统来说这显然不能忍受</li>
+<li>数据不完整：因为是定期备份，数据肯定不是最新的，会有丢数据的风险。这里补充一句，其实现代系统想要做到数据实时强一致性，几乎是不可能的</li>
+</ol>
+<h2 id="主从"><a href="#主从" class="headerlink" title="主从"></a>主从</h2><p><img src="/2023/03/27/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%BC%82%E5%9C%B0%E5%A4%9A%E6%B4%BB/3.png" alt="img"></p>
+<p>可以在另一台机器上，再部署一个数据库实例，成为这个原实例的副本，让两者保持【实时同步】，这里的实时同步要打上引号，因为两台机器有网络隔离，永远不可能真正的实时同步，比如当主库写一条数据，还没同步的时候就宕机了，这个时候从库就会有丢数据的可能。</p>
+<p>我们一般把原实例称为主库（master），新实例称作从库（slave），这个方案的优点在于</p>
+<ul>
+<li>数据完整性高：主从副本实时同步，数据差异很小</li>
+<li>抗故障能力提升：主库有任何异常，从库可以随时切换为主库，继续提供服务</li>
+<li>读性能提示：从库可以直接用来读</li>
+</ul>
+<h2 id="主从-多机器"><a href="#主从-多机器" class="headerlink" title="主从+多机器"></a>主从+多机器</h2><p>同样的，业务应用也也可以在其他机器部署一份，避免单点。因为业务应用通常是【无状态】的，这里的无状态很好理解，业务代码的逻辑部分（除去数据库的部分），在什么机器上都能跑，且不会对机器造成持久化的影响，不像数据库一样存储数据，所以直接部署即可，非常简单。</p>
+<p><img src="/2023/03/27/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%BC%82%E5%9C%B0%E5%A4%9A%E6%B4%BB/4.png" alt="img"></p>
+<p>因为业务应用部署了多个，所以现在还需要一个接入层，来做请求的负载均衡，一般是用nginx或者是lvs，这样当一台机器宕机之后，另一台机器也可以【接管】所有流量，持续提供服务。</p>
+<p><img src="/2023/03/27/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%BC%82%E5%9C%B0%E5%A4%9A%E6%B4%BB/5.png" alt="img"></p>
+<h2 id="提高可用性的核心思想"><a href="#提高可用性的核心思想" class="headerlink" title="提高可用性的核心思想"></a>提高可用性的核心思想</h2><p>从这些方案可以看出，提升可用性的关键思路就是：<strong>冗余</strong></p>
+<p>担心一个实例故障，那就部署多个实例；担心一个机器宕机，那就部署多台机器；担心一个数据库可能会崩然后丢数据，那就多整几个数据库；这种冗余的思想放在机房层面，就产生了同城灾备、同城双活等方案；放在城市层面，就产生了两地三中心、异地双活、异地多活等方案</p>
+<p>以上说的方案还是有缺点的，因为应用虽然部署了多台机器，但是这些机器的分布情况，我们并没有去深究。</p>
+<p>而一个机房有很多服务器，这些服务器通常会分布在一个个【机柜】上，如果使用的机器刚好在一个机柜，还是存在风险。</p>
+<p>如果恰好链接这个机柜的交换机&#x2F;路由器发生故障，那么你的应用依旧有【不可用】的风险</p>
+<p>哪怕是在不同机柜上，依旧会有风险，因为它们始终还是属于一个机房。</p>
+<p>机房的故障率从现实角度来分析其实真的很低，建设一个机房的要求是很高的，地理位置、温湿度控制、备用电源等等。机房厂商会在各方面做好防护，但即使这样，还是有以下事故</p>
+<ul>
+<li>15年支付宝因为光纤被挖断，5小时无法访问支付宝</li>
+<li>21年b站服务器着火，3小时无法访问</li>
+<li>21年富途证券服务器断电，2小时无法访问</li>
+</ul>
+<p>可见，哪怕机房级别的防护已经做的足够好，但只要有概率出现问题，那现实情况就有可能发生。虽然概率很小，但一旦发生，就会造成重大损失。</p>
+<p>像前文所说的一样，不同体量的系统，关注的重点是不一样的。小系统关注的重点是用户，这个阶段用户的规模、增长就是一切。在用户体量上来之后，会重点关注性能，优化接口响应时间，接口打开速度等等。这个阶段更多的是关注用户体验，而体量再大下去，可用性就会变得尤为重要。像微信、支付宝这种全民级别的应用，如果机房发生一次故障，那么影响和损失都是巨大的</p>
+<p>我们该如何应对机房级别的故障呢？没错，还是冗余</p>
+<h1 id="多机房"><a href="#多机房" class="headerlink" title="多机房"></a>多机房</h1><h2 id="同城灾备"><a href="#同城灾备" class="headerlink" title="同城灾备"></a>同城灾备</h2><p>简单起见，可以在同一个城市再搭建一个机房，原机房为A，新机房为B，这两个机房的网络用一条【专线】连通。</p>
+<p><img src="/2023/03/27/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%BC%82%E5%9C%B0%E5%A4%9A%E6%B4%BB/6.png" alt="img"></p>
+<p>为了避免A机房故障导致数据丢失，所以我们需要把数据在B机房也做【定时备份】。这种方案，我们成为【冷备】。因为B机房只做备份，不提供服务，只有在A机房故障的时候才会弃用。</p>
+<p>或者可以把AB之间的关系换成主从的关系，这样不仅能提高系统吞吐量，也能够更加保证数据的完整性</p>
+<p><img src="/2023/03/27/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%BC%82%E5%9C%B0%E5%A4%9A%E6%B4%BB/7.png" alt="img"></p>
+<p>在这个方案的设想中，如果A机房真挂掉了，要想保证服务不中断，还需要做这些事情</p>
+<ol>
+<li>B机房所有从库升级成主库</li>
+<li>在B机房部署应用，启动服务</li>
+<li>部署接入层，配置转发规则</li>
+<li>DNS指向B机房接入层，接入流量，业务恢复</li>
+</ol>
+<p>整个过程的每一步需要人为介入，且需要花费大量时间，回复之前整个服务还是不可用的，如果想要做到故障之后立即【切换】，就需要考虑下面这种架构</p>
+<p><img src="/2023/03/27/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%BC%82%E5%9C%B0%E5%A4%9A%E6%B4%BB/8.png" alt="img"></p>
+<p>这样的话，A机房整个挂掉，我们只需要做两件事</p>
+<ol>
+<li>B机房所有从库提升为主库</li>
+<li>DNS指向B机房接入层，接入流量，业务回复</li>
+</ol>
+<p>这种方案我们叫【热备】，热备相比于冷备的最大优点是随时可切换，不同点有需要多加一层应用层和接入层，同时数据库层面的定时备份变成了实时备份，这些都是需要额外开销的。我们把这两个方案统称为：同城灾备</p>
+<p>同城灾备的最大优势在于，我们不用担心【机房】级别的故障了，一个机房发生风险，我们只需要把流量切换到另一个机房，当然这不一定会没有问题，比如冷备的问题是之前的备用系统没有经过流量的测试，不一定能扛得住；热备也是，瘫了一个主系统，那么备用系统的压力范围，也不一定能抗住。</p>
+<h2 id="同城双活"><a href="#同城双活" class="headerlink" title="同城双活"></a>同城双活</h2><p>虽然有了应对机房故障的解决方案，但是有个问题是不能忽略的：A机房挂掉，全部流量切到B机房，B机房是否真的能如我们所愿，正常提供服务？</p>
+<p>另外从成本的角度上看，我们新部署一个机房，需要购买很多硬件资源，花费成本也是非常高昂的，如果只是放在那里不去使用，是很浪费资源的一种表现。</p>
+<p>因此我们需要让B机房也接入流量，实时提供服务</p>
+<p>只需要把B机房的接入层IP地址，加入到dns服务中，这样B机房从上层就可以有流量进来了</p>
+<p><img src="/2023/03/27/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E5%BC%82%E5%9C%B0%E5%A4%9A%E6%B4%BB/9.png" alt="img"></p>
+<p>这里有一个新问题：B机房的存储都是从库，而从库默认都是不可写的，也就是说B机房是处理不了写请求的。这个问题就应该在业务应用层解决，需要区分读写分离，一般是通过中间件实现，写流量给A机房，读流量可以给两个机房</p>
+<p>这种架构有什么问题呢？</p>
+<h2 id="两地三中心"><a href="#两地三中心" class="headerlink" title="两地三中心"></a>两地三中心</h2><p>因为把两个机房当成一个整体来规划，如果是一个城市的话，当整个城市发生自然灾害的时候，例如地震、水灾，那么依旧可能有【全局覆没】的风险</p>
+<p>这个时候就可以将备份机房放在另一个城市</p>
+<p>两地三中心就是指两个城市，三个机房，其中2个机房在同一个城市，并且同时提供服务，第三个机房部署在异地，制作数据灾备。</p>
+<p>这种架构方案，通常用在银行、金融、政企相关的项目中，问题还是启用后的服务，不确定能否如期工作。</p>
+<p>所以想要真正抵御城市级别的故障，越来越多的互联网公司，开始实施【异地双活】</p>
+<h2 id="异地双活"><a href="#异地双活" class="headerlink" title="异地双活"></a>异地双活</h2><p>主要问题是跨机房的延迟调用，当B地的应用去跨区域读写A地的存储，网络延迟就会让整个请求变得非常慢。而要解决这个问题，就必须在存储层做改造了。</p>
+<p>B机房的存储不再是从库，而也要变为主库，同时两个机房的数据还要【互相同步】，无论客户端写哪一个机房，都要把数据同步到另一个机房。因为只有两个机房都拥有全量数据，才能支持任意切换机房，持续提供服务。MySQL本身是提供了双主架构的，支持双向数据复制，但平时用的不多。而且Redis、mongoDB等数据库是没有这个功能的，所以必须开发对应的【数据同步中间件】来实现双向同步的功能。</p>
+<p>除了数据库这种有状态的软件之外，通常还会用到消息队列，例如rabbitMQ，kafka等，这些也是有状态的服务，所以它们也需要开发双向同步的中间件，支持任意机房写入数据，同步至另一个机房</p>
+<p>业界开源出了很多数据同步中间件，例如阿里的canal、redisshake、mongoshake，可分别在两个机房同步MySQL、REDIS、MONGODB数据</p>
+<p>这样的话有一个新的问题，两个机房都可以写，如果操作的是同一条数据，就很容易发生竞态的问题</p>
+<p>分别有两个方案</p>
+<ol>
+<li>消息同步中间件要有自动解决数据的能力，区分出操作的先后顺序</li>
+<li>从源头避免数据冲突的发生</li>
+</ol>
+<p>一般都是采用第二种方案：在最上层接入流量的时候，就不要让冲突的情况发生。</p>
+<p>具体来讲就是将用户区分开，部分用户请求固定达到北京机房，其他用户请求固定打到上海机房。进入某个机房的用户请求，之后的所有业务操作，都在这一个机房内完成，从根源上避免【跨机房】。</p>
+<p>这时候需要在接入层之上，再部署一个路由层，自己配置路由规则，把用户分流到不同的机房内。</p>
+<p>一般来说有三种方式</p>
+<ul>
+<li>按业务类型分片，比如某个子域的请求固定全打在某个机房</li>
+<li>直接哈希分片，先对请求进行哈希，再对机房的数量进行取模，这样可以保证流量均匀分布到某个机房，但是对于某些请求来说可能速度会慢，比如一个新疆的请求，打到了广州机房，网络延迟就会比打在西安机房大</li>
+<li>按地理位置分片，请求只会打在距离自己最近的机房，处理请求的速度快，但是流量不均匀</li>
+</ul>
+<h2 id="异地多活"><a href="#异地多活" class="headerlink" title="异地多活"></a>异地多活</h2><p>把异地双活的思想推到多个城市，部署多个机房</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/04/%E6%88%91%E7%9A%84%E6%9C%AC%E7%A7%91%E5%89%8D%E5%8D%8A%E7%94%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/04/%E6%88%91%E7%9A%84%E6%9C%AC%E7%A7%91%E5%89%8D%E5%8D%8A%E7%94%9F/" class="post-title-link" itemprop="url">我的本科前半生</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-04 23:33:56 / 修改时间：23:48:31" itemprop="dateCreated datePublished" datetime="2023-03-04T23:33:56+08:00">2023-03-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%84%9F%E6%82%9F%E5%8F%8A%E8%AE%A4%E7%9F%A5/" itemprop="url" rel="index"><span itemprop="name">感悟及认知</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我是一个很喜欢用文字记录生活与想法的人，但是由于文字功底太弱，这些文字大多都躺在我的备忘录和废纸篓里。<br>      昨天看到了一个我很尊敬的学长写的一篇博文，深有所感。于是想写一些东西，记录一下大学这两年的一些经历，感悟和想法。部分内容摘自<a target="_blank" rel="noopener" href="http://www.cbb777.fun/2023/02/24/%E5%AE%9E%E4%B9%A0%E6%B1%82%E8%81%8C%E6%80%BB%E7%BB%93/">实习求职总结</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.cbb777.fun/2023/03/04/%E6%88%91%E7%9A%84%E6%9C%AC%E7%A7%91%E5%89%8D%E5%8D%8A%E7%94%9F/">我的本科前半生</a></p>
+<h1 id="大一"><a href="#大一" class="headerlink" title="大一"></a>大一</h1><p>20年9月16日，我独自坐上了从景德镇到南昌的动车，在体验过人生的第一次地铁和第一次飞机之后，在晚上十一点抵达了重庆。当时订的酒店在机场附近有一个总店一个分店，很不幸，我订的是总店但是不小心跑到分店去了。当时下着淅淅沥沥的小雨，我背着我的电脑包和双肩包走在凌晨的大街上，忽然觉得有些冷，那晚我把QQ签名改成了“希望生活别把我揍的太惨”。<br><img src="/2023/03/04/%E6%88%91%E7%9A%84%E6%9C%AC%E7%A7%91%E5%89%8D%E5%8D%8A%E7%94%9F/1.png" alt="image.png"><br>        进入大学后，我并没有选择松懈。<strong>我觉得人就是这样，越长大要承受的东西只会越来越多，万万没有变轻松的道理，中学比小学难熬，大学比中学难熬，进了社会比在学校难熬。</strong>我选择了在报道的第二天就一头扎进了图书馆，并在一个礼拜内速通了《高等数学上》及《线性代数》的大部分内容。开学之后没多久就放国庆了，但是国庆我也没有闲着，在之后的几个礼拜我又陆陆续续的把《C语言程序设计》学完了，当时真的非常幼稚，一有问题就在群里问，一有看不懂的代码就直接打包让当时的C语言志愿者帮忙看，完全不知道这是一种多么不负责任的行为，现在想想真的是愧怍万分。<br>        当时其实完全没有思考过自己到底想在大学里面干什么事情，在毕业的时候成为什么样的人，只顾着努力学东西。我只是把高中的那一套东西复用在大学里了，打算成为班里面的尖子，然后争取保研，但是我真的需要一个硕士学位吗？<br>        <strong>这何尝不是一种懒惰呢？还没有确定明确的目标就慌不择路的随便选条路出发，现在回头看看只觉这是在用战术上的勤奋来掩盖战略上的懒惰罢了。</strong><br>        大概是十一月初，我大学生活最重要的一个转折点来了。我去参加了当时我们学院的优秀就业生宣讲，第一个宣讲人是胡仓学长，也是一个很厉害很厉害的学长，在听完他的经历之后我花了一下午仔细思考了之后的规划，最终决定不读研了，本科毕业直接就业。这个决定其实并没有得到家人和朋友的支持，但我并没有动摇我的想法，人生总得自己去体验嘛。<br><img src="/2023/03/04/%E6%88%91%E7%9A%84%E6%9C%AC%E7%A7%91%E5%89%8D%E5%8D%8A%E7%94%9F/2.png" alt="image.png"><br>        之后我就很少去上课了，因为我觉得那些课程真的很浪费时间，大部分课程都是通识课，对就业可以说是毫无帮助，开设的少部分专业课，老师只是在念年纪比我都大的PPT，一节课一个半小时，我想如果自学的话也许花不了二十分钟就能把一节课的内容给学完。<br>        大一也没有确定好方向，同时也缺乏学习的方法论，基本上ACM、CTF、安全、后端、前端，这些方向我都尝试过，当时很多开发环境我都装不上，经常是一个环境装好几个小时，最后还是不了了之；除此之外刷了一些算法题也并没有体现出来效果。这对一个刚接触技术的小白来说打击太大了。加上当时其实对写代码根本说不上有什么兴趣，我很快就慢慢对写代码这件事情丧失了动力，但我又决定了本科毕业就业，于是乎我开始选择逃避现实了，几乎每天都窝在寝室里，不去上课也不做正事，每天看看小说刷视频打游戏。<strong>一边因为迷茫而焦虑，同时又缺乏自驱力和行动力，无法走出自己的舒适圈，我想这是很多大学生的问题。</strong></p>
+<h1 id="大二"><a href="#大二" class="headerlink" title="大二"></a>大二</h1><p><strong>我是一个很难因为自己而开心起来的人，我直到现在都没有找到真正能让我很开心的事情，我总觉得我存在的意义是为了周围的人，为了我的家人、伴侣和朋友。如果说取悦自己是一门课程的话，那我一定没有及格。</strong><br>        其实到现在我都不能理解为什么有人的开心能来的这么容易，我的好哥们会因为吃到好吃的而觉得开心，他可以为了吃专门跑出去一趟，我长这么大似乎都没有很喜欢很喜欢吃的东西，大部分食物都只是用来饱腹而已。<br>        这可能也和多巴胺能有关系，有的人就是很容易觉得幸福和满足，不需要出人头地，平平淡淡的生活已经能够让他们很开心很开心了。而有的人多巴胺能很强，对自己的现状很容易产生一种不满足的心理，这种人更容易取得一点成就，但是这一定就是好事吗？我并不觉得这种世俗意义上的成功和幸福感是有正相关性的。之前我一直希望我家的小孩能够好好读书，出人头地，大有作为；但现在我完全不这么想了，现在的小孩能活的开心的太少了，不需要有什么成就，开开心心的过一生就很好。<br>        <strong>如何经营好自己的生活、享受当下是我觉得我急需学习的一项技能。好消息是现在我已经迈出了第一步，我开始学画画、摄影、骑行、读书、分享自己的生活。</strong><br><img src="/2023/03/04/%E6%88%91%E7%9A%84%E6%9C%AC%E7%A7%91%E5%89%8D%E5%8D%8A%E7%94%9F/3.png" alt="AB205C830C36C9F4AB42E05364A29BBA.jpg"><br>        就像中学一样，我是因为不想让家人过于担心我的成绩才开始努力学习，最终完成逆袭的。在大二开始之前的那个暑假我认识了当时的爱人，因为恋爱的原因，我觉得自己不能再继续颓废下去了，当时刚好极客勤奋蜂工作室开启了Go学员的培训，为了通过工作室的考核，我开始把大一学过的东西慢慢捡起来，然后每天把大量的时间丢在写代码，学技术上面。<strong>不知道是不是我的性格如此，不管是什么东西，只要我花了足够多的时间，我就会慢慢的不排斥这件事甚至喜欢上它。</strong>每做完一个嘉文学长设置的project我都会更热爱代码一分，每划掉每日to-do list中的一项我的成就感就会多一分，在成就感和满足感积累之中，我慢慢的开始喜欢上技术了。我想也许就是这样吧，在大学我也读过几本心理学的书籍，<strong>满足感、成就感、被需要感是做某些事情的最佳动力了，同时，一个最可怜的人也一定不是缺少财富、权利、地位，而一定是不被需要。</strong><br><img src="/2023/03/04/%E6%88%91%E7%9A%84%E6%9C%AC%E7%A7%91%E5%89%8D%E5%8D%8A%E7%94%9F/4.png" alt="image.png"></p>
+<p><img src="/2023/03/04/%E6%88%91%E7%9A%84%E6%9C%AC%E7%A7%91%E5%89%8D%E5%8D%8A%E7%94%9F/5.png" alt="img"></p>
+<p>在21年年底的时候，我在QQ空间里面看到了有学长分享食铁兽招新的信息，然后加入了招新QQ群，22年1月13日，那时候我刚考完《数据结构》这门课，这也是那学期的最后一门考试，考完之后突如其来的约面了，那是我人生中的第一次技术面试，说实话答得很差，完全没有准备过八股，只能凭借平常做项目的一些实践经历答上来一部分问题，大概只答上来了一小半吧，因为是第一次面试，我的印象真的非常深刻，问的问题有Redis的持久化，Redis的数据结构，HTTP2的特性这些，面试官还和我讨论了一下Go的优劣和以后职业规划的事情。<br>        之后食铁兽的负责人晚上又和我联系了一下，简单问了一些职业发展之类的问题。第二天通知我面试通过了，当时真的非常非常开心，第一次觉得自己在技术上或者说是在专业知识上被认可了，然后当天就去了食铁兽那边，见到了面试官源哥，婧姐，还有负责人峰哥。当天主要和峰哥、源哥聊的比较多，这也是我第一次了解创业相关的东西，比如融资是怎么一回事。<br>        之后的话就放寒假了，我当时在家不怎么学习，基本上都是食铁兽给的一些任务PUSH着我去学，比如尝试基于TCP、UDP、KCP、和HTTP编程，还有当时Go的最新版本是1.18beta，推出了泛型这一特性，但是还没有来得及对内置数据结构（slice map等）进行泛型的封装，于是我去学习了泛型，实现了简单的泛型封装。<br>        差不多三月到五月吧，基本每个周末都会去食铁兽那边敲代码，那边的环境是真的很好，呆着就容易让人心情愉悦，我慢慢的把分布式消息队列的拼图一块块补全，从raft选主的实现，到消息的存储和删除，到消息的切片，再到考虑结点状态进行消息的分发，慢慢的也把这个项目做出来了，这也是我第一个不看视频写出来的非web项目。<br><img src="/2023/03/04/%E6%88%91%E7%9A%84%E6%9C%AC%E7%A7%91%E5%89%8D%E5%8D%8A%E7%94%9F/6.png" alt="56E6CD019183D099581FB095CF187A7C.jpg"><br>        源哥曾经说过这么一段话，我深以为然。<br>        “<strong>其实编程真的不是一件很难的事情，甚至是一个比较有意思的事情。只是大部分人还在学的阶段就放弃了，这个阶段他们只能抄别人的代码，自己写不出来东西，一旦自己能创造东西就能感受到编程的快乐了。</strong>”<br>        除了工程上的收获之外，我还认识了很多很厉害的大佬，基本上食铁兽成员的专业能力已经是我校一级梯队水准了，比如源哥，给我的感觉就是在技术上钻的很深，不管是理论知识还是工程能力都很强，架构层面的知识也很优秀，之前问过他一点设计方面的题目，能感觉出来他思考的方面特别多。而且他知识的广度也很强，现在我也大三下了，感觉我也很难在一年之后达到这样的水平。还有峰哥、翔哥、婧姐、洋哥，也都是很优秀的人，就不一一说了，食铁兽的氛围是真的挺好的，大家都是学生，没有那种领导的感觉，这些哥哥姐姐们也很照顾我，在那边呆着也很舒服。<br>        差不多五月开始正式准备八股和算法了，那段时间的学习强度真的特别大，也是我在校园最痛苦的一段时间，差不多白天一整天都在工作室呆着，学到脑子疼才结束，晚上睡眠质量也差，需要吃褪黑素才睡得着，不然脑子会一直处于活跃状态，明明身体很困，但是意识非常非常清晰。差不多准备了两个礼拜之后就开始投递简历了，投了很多厂子，不过大部分厂子看到是24届就直接拒了，当时真的非常焦虑，觉得自己是不是要找不到工作了。最后好像只有几个小厂还有字节给了面试机会，字节的算法没做出来，于是挂掉了，最后拿了一个小厂的offer但是不太想去。<br>    没有找到合适的实习就选择了去老师的实验室干活，做的是偏运维的华为HPC高性能迁移项目，其实就是写脚本，不过真的挺折磨的，需要保证一个大的脚本一次性执行成功，那段时间我对于linux和shell的熟悉程度也在直线上升。同时也和我校的研究生学长进行了交流和接触，更坚定了我不读研的想法。</p>
+<p>“学长你学的什么方向啊？”<br>“开发吧，JAVA学了一半，没完全学完”<br>“那你发了paper吗？”<br>“还没有，还在写”<br>“打算毕业之后就业还是接着深造啊？”<br>“就业，读不下去了，读研都已经觉得很痛苦了。”<br>“读研究生有补贴吗？”<br>“一个月800”</p>
+<h1 id="大三"><a href="#大三" class="headerlink" title="大三"></a>大三</h1><p>在大三入学后我又开始了新一轮的投递和面试，在开学的一周内拿了两家公司的offer，最后选择了去通明智云实习，这是一家搞负载均衡的公司，我们组负责开发负载均衡设备的纳管平台。<br>        那是第一次出远门实习，在此要感谢我的辅导员——林义钧老师，他是一位真正有师德，替学生考虑的老师，替我解决了学校里的很多麻烦，在大部分院都卡学生外出实习、完全不考虑当今就业市场学生可能毕业即失业、只顾学生就业率、升学率的情况下，林义钧老师仍然支持我实习，并替我解决了请假审批的问题。<br>        在通明智云我学到了很多东西，这是我第一次接触到生产级别的项目。我的leader韩哥是一个非常好的领导，并没有因为我是实习生就给我分配边角任务，而是真正有让我积极参与项目、融入到整个集体里面来，同时他也会让每个人不只负责一个模块，而是定期更换模块，让所有人对项目都有多方位的理解，也能真的学到技术。<br><img src="/2023/03/04/%E6%88%91%E7%9A%84%E6%9C%AC%E7%A7%91%E5%89%8D%E5%8D%8A%E7%94%9F/7.png" alt="689294415A37CFD7521DF177B8FA68A9.jpg"><br>        一开始主要负责部署相关的工作，负责和用户对接，能被leader信任，真的去做事情对我来说真的是一件挺有意义的事情。后面主要负责Prometheus相关的开发工作，但是没深入多久就和我当时的爱人分手了，后面整个人的状态其实都不太好，也没有多少产出，也确实是一件挺遗憾的事情。<br>        公司里还有来自北邮、北林的实习生，该说不说，长得都很帅。在之前我没觉得重邮本学历有多低，在实习之后发现好像确实有点低了。大家一起玩ranging loop、爬长城是真的挺开心的，长这么大第一次碰到除了LOL之外戳我的游戏，我之前一直以为自己不爱玩游戏呢。<br>        组里面的同事也很友好：说话很好笑很热心的美美、对技术很有追求的建国、像大哥哥一样很温暖的恩清、很腼腆的PM若培、喜欢玩摩托的士亮等等。还记得我理解不了需求、写不来mongo的查询语句、搞不懂prometheus实现原理、部署出问题的时候基本都是问的美美、建国和恩清，谢谢他们愿意花时间替我来擦屁股。总的来说大家都很好，氛围很温暖，下了班大家也会去地铁口那边一起吃饭，平常住在一栋楼里面交流也多。真的是一段很难忘也很有意义的经历，不仅仅是技术方面成长了，连带着待人接物、生活技能方面也学会了不少东西。<br>        现在我加入了百度APP业务中台部门，虽然呆的时间还不久，但是也能够感觉出来氛围挺好的，我的mentor宇哥和leader学明哥相处起来都给人一种很舒服的感觉，并且也是真的希望我能够学到东西，在我反应了我更想往Go方面去靠的时候，他们立马给我确定了之后的任务方向。百度给我的感觉是新人培养制度真的很不错，有很详细的培养方案，能够帮助实习生快速融入团队，同时整个部门的效率也非常高，不会在不该浪费时间的地方浪费时间，组里还有来自北大硕、北航硕的实习生，真的都是一群很优秀很优秀的人。<br><img src="/2023/03/04/%E6%88%91%E7%9A%84%E6%9C%AC%E7%A7%91%E5%89%8D%E5%8D%8A%E7%94%9F/8.png" alt="9CE5E3FDD31967D5D0140BB2F68751A9.jpg"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>感觉自己真的很幸运，这么多年都没有碰到过坏人。从入学认识的室友、导员，到后面认识的学长学姐：胡仓学长、宋扬学长、彩嵘学长、文炀学长、嘉文学长，再到食铁兽认识的小伙伴：源哥、峰哥、婧姐、洋哥，再到通明智云的同事和leader，还有现在的mentor、同事和leader，大家都是很好很好的人，相处起来都非常舒服，感谢所有遇见。<br>        大三还没结束，要做的事情还有很多。回头看看其实比起刚入学那一会，我已经成长不少了，也学会了一些道理。也培养了一些比较好的习惯，比如我上大学前完全想不到我现在在假期也会学习、会定期阅读和运动、会主动走出舒适区去学一些我觉得我应该会的技能。</p>
+<p>当然大学里也有一些不好的经历，甚至有些事情我到现在也没有想明白原因，不明白自己为什么要被这么对待。虽然不理解，但是也只能试着接受。</p>
+<p>希望我能过好大学的最后一年零几个月的生活，收拾行囊，再度出发吧。也希望我能一直热爱编程，热爱我的事业。我几乎不在社交媒体上发编程相关的东西，一是觉得我还是个noob，需要学习的东西还有很多；二是不爱给自己打上程序员的这个tag，不想给自己设限。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2023/03/02/MySQL%E4%B8%BB%E9%94%AE%E7%9B%B8%E5%85%B3%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83%E5%8F%8A%E6%96%B9%E6%A1%88/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1637,252 +1923,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/03/Slice%E8%AF%A6%E8%A7%A3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="安妮的心动录">
-      <meta itemprop="description" content="永远不要高估自己">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="安妮的心动录的园子">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/11/03/Slice%E8%AF%A6%E8%A7%A3/" class="post-title-link" itemprop="url">Slice详解</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-11-03 22:10:39 / 修改时间：23:01:35" itemprop="dateCreated datePublished" datetime="2022-11-03T22:10:39+08:00">2022-11-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Go/" itemprop="url" rel="index"><span itemprop="name">Go</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.4k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Slice详解"><a href="#Slice详解" class="headerlink" title="Slice详解"></a>Slice详解</h1><h3 id="slice和数组的区别"><a href="#slice和数组的区别" class="headerlink" title="slice和数组的区别"></a>slice和数组的区别</h3><p>众所周知，go是一门强类型的语言，什么是强类型呢？就是对类型要求非常严格(在运算时)，所以go中的float不能和int进行运算，甚至int和int64也不能进行运算。</p>
-<p>数组是指长度固定的数据集合，比如 [3] int 指的就是长度为3的int类型集合，它和[4] int是两个完全不同的类型，所以不能作比较，比较也是一种运算。</p>
-<p>而slice则是动态数组，长度不固定，可以动态扩容，slice的类型和长度没有关系，所以不同的slice可以进行比较(但这个操作通常没有意义)</p>
-<h3 id="slice本质"><a href="#slice本质" class="headerlink" title="slice本质"></a>slice本质</h3><p>slice其实就是一个结构体，里面有着对数组的封装，还有len和cap两个字段来描述数组的长度和容量</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// runtime/slice.go</span></span><br><span class="line"><span class="keyword">type</span> slice <span class="keyword">struct</span> &#123;</span><br><span class="line">	array unsafe.Pointer <span class="comment">// 元素指针 指向的其实是一个底层的数组</span></span><br><span class="line">	<span class="built_in">len</span>   <span class="type">int</span> <span class="comment">// 长度 </span></span><br><span class="line">	<span class="built_in">cap</span>   <span class="type">int</span> <span class="comment">// 容量</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>如果要判断slice是否为空，要使用</p>
-<p><code>len(slice)==0</code></p>
-<p>而不能使用</p>
-<p><code>slice==nil</code></p>
-<p>因为slice&#x3D;0判断的是数组内是否有元素，如果没有元素则为空，而slice&#x3D;&#x3D;nil判断的是一整个结构体是否为Nil 如果我们用var 的方式声明，不会给slice分配内存，那么slice确实&#x3D;nil。但如果我们使用make的方式进行声明，那么就会给slice分配内存，所以slice就!&#x3D;nil了</p>
-<p>同理的 要判断两个slice是否相同，不能简单的通过slice1&#x3D;&#x3D;slice2进行判断，而是要循环切片进行判断</p>
-<h3 id="slice传参"><a href="#slice传参" class="headerlink" title="slice传参"></a>slice传参</h3><p>在我们把slice作为参数传递出去的时候，传的是<strong>值</strong>，这也就是为什么我们在被调函数中对数组进行append，在主调函数中看不到这个变化。但是如果直接通过下标的方式对slice进行修改，那么是可以反映到主调函数中的(因为下标修改是直接对底层的数组进行修改)</p>
-<p>准确的来说，go中所有的参数传递，都是值传递，并没有引用传递，那有的同学可能就疑惑了，我传递map的话不是在被调函数中的改变可以反映到主调函数中吗？</p>
-<p>因为进行函数调用的时候，slice类型会调用runtime.makeslice函数，这个函数的返回值类型是值，而map类型会调用runtime.makemap函数，这个函数的返回值类型是一个指针</p>
-<h3 id="slice的扩容过程"><a href="#slice的扩容过程" class="headerlink" title="slice的扩容过程"></a>slice的扩容过程</h3><p>网上流传的版本是:当slice容量小于1024的时候，每次扩容翻倍，在1024长度之后，每次扩容1.25倍，而在1.18版本之后变为了，当容量小于256的时候，扩容为两倍，超过256，newcap&#x3D;oldcap+(oldcap+3*256) &#x2F;4</p>
-<p>这个说法不对，或者说只对了一半</p>
-<p>go 1.9.5源码</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// go 1.9.5 src/runtime/slice.go:82</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">growslice</span><span class="params">(et *_type, old slice, <span class="built_in">cap</span> <span class="type">int</span>)</span></span> slice &#123;</span><br><span class="line">    <span class="comment">// ……</span></span><br><span class="line">    newcap := old.<span class="built_in">cap</span></span><br><span class="line">	doublecap := newcap + newcap</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">cap</span> &gt; doublecap &#123;</span><br><span class="line">		newcap = <span class="built_in">cap</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> old.<span class="built_in">len</span> &lt; <span class="number">1024</span> &#123;</span><br><span class="line">			newcap = doublecap</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">for</span> newcap &lt; <span class="built_in">cap</span> &#123;</span><br><span class="line">				newcap += newcap / <span class="number">4</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//</span></span><br><span class="line">	<span class="comment">//内存对齐 </span></span><br><span class="line">	capmem = roundupsize(<span class="type">uintptr</span>(newcap) * ptrSize)</span><br><span class="line">	newcap = <span class="type">int</span>(capmem / ptrSize)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>go 1.18源码</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// go 1.18 src/runtime/slice.go:178</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">growslice</span><span class="params">(et *_type, old slice, <span class="built_in">cap</span> <span class="type">int</span>)</span></span> slice &#123;</span><br><span class="line">    <span class="comment">// ……</span></span><br><span class="line">    newcap := old.<span class="built_in">cap</span></span><br><span class="line">	doublecap := newcap + newcap</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">cap</span> &gt; doublecap &#123;</span><br><span class="line">		newcap = <span class="built_in">cap</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">const</span> threshold = <span class="number">256</span></span><br><span class="line">		<span class="keyword">if</span> old.<span class="built_in">cap</span> &lt; threshold &#123;</span><br><span class="line">			newcap = doublecap</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">for</span> <span class="number">0</span> &lt; newcap &amp;&amp; newcap &lt; <span class="built_in">cap</span> &#123;</span><br><span class="line">                <span class="comment">// Transition from growing 2x for small slices</span></span><br><span class="line">				<span class="comment">// to growing 1.25x for large slices. This formula</span></span><br><span class="line">				<span class="comment">// gives a smooth-ish transition between the two.</span></span><br><span class="line">				newcap += (newcap + <span class="number">3</span>*threshold) / <span class="number">4</span></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> newcap &lt;= <span class="number">0</span> &#123;</span><br><span class="line">				newcap = <span class="built_in">cap</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">    </span><br><span class="line">	<span class="comment">//内存对齐</span></span><br><span class="line">	capmem = roundupsize(<span class="type">uintptr</span>(newcap) * ptrSize)</span><br><span class="line">	newcap = <span class="type">int</span>(capmem / ptrSize)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如果只看前半部分，那么网上的各种文章说的是对的，现实是，后半部分还对newcap做了一个内存对齐，这个和内存分配策略有关，进行内存对齐之后，新slice的容量&gt;&#x3D;未进行内存对齐之前的cap</p>
-<h3 id="new和make的区别"><a href="#new和make的区别" class="headerlink" title="new和make的区别"></a>new和make的区别</h3><p>首先new和make都是Go内置的用来分配内存的函数，区别是make用来给slice map channel等引用类型分配内存，返回值是一个值类型，而new用来给数组、结构体值类型来分配内存，后者返回值是一个指针</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/03/Go-web%E4%B8%8EContent-Type/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="安妮的心动录">
-      <meta itemprop="description" content="永远不要高估自己">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="安妮的心动录的园子">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/11/03/Go-web%E4%B8%8EContent-Type/" class="post-title-link" itemprop="url">Go web与Content-Type</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2022-11-03 22:07:05 / 修改时间：23:01:41" itemprop="dateCreated datePublished" datetime="2022-11-03T22:07:05+08:00">2022-11-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Go/" itemprop="url" rel="index"><span itemprop="name">Go</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Go-web与Content-Type"><a href="#Go-web与Content-Type" class="headerlink" title="Go web与Content-Type"></a>Go web与Content-Type</h1><p>首先要对http的工作方式有一定的了解，这里默认大家都会。这里只是随手写了点东西记录一下Content-Type的类型和内容。</p>
-<h3 id="http请求与响应"><a href="#http请求与响应" class="headerlink" title="http请求与响应"></a>http请求与响应</h3><p>http request的具体组成</p>
-<ul>
-<li>请求行：请求类型+url+协议版本</li>
-<li>请求头:Host(表明请求目的地 主机域名) User-Agent(客户端的信息 由浏览器定义) Content-Type Content-Length等等</li>
-<li>空行</li>
-<li>请求体：实体数据</li>
-</ul>
-<p>http response的具体组成</p>
-<ul>
-<li>状态行：由协议版本号、状态码和状态消息组成</li>
-<li>响应头： 客户端可以使用的一些信息 比如Date Content-Type Connection(是否为长链接) 等等</li>
-<li>空行</li>
-<li>响应体：实体数据</li>
-</ul>
-<h3 id="net-x2F-http"><a href="#net-x2F-http" class="headerlink" title="net&#x2F;http"></a>net&#x2F;http</h3><p>这个库里面主要是与http相关的一些API，可以分为客户端和服务端两个部分</p>
-<ul>
-<li>服务端相关：server serverMux Handler&#x2F;HandlerFunc</li>
-<li>客户端相关: client response header request cookie</li>
-</ul>
-<p>具体过程如下</p>
-<p><img src="/2022/11/03/Go-web%E4%B8%8EContent-Type/1.png"></p>
-<p>首先服务端创建Listen Socket监听指定的端口，等待客户端请求到来，之后Listen socket接受客户端的请求，得到Client Socket，通过这个socket和客户端进行通信；每次处理客户端的请求时，首先从Client Socket读取HTTP协议头，如果是POST可能还要读取数据，然后交给相应的Handler处理，处理完毕之后准备好客户端需要的数据，通过Client Socket写回给客户端。</p>
-<p>ListenAndServe函数的具体流程</p>
-<ul>
-<li>监听某个端口  如果有新连接进来 创建一个goroutine处理新的连接 </li>
-<li>在goroutine中 将请求和响应分别封装为http.Request和http.ResponseWriter对象，将这两个对象作为参数传递给server.Handler的serveHTTP,这个server.handler就是listenandserve函数的参数(http.servemux)</li>
-<li>查找http.Request对象的url(在servemux中的map中进行) 然后执行</li>
-<li>监听之后内部有一个for循环不断接受请求，每个请求创建一个conn,最后创建一个goroutine</li>
-</ul>
-<h3 id="Content-Type初识"><a href="#Content-Type初识" class="headerlink" title="Content-Type初识"></a>Content-Type初识</h3><p>Content-Type 是http的首部字段，用于说明请求或者返回的消息body是以何种方式进行编码，在request header和response header里都存在，网页通过这个类型定义网络文件的类型和网页的编码，决定浏览器将以什么形式、什么编码读取这个文件。</p>
-<p>常见的媒体格式类型如下</p>
-<ul>
-<li>text&#x2F;html html格式</li>
-<li>text&#x2F;plain 纯文本格式</li>
-<li>text&#x2F;xml xml格式</li>
-<li>text&#x2F;gif gif图片格式</li>
-<li>text&#x2F;jpeg jpg图片格式</li>
-<li>text&#x2F;png png图片格式</li>
-</ul>
-<p>以application开头的媒体格式类型</p>
-<ul>
-<li>application&#x2F;xhtml+xml XHTML格式</li>
-<li>application&#x2F;xml XML格式</li>
-<li>application&#x2F;atom+xml Atom XML聚合格式</li>
-<li>application&#x2F;json JSON数据格式</li>
-<li>application&#x2F;pdf pdf格式</li>
-<li>application&#x2F;msword Word文档格式</li>
-<li>application&#x2F;octet-stream 二进制数据流格式</li>
-<li>application&#x2F;x-www-form-unlencoded 表单默认的提交数据格式(被编码为key&#x2F;value的格式)</li>
-</ul>
-<p>另一种常见的媒体格式的上传文件之时使用的</p>
-<ul>
-<li>multipart&#x2F;form-data 需要在表单中进行文件上传时，就需要使用到这个格式</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1954,7 +1994,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1967,7 +2007,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-count">23</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -2014,12 +2054,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">112k</span>
+    <span title="站点总字数">130k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:42</span>
+    <span title="站点阅读时长">1:58</span>
 </div>
 
 
