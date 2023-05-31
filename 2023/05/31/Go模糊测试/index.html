@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="博客:cbb777.fun 全平台账号:安妮的心动录 github: https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord 下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论 在Go 1.18开始提供了Fuzzing能力的支持，testing包在我们常见的T B类型之外新增了F的类型，用于支持模糊测试 Fuzzing Test日常测试代码的时候我们经">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go模糊测试">
+<meta property="og:url" content="http://example.com/2023/05/31/Go%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/index.html">
+<meta property="og:site_name" content="安妮的心动录的园子">
+<meta property="og:description" content="博客:cbb777.fun 全平台账号:安妮的心动录 github: https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord 下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论 在Go 1.18开始提供了Fuzzing能力的支持，testing包在我们常见的T B类型之外新增了F的类型，用于支持模糊测试 Fuzzing Test日常测试代码的时候我们经">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/05/31/Go%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/1682407394290-f8c3006a-9f60-4362-a4e8-025536043457.png">
+<meta property="og:image" content="http://example.com/2023/05/31/Go%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/1682408593234-75061a31-701a-4f88-8121-7cb8c0d683df.png">
+<meta property="article:published_time" content="2023-05-31T07:34:32.000Z">
+<meta property="article:modified_time" content="2023-05-31T07:36:33.825Z">
+<meta property="article:author" content="安妮的心动录">
+<meta property="article:tag" content="Go">
+<meta property="article:tag" content="后端">
+<meta property="article:tag" content="测试">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/05/31/Go%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/1682407394290-f8c3006a-9f60-4362-a4e8-025536043457.png">
+
+<link rel="canonical" href="http://example.com/2023/05/31/Go%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Go模糊测试 | 安妮的心动录的园子</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">安妮的心动录的园子</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-resources">
+
+    <a href="/resources/" rel="section"><i class="download fa-fw"></i>资源</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/31/Go%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Go模糊测试
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-05-31 15:34:32 / 修改时间：15:36:33" itemprop="dateCreated datePublished" datetime="2023-05-31T15:34:32+08:00">2023-05-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%90%8E%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">后端</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>博客:cbb777.fun</p>
+<p>全平台账号:安妮的心动录</p>
+<p>github: <a target="_blank" rel="noopener" href="https://github.com/anneheartrecord">https://github.com/anneheartrecord</a></p>
+<p>下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论</p>
+<p>在Go 1.18开始提供了Fuzzing能力的支持，testing包在我们常见的T B类型之外新增了F的类型，用于支持模糊测试</p>
+<h2 id="Fuzzing-Test"><a href="#Fuzzing-Test" class="headerlink" title="Fuzzing Test"></a>Fuzzing Test</h2><p>日常测试代码的时候我们经常使用table driven test的方式来构造一组输入和预期的结果，之后调用我们的待测函数，检查结果是否和我们的预期匹配，也就是我们平常说的Mock数据</p>
+<p>这就引出了一个问题，这个table要多大呢？<br>通常大家都只是写一个【正常】的case 一个【异常】的case<br>但是这些样例其实是不够的，比如一些异常值、corner case，可能无法处理，或者可能有程序挂掉、安全问题等等</p>
+<p>而fuzzing test的作用就是帮我们自动生成输入数据，以下是维基百科对于fuzzing test的定义</p>
+<p><code>Fuzzing is a technique where you automagically generate input values for your functions to find bugs</code></p>
+<p>模糊测试能够【持续】、【自动】地生成一系列【半随机】的数据作为待测函数的输入，来找到程序里隐藏的bug，对于边界case能够很好的验证。模糊测试中的输入不是由人工指定的，而是自动生成的随机数据，所以可以规避掉人工主观判断造出来的数据。</p>
+<p>模糊测试通常可以不依赖于开发测试人员定义好的数据集，取而代之的则是一组通过数据构造引擎自行构造的一系列随机数据。模糊测试会讲这些数据作为输入提供给待测程序，并且监测程序是否出现panic、断言失败、无限循环，或者其他的异常情况</p>
+<p>这些通过数据构造引擎生成的数据被称为<strong>语料（corpus）</strong>，另外模糊测试其实也是一种持续测试的手段，因为如果不限制执行的次数或者执行的最大时间，它就会一直不停的执行下去</p>
+<h2 id="Go模糊测试"><a href="#Go模糊测试" class="headerlink" title="Go模糊测试"></a>Go模糊测试</h2><p>让我们来看看一个Golang实现的模糊测试长什么样<br><img src="/2023/05/31/Go%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/1682407394290-f8c3006a-9f60-4362-a4e8-025536043457.png"></p>
+<p>签名部分：从常见的<code>func TestXxx(t *testing.T)</code> 变成了<code>func FuzzXxx(f *testing.F)</code></p>
+<p>seed corpus：一组用户提供的语料，fuzzing引擎会使用这个语料来生成随机数据。其实就是一个样本，之后引擎就知道要生成什么类型的随机数据了</p>
+<p>Fuzzing arguments: 接受*testing.t和想要随机生成的数据类型<br><img src="/2023/05/31/Go%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/1682408593234-75061a31-701a-4f88-8121-7cb8c0d683df.png"><br>模糊测试的要求</p>
+<ul>
+<li>模糊测试必须是一个名称类似于<code>FuzzXxx</code>的函数，仅接受一个<code>*testing.F</code>参数，无返回值</li>
+<li>模糊测试必须在<code>*_test.go</code>中运行</li>
+<li>Fuzz target(模糊目标)必须是对<code>(*testing.F).Fuzz</code>的方法调用，参数是一个函数，并且这个函数的第一个参数是<code>*tesing.T</code>，然后是模糊参数（fuzzing argument），没有返回值</li>
+<li>一个模糊测试中必须只有一个模糊目标</li>
+<li>所有种子语料库（seed corpus）必须具有与模糊参数相同的类型，顺序相同</li>
+<li>模糊参数只能是以下的类型</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">string, []byte</span><br><span class="line">int, int8, int16, int32/rune, int64</span><br><span class="line">uint, uint8/byte, uint16, uint32, uint64</span><br><span class="line">float32, float64</span><br><span class="line">bool</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的一点是，在Go执行的过程中，多个fuzzing target是并行来处理的，底层会有多个worker，调度的顺序也不一定，所以不能做持久化，也不能依赖一些全局状态，不要尝试改变入参</p>
+<p><strong>运行模糊测试</strong></p>
+<p>我们依然可以使用<code>go test</code>命令来跑模糊测试，只是需要加上一个<code>-fuzz=FuzzTestName</code>的选项。同时这个包下所有其他类型的test都会优先于模糊测试执行，毕竟比较耗费资源，随机数据生成是有样本的。</p>
+<p>执行结果如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">~ go test -fuzz FuzzFoo</span><br><span class="line">fuzz: elapsed: 0s, gathering baseline coverage: 0/192 completed</span><br><span class="line">fuzz: elapsed: 0s, gathering baseline coverage: 192/192 completed, now fuzzing with 8 workers</span><br><span class="line">fuzz: elapsed: 3s, execs: 325017 (108336/sec), new interesting: 11 (total: 202)</span><br><span class="line">fuzz: elapsed: 6s, execs: 680218 (118402/sec), new interesting: 12 (total: 203)</span><br><span class="line">fuzz: elapsed: 9s, execs: 1039901 (119895/sec), new interesting: 19 (total: 210)</span><br><span class="line">fuzz: elapsed: 12s, execs: 1386684 (115594/sec), new interesting: 21 (total: 212)</span><br><span class="line">PASS</span><br><span class="line">ok      foo 12.692s</span><br></pre></td></tr></table></figure>
+
+<p>Fuzzing test的局限性，在单元测试中因为测试输入是固定的，所以可以和把得到的结果和预期结果进行比较来判断执行结果是否与预期相符合。</p>
+<p>但是在使用fuzzing的时候，我们无法预测输出结果是什么，因为测试的输入除了我们代码只能给指定的用例之外，还有fuzzing随机生成的输入，所以我们无法提前知道预期结果是什么</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+              <a href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag"># 后端</a>
+              <a href="/tags/%E6%B5%8B%E8%AF%95/" rel="tag"># 测试</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/05/31/Go%E5%B8%B8%E8%A7%81%E6%89%8B%E6%90%93demo/" rel="prev" title="Go常见手搓demo">
+      <i class="fa fa-chevron-left"></i> Go常见手搓demo
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/05/31/%E2%80%9C%E5%A6%82%E4%BD%95%E8%A7%A3%E6%9E%90%E4%B8%8D%E5%AE%9AJSON%E6%95%B0%E6%8D%AE%E2%80%9D/" rel="next" title="“如何解析不定JSON数据”">
+      “如何解析不定JSON数据” <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC81NjgwMy8zMzI2Nw=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Fuzzing-Test"><span class="nav-number">1.</span> <span class="nav-text">Fuzzing Test</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Go%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95"><span class="nav-number">2.</span> <span class="nav-text">Go模糊测试</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="安妮的心动录"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">安妮的心动录</p>
+  <div class="site-description" itemprop="description">永远不要高估自己</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/anneheartrecord" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:chengxisheng777@gmail.com" title="E-Mail → mailto:chengxisheng777@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/2523286318" title="QQ → 2523286318"><i class="gratipay fa-fw"></i>QQ</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">安妮的心动录</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">141k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:08</span>
+</div>
+
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <span class="post-meta-divider">|</span>
+<!-- 不蒜子计数初始值纠正 -->
+<script>
+$(document).ready(function() {
+
+    var int = setInterval(fixCount, 50);  // 50ms周期检测函数
+    var countOffset = 20000;  // 初始化首次数据
+
+    function fixCount() {            
+       if (document.getElementById("busuanzi_container_site_pv").style.display != "none")
+        {
+            $("#busuanzi_value_site_pv").html(parseInt($("#busuanzi_value_site_pv").html()) + countOffset); 
+            clearInterval(int);
+        }                  
+        if ($("#busuanzi_container_site_pv").css("display") != "none")
+        {
+            $("#busuanzi_value_site_uv").html(parseInt($("#busuanzi_value_site_uv").html()) + countOffset); // 加上初始数据 
+            clearInterval(int); // 停止检测
+        }  
+    }
+       	
+});
+</script> 
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="博客:cbb777.fun 全平台账号:安妮的心动录 github: https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord 下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论 什么是消息队列消息队列，我们一般会称为MQ（Message Queue）,也就是说消息队列的本质就是一个队列，而队列是一种先进先出的数据结构，提供消息传递和消息排队模型，可以在">
+<meta property="og:type" content="article">
+<meta property="og:title" content="消息队列系统学习">
+<meta property="og:url" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="安妮的心动录的园子">
+<meta property="og:description" content="博客:cbb777.fun 全平台账号:安妮的心动录 github: https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord 下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论 什么是消息队列消息队列，我们一般会称为MQ（Message Queue）,也就是说消息队列的本质就是一个队列，而队列是一种先进先出的数据结构，提供消息传递和消息排队模型，可以在">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1670565301195-6a5df167-0f49-4812-b648-247b6c15cf0e.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1670565335300-52330f30-1d93-49be-b70b-c50906a61096.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1670565724785-78356256-717e-4f5a-865d-90afe84f7226.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1670565780159-8d1d3475-6244-4a13-b440-bf94f90cedab.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1670576619633-e8cfd841-4823-44df-b3dd-eecd0052c3eb.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1670575350774-76cb25c0-2bae-4ac7-baae-ecb911767458.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1670575824095-d0f958e8-2464-46ad-9afd-0faf74cd101b.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1670576658702-ebe9380a-41e5-4206-9f90-ce09c6af384d.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682219039171-07775a32-cf8b-4b8f-87ab-d77646e3db76.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682220786986-bcdaace6-1ac7-48f7-b874-208796a3b695.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682231688042-eeae1153-5dd6-4257-ab60-8b8514176129.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682231855780-0822f566-06df-4dd8-8bdd-3c1d7284dfa1.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682231915296-3eed9904-91c2-43b4-b850-2b53441c8fe4.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682231969316-adf66ecb-d07a-49d5-aff9-33594197eefa.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682232008012-741758f7-8650-4ae5-a9c9-63bcdb815600.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682240083542-ca650a22-889b-4906-be94-014ecf18debe.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682243085046-f38a72f7-331c-432c-b990-e8de4b438bc4.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682243400607-7ce2e51a-9fc5-48bd-a1be-dfa226eb2fd7.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682243577968-08304a97-3d76-453a-85a1-10a8ab01388e.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682244903659-cac62393-1696-488c-bf90-160904556ea4.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682301934196-2cc57808-2996-478a-a2af-458ebb95ce7e.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682302140012-861fac45-f4a9-40a3-a11a-e843e0093230.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682307910434-a21873d5-4aea-4273-a704-33f2b20b5c06.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682317442354-57387d85-94bc-47b5-8615-f2bcb012be42.png">
+<meta property="article:published_time" content="2023-05-28T15:07:27.000Z">
+<meta property="article:modified_time" content="2023-05-30T05:03:52.970Z">
+<meta property="article:author" content="安妮的心动录">
+<meta property="article:tag" content="后端">
+<meta property="article:tag" content="消息队列">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1670565301195-6a5df167-0f49-4812-b648-247b6c15cf0e.png">
+
+<link rel="canonical" href="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>消息队列系统学习 | 安妮的心动录的园子</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">安妮的心动录的园子</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-resources">
+
+    <a href="/resources/" rel="section"><i class="download fa-fw"></i>资源</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          消息队列系统学习
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-05-28 23:07:27" itemprop="dateCreated datePublished" datetime="2023-05-28T23:07:27+08:00">2023-05-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-05-30 13:03:52" itemprop="dateModified" datetime="2023-05-30T13:03:52+08:00">2023-05-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%90%8E%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">后端</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>9 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>博客:cbb777.fun</p>
+<p>全平台账号:安妮的心动录</p>
+<p>github: <a target="_blank" rel="noopener" href="https://github.com/anneheartrecord">https://github.com/anneheartrecord</a></p>
+<p>下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论</p>
+<h2 id="什么是消息队列"><a href="#什么是消息队列" class="headerlink" title="什么是消息队列"></a>什么是消息队列</h2><p>消息队列，我们一般会称为MQ（Message Queue）,也就是说消息队列的本质就是一个队列，而队列是一种先进先出的数据结构，提供<strong>消息传递和消息排队</strong>模型，可以在分布式环境下提供应用解耦、弹性伸缩、流量削峰、异步通信、数据同步、微服务之间通信等功能，作为分布式系统架构中的一个重要组件，有着举足轻重的地位<br>我们会将要传输的数据、消息放在消息队列中<br>其中，往MQ里放东西的叫做生产者<br>从MQ里面取消息的叫做消费者</p>
+<h2 id="为什么要用消息队列"><a href="#为什么要用消息队列" class="headerlink" title="为什么要用消息队列"></a>为什么要用消息队列</h2><h3 id="解耦"><a href="#解耦" class="headerlink" title="解耦"></a>解耦</h3><p>现在有一个系统A，A可以产生一个UserId<img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1670565301195-6a5df167-0f49-4812-b648-247b6c15cf0e.png"><br>然后有系统B和系统C都需要这个UserId去做相关的操作<br><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1670565335300-52330f30-1d93-49be-b70b-c50906a61096.png"><br>这样就会有一个问题，每当出现改动的时候，我都要改动整个系统，比如B不需要A的消息了，那么就要改A、B，新来的一个D服务，需要用到A的消息，那么又需要修改，整个系统的冗余度很高<br>引入消息队列之后：系统A将id写到消息队列中，BC服务从消息队列中拿数据</p>
+<p>系统A只负责写数据，不关心数据的消费、处理，而BC服务只负责拿数据，即使BC服务挂了，也和系统A没关系，只和消息队列有关，这样就能做到多个服务之间的解耦</p>
+<h3 id="异步"><a href="#异步" class="headerlink" title="异步"></a>异步</h3><p><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1670565724785-78356256-717e-4f5a-865d-90afe84f7226.png"><br>如果是同步的话，A必须要等待B C D 处理完之后才能返回，整个时间比较久<br><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1670565780159-8d1d3475-6244-4a13-b440-bf94f90cedab.png"><br>如果是异步的话，A（比如注册服务）将消息写道消息队列之后就可以返回，之后再发给邮件服务和短信服务消费</p>
+<h3 id="限流、削峰"><a href="#限流、削峰" class="headerlink" title="限流、削峰"></a>限流、削峰</h3><p>当请求来的时候，先把请求放在消息队列中，然后系统再根据自己能够处理的请求数去消息队列里面拿数据，这样即使每秒请求数很大，也不会把系统打崩</p>
+<h3 id="流量控制"><a href="#流量控制" class="headerlink" title="流量控制"></a>流量控制</h3><p>消息队列通常有很多种方式来实现流量控制</p>
+<p>1.配额控制：通过为每个生产者或者消费者分配配额，限制它们可以发送或者接受的消息数量。这可以保证消息队列中的资源不会被过度使用，并确保系统在高负载情况下的稳定性</p>
+<p>2.窗口机制：当生产者将消息发送到消息队列的时候，消息队列会给每个生产和分配一个发送窗口，当消费者确认之后把对应的消息从窗口里面删除</p>
+<p>3.缓冲区：消息队列把消息往缓冲区里丢，消费者从缓冲区里去取</p>
+<p>4.速率限制：这个一般是在客户端实现的，可以实现生产者在每秒、每分钟生产多少条消息</p>
+<h3 id><a href="#" class="headerlink" title></a></h3><h3 id="如何保证消息不被重复消费"><a href="#如何保证消息不被重复消费" class="headerlink" title="如何保证消息不被重复消费"></a>如何保证消息不被重复消费</h3><p>常见的消息队列都有确认机制（ACK机制），当消费者消费数据之后会给消息队列中间件发送一个确认消息，消息队列收到之后就会把这条消息从队列中删除。</p>
+<p>当出现网络传输等故障，ACK没有传送到消息队列，导致消息队列不知道消费者已经消费过该消息了，再次将消息分发给其他的消费者</p>
+<p>解决：</p>
+<p>1.看场景，如果场景不需要幂等，那么可以不管，比如这条消息拿去插入数据库，重复插入主键相同的数据是会自动出错的，再比如做redis的set操作，也不需要管，多次set之后仍然是幂等的</p>
+<p>2.准备第三方介质做消费记录，比如加个redis，给消息分配一个全局id，只要消费过该消息就将&lt;id,message&gt;写入redis。消费者消费之前先去redis中查有没有消费记录即可</p>
+<h3 id="如何保证消息的可靠性传输"><a href="#如何保证消息的可靠性传输" class="headerlink" title="如何保证消息的可靠性传输"></a>如何保证消息的可靠性传输</h3><p>消息队列丢数据主要有三个可能</p>
+<p>1.生产者丢数据</p>
+<p>2.消息队列组件丢数据</p>
+<p>3.消费者丢数据</p>
+<p>生产者：可以采用transaction机制，开启事务来发送消息，如果发送失败就回滚。但是生产中用的不多，因为会导致吞吐量的下降，一般都是用confirm机制，如果生产者成功把消息发送给队列，队列会回一个ack，否则回一个nack</p>
+<p>消息队列：可以开启持久化，而且一般是集群部署的，有master和slave节点，一般都是同步复制，只有主节点和从节点都写入成功才返回ack给生产者</p>
+<p>消费者：取消自动确认，自动确认后消息队列收到ACK会立马把消息从队列中删掉，而是手动确认（即处理后才回ACK）。</p>
+<h2 id="消息队列需要考虑的问题"><a href="#消息队列需要考虑的问题" class="headerlink" title="消息队列需要考虑的问题"></a>消息队列需要考虑的问题</h2><h3 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h3><p>消息队列肯定不是单机的，这样可用性和健壮性都非常差，所以项目中使用的消息队列都得集群或者分布式</p>
+<h3 id="数据问题"><a href="#数据问题" class="headerlink" title="数据问题"></a>数据问题</h3><p>消息丢失：当消费者拿了数据还没使用的时候，服务就挂掉了，就会导致消息的丢失，一般会使用ACK应答机制，当消费者拿到消息发送确认ACK信号，消息队列才会把对应的消息删掉</p>
+<p>消息堆积：消息堆积分为客户端堆积和服务端堆积<br>一般都会设置告警规则来通知开发者消息堆积的问题</p>
+<p>如果是客户端消息堆积，那可以考虑扩大消费线程或者节点来解决， 针对于某些特殊场景，如果消息堆积已经影响到业务，并且堆积的消息可以跳过不消费，那么可以重置消费消息位置为最新位置开始消费，快速恢复业务。</p>
+<p>如果是服务端消息堆积，考虑服务端宕机的情况，快速恢复之后重新可用</p>
+<h3 id="消费者取数据"><a href="#消费者取数据" class="headerlink" title="消费者取数据"></a>消费者取数据</h3><p>两种方法</p>
+<p>1.push 消息队列有新消息的时候主动叫消费者去拿，实时性强。如果消费者故障，服务端堆积消息。</p>
+<p>2.pull 消费者不断的轮询消息队列，看看有没有新数据，如果有就消费，实时性弱。</p>
+<p><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1670576619633-e8cfd841-4823-44df-b3dd-eecd0052c3eb.png"></p>
+<h2 id="消息队列的传输模式"><a href="#消息队列的传输模式" class="headerlink" title="消息队列的传输模式"></a>消息队列的传输模式</h2><h3 id="点对点模型"><a href="#点对点模型" class="headerlink" title="点对点模型"></a>点对点模型</h3><p>用于消息生产者和消息消费者之间点到点的通信，消息生产者将消息发送到某个特定的消费者<br>特点：<br>1.每个消息只有一个消费者<br>2.发送者和接收者都没有时间依赖<br>3.接受者确认消息接受和处理成功</p>
+<p><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1670575350774-76cb25c0-2bae-4ac7-baae-ecb911767458.png"></p>
+<h3 id="发布订阅模型"><a href="#发布订阅模型" class="headerlink" title="发布订阅模型"></a>发布订阅模型</h3><p>发布订阅模型支持向一个特定的消息主题产生消息，在这种模型下，发布和订阅者彼此不知道对方的存在，多个消费者可以获得消息，在发布者和订阅者之间存在<strong>时间依赖性</strong>，<strong>发布者publish</strong>需要建立一个<strong>订阅subscription</strong>，以便消费者能够订阅。订阅者必须<strong>保持持续的活动状态</strong>并<strong>接受消息</strong></p>
+<p>主题、订阅、消费者（组）之间的关系为 M：N：O</p>
+<p>在这种情况下，订阅者未连接时，发布的消息将<strong>在订阅者重新连接的时候重新发布</strong><br>特点：<br>1.每个消息可以有多个订阅者<br>2.客户端只有订阅之后才能收到消息<br>3.持久订阅和非持久订阅</p>
+<p>持久订阅：订阅关系建立之后，消息就不会消失，不管订阅者是否在线<br>非持久订阅：订阅者为了接受消息，必须一直在线，当只有一个订阅者的时候等于点对点模式</p>
+<h3 id="pub-sub-vs-queue"><a href="#pub-sub-vs-queue" class="headerlink" title="pub-sub vs queue"></a>pub-sub vs queue</h3><p>发布订阅和队列模式是消息队列中的两种不同的消息模式</p>
+<p>发布-订阅模式：发布者将消息发送到特定的主题（topic）上，订阅者可以选择订阅感兴趣的主题，从而接受与该主题相关的消息。在该模式中，消息被广播给所有订阅者，每个订阅者可以独立处理消息，订阅者之间不会相互干扰。发布-订阅模式通常用于广播消息或者通知</p>
+<p>队列模式：消息发送到队列中，然后一个或者多个消费者从队列中收取并处理消息。在该模式中，每条消息只能被一个消费者接收和处理。如果有多个消费者，消息将被平均分配给它们。队列模式通常用于实现任务分配或者负载均衡等场景</p>
+<p><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1670575824095-d0f958e8-2464-46ad-9afd-0faf74cd101b.png"></p>
+<h2 id="市面上消息队列对比"><a href="#市面上消息队列对比" class="headerlink" title="市面上消息队列对比"></a>市面上消息队列对比</h2><p>记住两个最常见的MQ的对比就可以，硬盘MQ代表是Kafka 内存MQ代表是RabbitMQ</p>
+<p>Kafka的优点是客户端支持多语言、使用pull模式，支持消息批量操作，支持replica机制，Zookeeper自动选举leader恢复能力，数据可靠，有容错容灾的能力，单机吞吐量为10W级，延迟毫秒，数据基于硬盘层面存储，多Client支持有序，不支持事务，但是可以通过LOW LEVEL API的方式保证消息只支持消费一次</p>
+<p>RabbitMQ的优点是客户端支持多语言，多协议支持，不支持消息批量操作，有pull和push两种模式，使用的主从模式master&#x2F;slave，master提供服务，slave做备份，数据可靠（因为有备份），单机吞吐量为万级别，消息延迟为微秒级，内存级别，可以主动开启持久化，支持集群和负载均衡，不保证多Client消息有序</p>
+<p><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1670576658702-ebe9380a-41e5-4206-9f90-ce09c6af384d.png"></p>
+<h3 id="pulsar-kafka-rabbitmq-nsq的异同"><a href="#pulsar-kafka-rabbitmq-nsq的异同" class="headerlink" title="pulsar kafka rabbitmq nsq的异同"></a>pulsar kafka rabbitmq nsq的异同</h3><p>1.pulsar 和 kafka基于发布订阅模式，而rabbitmq 和 nsq基于的是队列模式</p>
+<p>2.pulsar和kafka都采用了持久化机制，以支持高吞吐量和高可靠性，而rabbitmq和nsq则将数据存储在内存中，以支持更低的延迟和更高的吞吐量</p>
+<p>3.pulsar和kafka都支持 多租户和多数据中心部署，可以轻松地在多个数据中心或者云平台上进行扩展，而rabbitmq和nsq则更加适合单个数据中心的部署</p>
+<p>4.pulsar和kafka都具有出色的可伸缩性和高可用性，处理数据单位是百万级别的；而rabbitmq和nsq则更加适合小规模的应用程序，具有更低的延迟和更高的性能</p>
+<p>5.pulsar和kafka都提供了消息流的处理程序，使用户可以对消息进行实时分析和处理</p>
+<p>总的来说：pulsar和kafka更适合处理大量消息和数据流，rabbitmq和nsq则更适合小规模应用程序，具有更低的延迟和更高的性能</p>
+<h1 id="Pulsar底层实现"><a href="#Pulsar底层实现" class="headerlink" title="Pulsar底层实现"></a>Pulsar底层实现</h1><p>Pulsar是Apache基金会的顶级项目，是<strong>云原生的分布式消息队列</strong>，集消息、存储、轻量化函数式计算为一体，采用计算与存储分离架构设计，支持多租户、持久化存储、多机房跨区域数据恢复机制，具有强一致性、高吞吐、低时延及高可扩展性等流数据存储特性</p>
+<ul>
+<li>云原生MQ</li>
+<li>单个Pulsar实例原生支持多集群，可跨机房完成消息复制</li>
+<li>支持超过一百万个topic</li>
+<li>支持多语言客户端</li>
+<li>主题多种订阅模式（独占、共享和故障转移）</li>
+<li>通过Book Keeper来实现持久化存储，保证消息传递</li>
+<li>分层式存储，可在数据陈旧时将数据从热存储卸载到冷存储中</li>
+</ul>
+<h2 id="消息"><a href="#消息" class="headerlink" title="消息"></a>消息</h2><p>Messages有很多的部分组成， 下面是几个值得注意的</p>
+<ul>
+<li>value&#x2F;payload 消息的数据</li>
+<li>properties 可选的属性，是一个key-&gt;value的键值对</li>
+<li>producer name 生产者名称</li>
+<li>publish time 发布时间戳</li>
+<li>sequence id 在topic中 每个msg属于一个有序的队列 sequence id是它在序列中的次序</li>
+</ul>
+<p>Pulsar和其他的MQ一样，会对消息的大小做出限制</p>
+<p>这个限制通过broker.conf中的maxMessageSize 决定</p>
+<p>不设置的话，默认为5MB</p>
+<h2 id="生产者"><a href="#生产者" class="headerlink" title="生产者"></a>生产者</h2><p>生产者是关联到topic的程序，它发布消息到Pulsar的broker上</p>
+<p><strong>发送模式</strong></p>
+<ul>
+<li>异步发送：生产者发送消息之后会等待broker的确认，如果没有收到确认则认为是发送失败</li>
+<li>同步发送：会把消息放在阻塞队列中，然后立马返回，然后这个阻塞队列会往broker中发消息</li>
+</ul>
+<p><strong>主题访问模式</strong></p>
+<ul>
+<li>Shared（共享）  多个生产者可以发布一个主题，这是默认设置</li>
+<li>Exclusive（独占） 一个主题只能由一个生产者发布，如果已经有生产者链接，其他生产者试图发布该主题将立即得到错误。如果”老”的生产者与broker发生网络分区，”老”生产者将被驱逐，”新”生产者将被选为下一个唯一的生产者</li>
+<li>WaitForExclusive（独占等待） 如果已经有一个生产者连接，生产者的创建是未决的，直到生产者获得独占访问。成功成为排他性的生产者被视为领导者，因此，如果想实现leader选举方案，可以使用这种模式</li>
+</ul>
+<p><strong>压缩、批处理与分块</strong><br>压缩：我们可以主动压缩生产者在传输期间发布的消息，Pulsar目前支持以下类型的压缩</p>
+<ul>
+<li>LZ4</li>
+<li>ZLIB</li>
+<li>ZSTD</li>
+<li>SNAPPY</li>
+</ul>
+<p>批处理：如果批处理开启，producer将会积累一批消息，然后通过一次请求发送出去。批处理的大小取决于最大的消息数量及最大的延迟发布</p>
+<p>分块：分块和批处理不能同时启用，要启用分块，必须提前禁用批处理。Chunking只支持持久化的主题</p>
+<p>一个producer与一个订阅consumer的分块消息<br>当生产者向主题发送一批大的分块消息和普通的非分块消息时。将M1切成分块M1-C1、M1-C2、M1-C3。这个broker在其管理的ledger里面保存所有的三个块消息，然后以相同的顺序分发给消费者（独占&#x2F;灾备）。消费者将在内存缓存所有的块消息，直到收到所有的消息快。将这些消息合并成为原始的消息M1，发送给处理进程<br><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682219039171-07775a32-cf8b-4b8f-87ab-d77646e3db76.png"></p>
+<h2 id="消费者"><a href="#消费者" class="headerlink" title="消费者"></a>消费者</h2><p>消费者通过订阅关联到主题，然后接受消息的程序</p>
+<p><strong>接收模式</strong></p>
+<p>消息可以通过同步或者异步的方式从broker接受</p>
+<p>同步：同步接收将会阻塞，直到消息可用</p>
+<p>异步：异步接收立刻返回future值，一旦新消息可用，它将即可完成</p>
+<p><strong>监听</strong></p>
+<p>客户端类库提供了它们对于consumer的监听实现，在这个接口中，一旦接受到新的消息，received方法将被调用</p>
+<p><strong>确认</strong></p>
+<p>消费者成功处理消息之后需要发送确认（ack）给broker，以让broker丢掉这条消息（否则将一直存储）。消息的确认可以逐个进行，也可以累积到一起。累计确认的时候，消费者只需要确认最后一条它收到的消息，所有之前的消息都认为被成功消费。累积确认不能用于shared模式，因为shared订阅为同一个订阅引入了多个消费者</p>
+<p><strong>主题</strong></p>
+<p>和其他的MQ一样，Pulsar中的topic是带有名称的通道，用来从producer到consumer传输消息，topic的名称是符合良好结构的URL</p>
+<p><code>&#123;persistent|non-persistent&#125;://tenant/namespace/topic</code></p>
+<ul>
+<li>peisistent|non-persistent 定义了topic的类型，Pulsar支持两种不同的topic：持久化和非持久化，默认是持久化类型，也就是会保存到硬盘上的类型</li>
+<li>tenant 实例中topic的租户，tenant是Pulsar多租户的基本要素，可以被跨集群的传播</li>
+<li>namespace topic的管理单元，与topic组的管理机制相关。大多数的topic配置在namespace层面生效，每个tenant可以有多个namespace</li>
+<li>topic 主题的最后组成部分</li>
+</ul>
+<p><strong>Partitioned topics 分区主题</strong></p>
+<p>普通的主题只由单个broker提供服务，这限制了主题的最大吞吐量，分区主题是由多个broker处理的一种特殊类型的主题，因此允许更高的吞吐量<br>分区主题实际上实现为N个主题，N是分区的数量。当消息发布到分区主题的时候，每个消息都被路由到几个Broker中的一个。分区在broker之间的分布由Pulsar自动的进行处理<br><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682220786986-bcdaace6-1ac7-48f7-b874-208796a3b695.png"><br>如上图，Topic有五个分区，划分在3个broker上，因为分区比broker多，前两个broker分别处理两个分区，而第三个broker只处理一个分区（Pulsar自动处理分区的分布）<br>此主题的消息将广播给两个消费者，路由模式决定将每个消息发布到哪个分区，而订阅模式决定将哪些消息发送到哪个消费者</p>
+<p><strong>路由模式</strong></p>
+<ul>
+<li>RoundRobinPartition message无key则轮询，有key则hash指定分区（默认模式）</li>
+<li>SinglePartition message 无key 则producer将会随机选择一个分区，将所有的消息都发送给该分区。如果message有key，那么会hash指定分区</li>
+<li>CustomParition 使用自定义消息路由实现</li>
+</ul>
+<p><strong>顺序保证</strong></p>
+<p>消息的顺序与路由模式和消息的key有关</p>
+<ul>
+<li>Per-key-partition （按key分区） 具有相同key的所有消息将被顺序放置在同一个分区中</li>
+<li>Per-producer （按照Producer） 来自同一生产者的所有消息都是有序的</li>
+</ul>
+<p><strong>哈希方案</strong></p>
+<p>HashingScheme是一个enum，表示在选择要为特定消息使用的分区时可用的标准哈希函数集</p>
+<p>有两种类型的标准哈希函数可用：JavaStringHash和Murmur3_32Hash，生产者的默认哈希函数是Java，但是当生产者的客户端是多语言的时候，Java是没用的</p>
+<p><strong>持久&#x2F;非持久化主题</strong></p>
+<p>默认情况下,Pulsar会保存所有没确认的消息到Book Keeper中，持久Topic消息会在broker重启或者consumer出问题的时候保存下来</p>
+<p>Pulsar也支持非持久化Topic 这些Topic的消息只存在于内存中，不会存储到磁盘</p>
+<p>因为Broker不会对消息进行持久化存储，当Producer将消息发送给Broker时，Broker可以立即将ack返回给Producer，所以非持久化的消息传递会比持久化的更快。相对的，当Broker因为一些原因宕机、重启后，非持久化的Topic消息都会消失，订阅者将无法收到这些消息。</p>
+<p><strong>Dead letter topic 死信主题</strong></p>
+<p>死信主题允许你在用户无法成功消费某些消息时使用新消息。在这种机制中，无法使用的消息存储在单独的主题中，成为死信主题。</p>
+<p>死信主题依赖于消息的重新投递，由于确认超时或者否认确认，消息将被重新发送。如果要对消息使用否定确认，请确保在确认超时之前对齐进行否定确认。</p>
+<p><strong>Retry letter topic 重试主题</strong></p>
+<p>对于许多在线业务系统，由于业务逻辑处理中出现异常，消息会被重复消费。</p>
+<p>若要配置重新消费失败消息的延迟时间，可以配置生产者将消息发送到业务主题和重试主题，并在消费者上启用自动重试。当在消费者上启用自动重试的时候，如果消息没有被消费，那么就会存储到重试主题中，在指定的延迟时间后，消费者会主动接受来自重试主题的失败消息</p>
+<p><strong>订阅模式</strong></p>
+<p>Pulsar支持exclusive （独占） failover（灾备） shared（共享） 和 key_shared（Key共享）四种消息订阅模式，示意图如下<br><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682231688042-eeae1153-5dd6-4257-ab60-8b8514176129.png"></p>
+<p><strong>独占模式</strong><br>默认的消息订阅模式。只能有一个消费者消费消息<br><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682231855780-0822f566-06df-4dd8-8bdd-3c1d7284dfa1.png"></p>
+<p><strong>灾备模式</strong><br>灾备模式下，一个topic也是只有单个consumer消费一个订阅关系的消息，但是在这个模式下，每个消费者会被排序，当前面的消费者无法连接上broker后，消息会由下一个消费者进行消费<br><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682231915296-3eed9904-91c2-43b4-b850-2b53441c8fe4.png"><br><strong>共享模式</strong><br>共享模式下，消息可被多个consumer同时消费，无法保证消费的顺序，消息通过roundrobin的方式投递到每一个消费者<br><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682231969316-adf66ecb-d07a-49d5-aff9-33594197eefa.png"><br><strong>key共享模式</strong><br>按照key对消息进行投递，相同的key的消息会被投递到同一个consumer上，消费示意图如下<br><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682232008012-741758f7-8650-4ae5-a9c9-63bcdb815600.png"></p>
+<p><strong>消息保留与过期</strong><br>默认策略</p>
+<ul>
+<li>立即删除所有被消费者确认过的消息</li>
+<li>以backlog的形式，持久化保存所有未被确认的消息</li>
+</ul>
+<p>两个特性</p>
+<ul>
+<li>消息保留可以让你保存consumer确认过的消息</li>
+<li>消息过期可以让你给未被确认的消息设置ttl</li>
+</ul>
+<p>消息保留和过期是针对namesapce层面进行设置和管理的</p>
+<p><strong>消息去重</strong></p>
+<p>实现消息去重的一种方式是确保消息只生产一次，即生产者幂等，这种方式的缺点在于把消息去重的工作交给应用来做。<br>在pulsar中，broker支持配置开启消息去重，用户不需要主动在代码中保证Producer只生产一次，启动之后即使消息被多次发送到topic上，也只会被持久化到磁盘一次</p>
+<p><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682240083542-ca650a22-889b-4906-be94-014ecf18debe.png"></p>
+<p>原理：Producer对每一个发送的消息，都会采用递增的方式生成一个唯一的sequence ID，这个消息会放在message的元数据中传递给broker。</p>
+<p>同时，broker也会维护一个pendingmessage队列，当broker返回发送成功ack之后，producer会将pendingmessage队列中的sequence id删除，标识producer任务这个消息生产成功。</p>
+<p>broker会记录针对每个producer接受到的最大sequence id和已经处理完的最大sequence id</p>
+<p>当broker开启消息去重之后，Broker会针对每个消息请求进行是否去重的判断，如果消息重复，则直接返回ack，不走后续存储的流程</p>
+<p><strong>延时消息</strong></p>
+<p>延时消息功能允许Consumer能够在消息发送到topic之后，过一段时间之后才能消费到这条消息。在这种集中中，消息在发布到broker之后，会被存储在book keeper中，当到消息特定的延迟时间时，消息就会传递给consumer</p>
+<p>broker不会在存储的时候做特殊处理，而是会把设置了延迟时间的消息加入到DelayedDeliveryTracker中，当到了指定的发送时间时，Tracker才会把这条消息推送给消费者</p>
+<p><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682243085046-f38a72f7-331c-432c-b990-e8de4b438bc4.png"><br>原理：</p>
+<p>在Pulsar中有两种方式实现延迟消息，分别为deliverAfter和deliverAt</p>
+<p>deliverAfter可以指定在多长时间之后进行消费</p>
+<p>deliverAt可以指定具体的延迟消费时间戳</p>
+<p>DelayedDeliveryTracker会记录所有需要延迟投递的消息的index，index由timestamp、 ledger id 、和entry id三部分组成，其中ledger id 和 entry id用来定位该消息</p>
+<p>timestamp除了记录需要投递的时间，还用于延迟优先级队列排序。tracker会根据延迟时间对消息进行排序<br><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682243400607-7ce2e51a-9fc5-48bd-a1be-dfa226eb2fd7.png"></p>
+<p><strong>多租户模式</strong></p>
+<p>Pulsar的云原生架构天然支持多租户，每个租户下还支持多Namespace，非常适合做共享大集群，方便维护。此外Pulsar天然支持租户之间的逻辑隔离，防止互相干扰，还能实现大集群资源的充分利用</p>
+<ul>
+<li>Tenant（租户）和 Namespace是Pulsar支持多租户的两个核心概念</li>
+<li>在租户级别，Pulsar为特定的租户预留合适的存储空间、应用授权和认证机制</li>
+<li>在namespace级别，Pulsar有一系列的配置策略（policy），包括存储配额、流控、消息过期策略等等</li>
+</ul>
+<p><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682243577968-08304a97-3d76-453a-85a1-10a8ab01388e.png"></p>
+<p><strong>统一消息模型</strong></p>
+<p>Pulsar做了队列模型和流模型的统一，在topic级别只需要保存一份数据，同一份数据可多次消费。以流式、队列等方式计算不同的订阅模型，大大的提升了灵活度</p>
+<p>同时Pulsar通过事务采用Exactly-Once刚好一次的语义，在进行消息传输过程中，可以确保消息不重不丢<br><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682244903659-cac62393-1696-488c-bf90-160904556ea4.png"></p>
+<p><strong>分片流</strong></p>
+<p>Pulsar将无界的数据看作是分片的流，分片分散存储在分层存储（tiered storage）、BookKeeper集群和Broker节点上，而对外提供一个统一的、无界数据的视图</p>
+<p>不需要用户显示迁移数据，对用户无感知，减少存储成本并保持近似无限的存储<br><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682301934196-2cc57808-2996-478a-a2af-458ebb95ce7e.png"></p>
+<p>跨地域复制</p>
+<p>Pulsar中的跨地域复制是将Pulsar中持久化的消息在多个集群之间备份<br>在Pulsar2.4.0中新增了复制订阅模式，在某个集群失效情况下，该功能可以在其他集群恢复消费者的消费状态，从而达到热备模式下的消息服务高可用<br><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682302140012-861fac45-f4a9-40a3-a11a-e843e0093230.png"></p>
+<h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p>单个Pulsar集群由以下三部分组成</p>
+<ul>
+<li>一个或者多个broker 用于负责处理和负载均衡producer发出的消息 并将这些消息分派给consumer。Broker 和 Pulsar配置存储交互来处理相应的任务，并将消息存储在BookKeeper实例中（bookies）；Broker底层依赖的是Zookeeper集群来处理特定的任务</li>
+<li>包含一个或者多个bookie的BookKeeper负责消息的持久化存储</li>
+<li>一个ZooKeeper集群用来处理多个Pulsar集群之间的协调任务</li>
+</ul>
+<p><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682307910434-a21873d5-4aea-4273-a704-33f2b20b5c06.png"></p>
+<p>Pulsar分离出Broker和Bookie两层架构，Broker为无状态的服务，用于发布和消费消息，而BookKeeper专注于存储，Pulsar存储是分片的，这种架构可以避免扩容时受到限制，实现数据的独立拓展和快速恢复</p>
+<p><strong>Brokers</strong><br>Pulsar的broker是一个无状态的组件，主要负责运行另外的两个组件</p>
+<ul>
+<li>一个HTTP服务器（service discovery） 它暴露了REST系统管理接口以及在生产者和消费者之间进行Topic查找的API</li>
+<li>一个调度分发器（Dispatcher） 它是一个异步的TCP服务器 通过自定义二进制协议应用与所有相关的数据传输</li>
+</ul>
+<p>出于性能考虑，消息通常从Managed Ledger缓存中分派出去，除非积压超过缓存大小。如果积压的消息对于缓存来说太大了，则Broker开始从BookKeeper中读取Entries</p>
+<p>为了支持全局Topic异地复制，Broker会控制Replicators追踪本地发布的条目</p>
+<p><strong>ZooKeeper元数据存储</strong></p>
+<p>Pulsar使用ZooKeeper进行元数据存储、集群配置和协调</p>
+<ul>
+<li>配置存储Quorum存储了租户、命名空间、和其他需要全局一致的配置项</li>
+<li>每个集群有自己独立的本地ZooKeeper保存集群内部的配置，例如broker负责哪几个主题及所有权归属元数据、broker负载报告ledger元数据等等</li>
+</ul>
+<p><strong>BookKeeper持久化存储</strong></p>
+<p>Apache Pulsar为应用程序提供有保障的信息传递，如果消息成功到达broker，就认为其预期达到了目的地</p>
+<p>为了提供这种保证，未确认送达的消息需要持久化直到它们被确认送达。这种消息传递模式通常成为持久消息传递，在Pulsar内部，没分新消息都被保存并同步N份</p>
+<p>BookKeeper是一个分布式的预写日志（WAL）系统，有如下几个特性</p>
+<ul>
+<li>使得Pulsar能够利用独立的日志，称为ledgers，随着时间的推移可以为topic创建多个ledgers</li>
+<li>保证多系统挂掉时的ledgers的读取一致性</li>
+<li>提供不同Boookies之间均匀的IO分布的特性</li>
+<li>容量和吞吐量都具有水平伸缩性，能够通过增加bookies立即增加容量到集群中</li>
+</ul>
+<p><img src="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/2_1_1682317442354-57387d85-94bc-47b5-8615-f2bcb012be42.png"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag"># 后端</a>
+              <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag"># 消息队列</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/" rel="prev" title="分布式系统常见设计">
+      <i class="fa fa-chevron-left"></i> 分布式系统常见设计
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/05/30/%E4%B8%80%E5%91%A8%E6%92%B8%E5%AE%8CK8S%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5-Day1/" rel="next" title="一周撸完K8S基础概念 Day1">
+      一周撸完K8S基础概念 Day1 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC81NjgwMy8zMzI2Nw=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97"><span class="nav-number">1.</span> <span class="nav-text">什么是消息队列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97"><span class="nav-number">2.</span> <span class="nav-text">为什么要用消息队列</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E8%80%A6"><span class="nav-number">2.1.</span> <span class="nav-text">解耦</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%82%E6%AD%A5"><span class="nav-number">2.2.</span> <span class="nav-text">异步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%90%E6%B5%81%E3%80%81%E5%89%8A%E5%B3%B0"><span class="nav-number">2.3.</span> <span class="nav-text">限流、削峰</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6"><span class="nav-number">2.4.</span> <span class="nav-text">流量控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-number">2.5.</span> <span class="nav-text"></span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%B6%88%E6%81%AF%E4%B8%8D%E8%A2%AB%E9%87%8D%E5%A4%8D%E6%B6%88%E8%B4%B9"><span class="nav-number">2.6.</span> <span class="nav-text">如何保证消息不被重复消费</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%B6%88%E6%81%AF%E7%9A%84%E5%8F%AF%E9%9D%A0%E6%80%A7%E4%BC%A0%E8%BE%93"><span class="nav-number">2.7.</span> <span class="nav-text">如何保证消息的可靠性传输</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E9%9C%80%E8%A6%81%E8%80%83%E8%99%91%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">消息队列需要考虑的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="nav-number">3.1.</span> <span class="nav-text">高可用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%97%AE%E9%A2%98"><span class="nav-number">3.2.</span> <span class="nav-text">数据问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E8%B4%B9%E8%80%85%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="nav-number">3.3.</span> <span class="nav-text">消费者取数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%9A%84%E4%BC%A0%E8%BE%93%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">消息队列的传输模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%82%B9%E5%AF%B9%E7%82%B9%E6%A8%A1%E5%9E%8B"><span class="nav-number">4.1.</span> <span class="nav-text">点对点模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E6%A8%A1%E5%9E%8B"><span class="nav-number">4.2.</span> <span class="nav-text">发布订阅模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pub-sub-vs-queue"><span class="nav-number">4.3.</span> <span class="nav-text">pub-sub vs queue</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%82%E9%9D%A2%E4%B8%8A%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%AF%B9%E6%AF%94"><span class="nav-number">5.</span> <span class="nav-text">市面上消息队列对比</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pulsar-kafka-rabbitmq-nsq%E7%9A%84%E5%BC%82%E5%90%8C"><span class="nav-number">5.1.</span> <span class="nav-text">pulsar kafka rabbitmq nsq的异同</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Pulsar%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0"><span class="nav-number"></span> <span class="nav-text">Pulsar底层实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF"><span class="nav-number">1.</span> <span class="nav-text">消息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E4%BA%A7%E8%80%85"><span class="nav-number">2.</span> <span class="nav-text">生产者</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E8%B4%B9%E8%80%85"><span class="nav-number">3.</span> <span class="nav-text">消费者</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84"><span class="nav-number">4.</span> <span class="nav-text">架构</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="安妮的心动录"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">安妮的心动录</p>
+  <div class="site-description" itemprop="description">永远不要高估自己</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/anneheartrecord" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:chengxisheng777@gmail.com" title="E-Mail → mailto:chengxisheng777@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/2523286318" title="QQ → 2523286318"><i class="gratipay fa-fw"></i>QQ</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">安妮的心动录</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">141k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:08</span>
+</div>
+
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <span class="post-meta-divider">|</span>
+<!-- 不蒜子计数初始值纠正 -->
+<script>
+$(document).ready(function() {
+
+    var int = setInterval(fixCount, 50);  // 50ms周期检测函数
+    var countOffset = 20000;  // 初始化首次数据
+
+    function fixCount() {            
+       if (document.getElementById("busuanzi_container_site_pv").style.display != "none")
+        {
+            $("#busuanzi_value_site_pv").html(parseInt($("#busuanzi_value_site_pv").html()) + countOffset); 
+            clearInterval(int);
+        }                  
+        if ($("#busuanzi_container_site_pv").css("display") != "none")
+        {
+            $("#busuanzi_value_site_uv").html(parseInt($("#busuanzi_value_site_uv").html()) + countOffset); // 加上初始数据 
+            clearInterval(int); // 停止检测
+        }  
+    }
+       	
+});
+</script> 
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+</body>
+</html>

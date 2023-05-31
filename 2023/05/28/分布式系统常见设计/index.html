@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="博客:cbb777.fun 全平台账号:安妮的心动录 github: https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord 下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论 分布式核心要素通常来说设计分布式系统的时候最需要考虑的核心要素有五个  Capacity 容量（能力） 指的是分布式系统里的CPU 内存 硬盘 网络 文件描述符 socket连">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式系统常见设计">
+<meta property="og:url" content="http://example.com/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/index.html">
+<meta property="og:site_name" content="安妮的心动录的园子">
+<meta property="og:description" content="博客:cbb777.fun 全平台账号:安妮的心动录 github: https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord 下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论 分布式核心要素通常来说设计分布式系统的时候最需要考虑的核心要素有五个  Capacity 容量（能力） 指的是分布式系统里的CPU 内存 硬盘 网络 文件描述符 socket连">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1683861835454-74e0183d-3ca1-4b94-8706-da6de1c125b7.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1683863302221-44d7f526-afa7-44d0-9e61-1a71b3036685.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1684126379204-895914b1-588c-4da6-9a9e-32cf62ea07a4.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1684144150603-cb27b827-a2f7-4495-93bf-d7815189462e.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1684230256857-0cf2d503-19cf-4f57-a00d-853f19f902db.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1684230535467-baa831aa-ae44-48a6-bb69-6ed34a2ec20f.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1684231028939-08b1d426-7b13-466c-b809-eaf439728067.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1684237185330-434942f9-556c-4408-a033-1e07b42e87ad.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1684310906242-ab5ee73d-8424-4a72-bcdf-c1664abfbf01.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1684311722641-3c848e47-7c31-4a90-b315-4005325ddf33.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1684312481795-d0a192f0-5fc1-4b3f-bf0f-d14be97ff061.png">
+<meta property="og:image" content="http://example.com/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1684312481795-d0a192f0-5fc1-4b3f-bf0f-d14be97ff061.png">
+<meta property="article:published_time" content="2023-05-28T11:01:56.000Z">
+<meta property="article:modified_time" content="2023-05-28T12:21:39.003Z">
+<meta property="article:author" content="安妮的心动录">
+<meta property="article:tag" content="后端">
+<meta property="article:tag" content="分布式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1683861835454-74e0183d-3ca1-4b94-8706-da6de1c125b7.png">
+
+<link rel="canonical" href="http://example.com/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>分布式系统常见设计 | 安妮的心动录的园子</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">安妮的心动录的园子</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-resources">
+
+    <a href="/resources/" rel="section"><i class="download fa-fw"></i>资源</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          分布式系统常见设计
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-05-28 19:01:56 / 修改时间：20:21:39" itemprop="dateCreated datePublished" datetime="2023-05-28T19:01:56+08:00">2023-05-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>博客:cbb777.fun</p>
+<p>全平台账号:安妮的心动录</p>
+<p>github: <a target="_blank" rel="noopener" href="https://github.com/anneheartrecord">https://github.com/anneheartrecord</a></p>
+<p>下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论</p>
+<h2 id="分布式核心要素"><a href="#分布式核心要素" class="headerlink" title="分布式核心要素"></a>分布式核心要素</h2><p>通常来说设计分布式系统的时候最需要考虑的核心要素有五个<img src="/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1683861835454-74e0183d-3ca1-4b94-8706-da6de1c125b7.png"></p>
+<ul>
+<li>Capacity 容量（能力） 指的是分布式系统里的CPU 内存 硬盘 网络 文件描述符 socket连接数等等硬性的指标</li>
+<li>Perfomant 性能 指的是IOPS TPS QPS Latency Jitter之类的性能指标要求，性能受限于容量，性能同时又影响了可靠性以及可用性</li>
+<li>Availablility 可用性 指的是产品或者服务在随机事件内调用时处于可服务状态的概率 也就是正常运行的时间&#x2F;总时间 之前说的异地多活也是为了保证可用性而出现的</li>
+<li>Reliability 可靠性 一般是不出故障的概率 通常企业级产品是5个9打底的 可以简单的和可用性划上约等号</li>
+<li>Scalability 可伸缩性 指的是处理集群能否动态缩扩容  使得处理能力越来越多和越来越少的某种能力 系统的可伸缩性决定了该系统能不能伸缩</li>
+</ul>
+<p>一个分布式系统通常会面临以下几个个难题：<strong>故障传播性、业务拆分与聚合、以及分布式事务</strong></p>
+<p>为了解决故障传播性的难题，我们可以采用”隔板” “熔断” “降级” “限流” “容错”以及”资源管控”等方式</p>
+<h2 id="微服务服务治理几大模式"><a href="#微服务服务治理几大模式" class="headerlink" title="微服务服务治理几大模式"></a>微服务服务治理几大模式</h2><h3 id="隔板模式"><a href="#隔板模式" class="headerlink" title="隔板模式"></a>隔板模式</h3><p>场景：<br>在分布式系统中通常将进程容器化 以进行资源隔离，然后在同一个进程中的所有业务都共享线程池，对外提供服务，但是这就导致了会经常遇到这样的问题：</p>
+<ol>
+<li>业务A负载较高，抢占了线程池里的大部分线程资源，从而导致其他业务的服务质量下降</li>
+<li>同一个进程内新加一个业务，这个业务会抢占其他业务的资源，可能会造成系统的不稳定，比如业务性能抖动</li>
+<li>难以调试，多个业务共享一个线程池，当出现故障的时候很难通过简单的日志判断是哪个业务出了问题</li>
+</ol>
+<p><strong>隔板模式：在分布式系统里进行资源的隔离，资源隔离通常按照业务粒度分为进程级别和线程级别</strong></p>
+<p>进程隔离：通常使用的是容器化进行隔离，比如通过docker实现业务进程之间的资源隔离，底层就是通过namespace实现的操作系统级别的隔离，比如隔离进程、网络、通信等等。cgroup实现的硬件层面的隔离，比如CPU、内存等等。具体实现笔者之前的博客有提到</p>
+<p>线程隔离：指给每个跑在进程里的业务按照业务类型创建一个线程池，从而实现线程级别粒度的资源隔离</p>
+<p>优势：</p>
+<ul>
+<li>提高业务可靠性，减少业务受其他业务影响的程度，当一个业务耗尽自身资源后也不会影响到其他业务的服务质量</li>
+<li>降低新加入的业务给系统带来的风险，减少新加业务导致其他业务可能出现的性能抖动</li>
+<li>利于调试，通过线程池可以很方便的定位是哪个服务出了故障，并且可以通过监控线程池的请求失败次数、超时次数、拒绝请求次数等可以实时反应当前的业务质量</li>
+</ul>
+<p>劣势：</p>
+<p>粒度更细，很容易就能想到劣势是引入了额外的开销，具体开销的点如下</p>
+<ol>
+<li>对象分配 创建多个线程对象</li>
+<li>并发 可能会有一些竞态问题 为了避免竞态问题 则必须进行并发控制</li>
+<li>线程的切换开销 操作系统层面的开销</li>
+</ol>
+<p>这些开销对于整个系统或者业务来说，一般开销不会特别大，在一些要求不苛刻的场景可以忽略</p>
+<p><strong>微服务限流三大件：熔断、降级、限流</strong></p>
+<h3 id="熔断模式"><a href="#熔断模式" class="headerlink" title="熔断模式"></a>熔断模式</h3><p>场景：</p>
+<p>1.系统负载突然过高，比如突发的访问量、过多的请求以及IO压力过载都可能会造成某个节点故障，比如节点A，然后节点A挂了，又把负载传给节点B，节点B负载过高之后又挂了，这样一连串的挂过去就会把请求从单点故障转化成为系统级别的级联故障</p>
+<p>2.我们希望在一个服务出现故障的时候，能够在一段时间内恢复，在请求被拒绝一段时间后再自动的去探测服务的可服务性</p>
+<p>熔断模式:也称为断路器模式，当系统里的响应时间或者异常比率或者单位异常数超过某个阈值的时候，比如超时次数或者重试次数超过某个阈值，就会触发熔断，接着所有的调用都快速失败，从而保证下游系统的负载安全。</p>
+<p>在断开一段时间之后，熔断器又试着让部分请求负载通过，如果这些请求成功，那么断路器就恢复正常，如果继续失败，那么就关闭服务，立刻返回失败，接着继续这个过程直到重试的次数超过一定的阈值，从而触发更加严重的”降级模式”<br><img src="/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1683863302221-44d7f526-afa7-44d0-9e61-1a71b3036685.png"><br>具体过程如下</p>
+<ul>
+<li>熔断器开始处于闭合状态，如果达到触发条件，那么熔断器就会打开</li>
+<li>接着熔断器处于打开状态，所有走到这个路径里的请求会走快速失败通道，从而避免负载下行，给下游的服务造成压力，过一个时间周期之后会自动切换到半打开状态</li>
+<li>半打开状态：认为之前的错误可能已经被修复了，因此允许通过部分请求试着看看能不能处理成功，如果这些请求处理成功，那么就认为之前导致失败的错误已经被修复，此事熔断器就切换到闭合状态，并且将计数器重置。如果这些试着发送的请求还是失败，则认为之前的问题没有解决，熔断器切回到打开模式，然后开始重置计数器给系统一定的时间来修复错误</li>
+<li>接着重复以上过程，直到半打开状态重复的次数达到一定的阈值发现错误还没被修复，从而触发”降级”状态</li>
+</ul>
+<h2 id><a href="#" class="headerlink" title></a></h2><h3 id="降级模式"><a href="#降级模式" class="headerlink" title="降级模式"></a>降级模式</h3><p>场景：</p>
+<p>1.某些时候系统会遇到负载过高的问题，当系统外来的或者内部的负载过高，超过预先定义的阈值，为了保证更加重要的业务的服务质量，希望将一些非核心的业务降低服务质量，从而释放一些额外的资源给紧急业务使用。<br>比如一个分布式系统里的读、写、数据校验、空间回收都比较消耗资源，在业务高峰期为了保证读和写的服务治理，可以把数据校验的服务通过限流或者减少线程数之类的方式，使得该服务能够调用的资源配额减少，从而释放部分资源给读和写使用，保证读写的服务质量。</p>
+<p>同样，在读和写业务不繁忙的时候，降低业务的资源配额，从而释放资源给空间回收使用。通过这种方式动态调整局部业务的服务质量从而保证关键业务的服务治理，提升用户体验。</p>
+<p>2.在云服务中”可用性”是一个很重要的指标，所以我们希望分布式的系统尽可能稳定，不管出现怎么样的故障，都能过保持基本的可用性</p>
+<p><strong>降级模式</strong>：</p>
+<p>可以从故障处理和系统服务质量两个角度理解降级模式</p>
+<p>从故障处理角度来说，服务降级就是这一功能或者服务直接不可用。</p>
+<p>而在动态调整系统整体的服务质量的时候，降级是降低某些当前非重要或者非核心业务的资源，从而释放部分资源给重要的或紧急的业务使用</p>
+<p>故障处理:是比熔断更加严重的故障处理方式，最后拿来兜底用的。</p>
+<p>比如某个功能出故障，”熔断”是还有希望将这个功能救活。而”降级”是发现救了几次没活之后，直接砍掉这个服务，保证服务整体不出问题</p>
+<p>系统服务质量：分为读功能降级、写功能降级、级联组件降级，还有自动降级或者人工降级。比如在云服务里，为了保证高可用性，在出现系统级的故障后，可以把写功能降级，就是这个服务状态变为只能读、只能查询而不能写。</p>
+<p>因此在设计的比较好的云服务里，按时间的纬度来度量可用性已经没有了太大的意义，因为不管怎样服务都是可用的，系统都是活着的，起码部分服务可用，因此在云服务里更合理的新的衡量可用性的指标是请求失败比率，即哪些服务不能对外提供能力，占比具体为多少</p>
+<p><strong>降级设计思路</strong></p>
+<p>触发策略</p>
+<ul>
+<li>超时降级：在超时重试的次数达到一个阈值后就触发降级</li>
+<li>失败比率重试：当某个服务的失败比率达到一定比率后开始降级</li>
+<li>系统故障降级：比如网络故障，硬盘故障，电源故障，服务器故障，数据中心故障等等</li>
+<li>限流降级：某些访问量太大的场景会触发限流，当达到限流的阈值后，请求也会被降级</li>
+<li>重要业务救急：比如为了保证读或者查询的功能，降低写、数据校验的资源配额</li>
+</ul>
+<p>降级处理</p>
+<ul>
+<li>资源配额调度，调度不紧急的业务支援紧急的重要的业务</li>
+<li>抛出异常，直接抛出异常，打印出错误日志，然后就不管了，请求会丢失，这在需要保证幂等性的请求里不太合适</li>
+<li>直接返回，直接返回拒绝服务，这里请求也会丢失，这在需要保证幂等性的请求里不太合适</li>
+<li>调用回退方法，调用出现服务降级时对应的业务处理逻辑，不同场景降级的逻辑不一样，比如可以把请求挂在等待队列里继续重试之类，这里需要根据业务场景合理设计回退方法</li>
+</ul>
+<p>服务降级策略</p>
+<p>可以把降级的等级分为几个层次，比如PO P1 P2 P3等等，等级越高表示问题越严重</p>
+<p>1.重要业务救急降级可以定义为P0级，只是调度次要的资源去救急，不会出现故障</p>
+<p>2.限流降级可以定义为P1 ，只是为了保证服务质量，而且如果不限流可能会出现系统负载过高从而出现故障</p>
+<p>3.超时&#x2F;失败比率降级以及失败比率可以定义为P2 出现小范围故障 而不蔓延不传播</p>
+<p>4.系统故障级别可以定义为P3级别 此事可以只保证最低资源的读请求服务</p>
+<p><img src="/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1684126379204-895914b1-588c-4da6-9a9e-32cf62ea07a4.png"><br>通常来说，分布式系统中每个服务的配置信息会保存在一个配置中心里，这个配置中心里可以有有每个服务的开关信息以及一些重要的资源配置信息。通过动态调整服务的配置信息，比如降级触发策略、降级处理措施、降级分级策略等来实现服务降级功能。</p>
+<p>分布式配置中心：管理各个服务的各种配置信息，包括但不限于以下内容</p>
+<ol>
+<li>应用程序的基本配置参数，如数据库连接信息、日志级别、缓存配置等等</li>
+<li>服务之间的调用配置，如远程服务的地址、超时设置、负载均衡策略等等</li>
+<li>业务规则的配置，如业务策略、规则、权限等等</li>
+<li>动态特性的配置，如开关、AB测试等等</li>
+<li>系统的降级策略配置，如降级的规则，降级处理的方式等等</li>
+</ol>
+<p>具体的实现可以如下，在配置中心定义一个降级策略的配置项，然后在系统中读取该配置项并根据其值进行对应的降级处理。</p>
+<p>参照上文，可以定义一个<code>DegradeStrategy</code>配置项，值为NULL P0 P1 P2 P3几个常量中的一个，在程序代码中读取加载该配置，分为以下几种情况进行请求的处理</p>
+<ul>
+<li>NULL 不进行降级处理</li>
+<li>P0 走业务备用逻辑</li>
+<li>P2 采用模拟的数据 或者缓存的数据进行响应</li>
+<li>P3 直接返回错误</li>
+</ul>
+<h3 id="限流"><a href="#限流" class="headerlink" title="限流"></a>限流</h3><p>动机:</p>
+<p>可靠性：每个系统都有自己的容量限制，也就是说能够处理的业务请求能力是有限的，如果不控制这些输入的请求数，突发输入过多的请求量会造成过度的资源竞争从而引发系统故障降低系统的可靠性</p>
+<p>可用性：限流有利于控制系统资源的消耗速率，有利于过载保护保证业务资源不被耗尽</p>
+<p>流量监管：对输入的请求流量进行细粒度的控制，通过监管输入的请求量速率对超出的部分进行惩罚，比如直接丢弃，使得进入系统的请求量被限制在一个系统所能承受的合理的范围之内，流量监管比较适合对延时要求较高的业务</p>
+<p>流量整形：控制最大输出请求速率，以确保请求量符合系统容量配置的最大传输速率规定。请求的流量被整形进行平滑处理，以使它符合下游服务的速率需求，流量整形比较适合可靠性要求较高的业务</p>
+<p>流这个词在不同上下文的含义是不一样的</p>
+<ul>
+<li>网络限流：带宽、流量</li>
+<li>IO限流：TPS QPS</li>
+<li>并发限流：并发请求数</li>
+<li>线程限流：线程数</li>
+</ul>
+<p>限流处理策略</p>
+<ul>
+<li>直接拒绝：当请求量超过阈值之后，新的请求就会被直接拒绝，方式为直接返回或者抛出异常。这种方式比较适合对分布式系统的负载容量已知的情况下，比如通过全链路压测已经确定了准确的系统处理能力以及系统容量</li>
+<li>冷启：当分布式系统长期处于低负载的情况下，请求量突发的时候，会把请求负载很快拉到很高的水准，这样可能瞬间就把系统击垮。通过”冷启”的方式，让输入的请求量缓慢增加，慢慢增加到阈值附近，对应的是令牌桶算法</li>
+<li>匀速排队：系统流量均匀，对应漏桶算法</li>
+</ul>
+<h3 id="纵向限流"><a href="#纵向限流" class="headerlink" title="纵向限流"></a>纵向限流</h3><p>两窗算法+两桶算法（固定窗口、滑动窗口）+（令牌桶、漏桶）<br>按照工作原理又可以划分为 保险丝模式和变压器模式</p>
+<p><strong>保险丝与两窗算法</strong></p>
+<p>保险丝：<br>电路中的保险丝主要是起电流过载保护作用，当电路中的电流过载的时候，保险丝自身就会烧坏从而切断电流，保护后续电路的安全运行。</p>
+<p>这与限流算法中的窗口算法原理类似，在拒绝请求之后，需要重新设置计数，因此我们定义它们为限流保险丝模式</p>
+<p><strong>固定窗口：</strong><br>按照时间线划分成一个个固定大小的时间窗口，并且每个窗口都有一个计数器来统计这一时间窗口内的访问次数，如果访问的次数超过了一个预先定义的阈值，则拒绝接下来的请求。直到下一个时间窗口，开始重新计数，当计数器又超过则继续拒绝，再在下一个时间窗口重新设置计数器继续计数，依次类推……<br><img src="/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1684144150603-cb27b827-a2f7-4495-93bf-d7815189462e.png"><br>优点： 实现简单 一个计数器就可以实现</p>
+<p>缺点有边界场景和跨窗口场景两个点，前者导致流量不均，可能有时候无法处理某些请求；后者导致流量可能超过阈值而带来风险</p>
+<p><strong>边界场景：</strong></p>
+<p>在第一个[0,5]的时间窗口内，第一秒就把计数器打到超过500，则后续的四秒将无法服务，得等到下一个[5,10]的时间窗口内计数器才被重置为0，才可以对外提供服务</p>
+<p><strong>跨窗口场景：</strong></p>
+<p>当第一个时间窗口的[4,5]的计数器为300，没有超过阈值，然后第二个时间窗口的[5,6]计数器为320，也没超过阈值，但是在[4,6]的时间窗口内计数为620 超过阈值，可能带来风险</p>
+<p><strong>滑动窗口：</strong></p>
+<p>也类似于固定窗口的计数器，不过将窗口按照时间线做了进一步的划分，每次往后移动一个细分单元，再每次都对一个小窗口进行计数统计实现流量控制。比如刚刚上图，把窗口的大小从5S缩小到1S，且会自动按照时间线进行移动</p>
+<p>能很好的规避掉跨窗口场景 但是对边界场景还是会不太平滑 不过也比固定窗口好很多了</p>
+<p><strong>变压器与两桶算法</strong></p>
+<p>变压器指的是将电路中某一等级的电压或电流转换成另外一种同频率的电压或电流的设备，有利于稳流稳压，在计算机中对应的是两桶算法，即漏桶和令牌桶</p>
+<p><strong>漏桶</strong></p>
+<p><img src="/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1684230256857-0cf2d503-19cf-4f57-a00d-853f19f902db.png"><br><img src="/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1684230535467-baa831aa-ae44-48a6-bb69-6ed34a2ec20f.png"><br>漏桶算法工作步骤</p>
+<ul>
+<li>请求被随意的输入，有突发较多的请求量也有较小的请求量，这些请求进入系统之后不是立马被处理，而是放在一个桶中</li>
+<li>当桶了缓冲的请求超过设置的水位时，输入的请求被拒绝进入，直接丢失</li>
+<li>桶以恒定的结果将输入的请求输出</li>
+</ul>
+<p>优点：<br>有利于流量的削峰填谷，且输出总是按照恒定的速率输出，因此有利于流量整形，平滑了突发的请求量</p>
+<p>缺点：</p>
+<p>1.无法接收突发流量 如果有超过桶设置水位的突发流量会被抛弃 这在幂等性的场景中明显是不适用的 比如支付场景 可能导致支付请求的丢失</p>
+<p>2.因为漏桶总是按照恒定速率输出请求（也不是每时每刻都以该速率输出 当某时刻小于到达的请求量设置的输出值的时候 则会比设置值小），这是在假设后续的服务能够承接这个速率的前提之下的，如果无法保证这些输出的请求稳定的在一个固定的时间内处理完，可能会导致后续的服务进行资源抢用，而导致引发更大的级联故障</p>
+<p><strong>令牌桶</strong></p>
+<p><img src="/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1684231028939-08b1d426-7b13-466c-b809-eaf439728067.png"><br>工作步骤</p>
+<ul>
+<li>这个桶每段时间会生成N个令牌</li>
+<li>桶子的最大令牌数量有限制</li>
+<li>如果有请求到来，则必须先在桶子里面拿令牌，然后进行请求的处理，之后从这个桶子里把令牌删掉</li>
+<li>如果桶子里面没令牌，当前请求无法通过，之后重试</li>
+</ul>
+<p>优点：</p>
+<ul>
+<li>当桶子里的令牌满了，是丢令牌而不是丢请求，这样可以在幂等性请求的场景使用</li>
+<li>可以支持突发的流量</li>
+</ul>
+<p>缺点：<br>对输出的请求速率没有做限制，有可能会打崩整个系统</p>
+<p>算法实践：</p>
+<ul>
+<li>两窗算法实现比较简单，性能好，但是超出限流阈值之后会直接拒绝请求，适用于非幂等的请求场景</li>
+<li>漏桶算法，平滑控制输出的请求速率，但是超出水位的请求会被丢弃，适用于非幂等的请求场景</li>
+<li>令牌算法，可以支持突发的请求量，不控制输出的请求速率；超出阈值之后只会丢失令牌但不丢失请求，可以结合在幂等性请求的场景使用</li>
+</ul>
+<h3 id="横向限流"><a href="#横向限流" class="headerlink" title="横向限流"></a>横向限流</h3><p>纵向限流解决的是某一个服务，一条链路的流量过高的问题，但是并没有解决这几个服务路径之间流量是否均匀分配的问题<br><img src="/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1684237185330-434942f9-556c-4408-a033-1e07b42e87ad.png"><br>横向限流的作用</p>
+<ul>
+<li>解决限流不均匀问题，尽可能让每个服务之间的流量是均匀的</li>
+<li>更细粒度的用户限流问题 限制每个用户（租户）可以进入系统的请求个数，纵向限流只能限制整体的进入网关的请求数，因此需要一个计数中心用于登记每个用户的请求数，从而进行更细粒度的流量控制，控制每个用户的请求数</li>
+</ul>
+<p>通常是通过一个类似配置中心的方式实现横向限流<br><img src="/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1684310906242-ab5ee73d-8424-4a72-bcdf-c1664abfbf01.png"></p>
+<ul>
+<li>可以将集群限流服务中心实现在一个网关实例里，与网关一起提供服务，好处是不需要再独立部署一个限流实例，缺点是如果网关挂掉，那么限流服务会一起挂掉，而且无法对网关层面进行横向限流，只实现了各个网关底下的服务的横向限流</li>
+<li>也可以独立拉起一个集群限流服务中心实例，用于提供全局限流计数服务，好处是与业务解耦，缺点是在集群内增加了一个额外的服务实例，增加了系统复杂度</li>
+</ul>
+<p>常见的横向限流算法有计数算法以及时间标签算法</p>
+<p><strong>计数算法</strong><br><img src="/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1684311722641-3c848e47-7c31-4a90-b315-4005325ddf33.png"><br>拉起一个独立的分布式配置中心，在里面实现限流算法，比如两窗、两桶算法用于全局计数，而且保证这个计数是全局唯一的，不管集群规模多大，保证每个服务所使用的计数器和计时器都是唯一的，服务拿到这个计数ID之后再进行限流调度</p>
+<p>CP模式：采用独立的限流中心，每个用户进入系统的请求都需要去远程的限流服务中心取一个计数返回，多了一个远程读取限流计数值的过程，会比较影响请求的性能<br>AP模式：本地维护一个限流技术的缓存，起一个独立线程维护，每隔一段时间本地限流缓存和远程进行同步，这种方式牺牲了限流的可靠性，但是保证了请求的性能</p>
+<p><strong>时间标签算法</strong></p>
+<p>计数算法只是实现了限制用户的请求量的最大值，并不能提供最小值保证，于是基于时间标签的算法被提出</p>
+<p>例如在云服务中，用户1和用户2付费不一样，因此提供的最大限流上线是不一样的，但是如果采用计数算法的话并不能保证付费多的用户就一定能得到更高的服务质量保证。因此需要一个可以预留资源的算法</p>
+<p><img src="/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1_1684312481795-d0a192f0-5fc1-4b3f-bf0f-d14be97ff061.png"><br>思路为：先保证最低的预留值，再根据权重划分剩下的资源，并且保证不要超过最大值。</p>
+<p>例如在云服务中，用户1和用户2付费不一样，因此提供的最大限流上线是不一样的，但是如果采用计数算法的话并不能保证付费多的用户就一定能得到更高的服务质量保证。因此需要一个可以预留资源的算法</p>
+<p><img src="/2023/05/28/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E8%AE%BE%E8%AE%A1/1684312481795-d0a192f0-5fc1-4b3f-bf0f-d14be97ff061.png"><br>思路为：先保证最低的预留值，再根据权重划分剩下的资源，并且保证不要超过最大值。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag"># 后端</a>
+              <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag"># 分布式</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/05/10/%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80/" rel="prev" title="分布式理论基础">
+      <i class="fa fa-chevron-left"></i> 分布式理论基础
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/05/28/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0/" rel="next" title="消息队列系统学习">
+      消息队列系统学习 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC81NjgwMy8zMzI2Nw=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E6%A0%B8%E5%BF%83%E8%A6%81%E7%B4%A0"><span class="nav-number">1.</span> <span class="nav-text">分布式核心要素</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E5%87%A0%E5%A4%A7%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">微服务服务治理几大模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%94%E6%9D%BF%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.1.</span> <span class="nav-text">隔板模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%86%94%E6%96%AD%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.2.</span> <span class="nav-text">熔断模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text"></span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%8D%E7%BA%A7%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.1.</span> <span class="nav-text">降级模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%90%E6%B5%81"><span class="nav-number">3.2.</span> <span class="nav-text">限流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%B5%E5%90%91%E9%99%90%E6%B5%81"><span class="nav-number">3.3.</span> <span class="nav-text">纵向限流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%AA%E5%90%91%E9%99%90%E6%B5%81"><span class="nav-number">3.4.</span> <span class="nav-text">横向限流</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="安妮的心动录"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">安妮的心动录</p>
+  <div class="site-description" itemprop="description">永远不要高估自己</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/anneheartrecord" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:chengxisheng777@gmail.com" title="E-Mail → mailto:chengxisheng777@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/2523286318" title="QQ → 2523286318"><i class="gratipay fa-fw"></i>QQ</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">安妮的心动录</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">141k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:08</span>
+</div>
+
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <span class="post-meta-divider">|</span>
+<!-- 不蒜子计数初始值纠正 -->
+<script>
+$(document).ready(function() {
+
+    var int = setInterval(fixCount, 50);  // 50ms周期检测函数
+    var countOffset = 20000;  // 初始化首次数据
+
+    function fixCount() {            
+       if (document.getElementById("busuanzi_container_site_pv").style.display != "none")
+        {
+            $("#busuanzi_value_site_pv").html(parseInt($("#busuanzi_value_site_pv").html()) + countOffset); 
+            clearInterval(int);
+        }                  
+        if ($("#busuanzi_container_site_pv").css("display") != "none")
+        {
+            $("#busuanzi_value_site_uv").html(parseInt($("#busuanzi_value_site_uv").html()) + countOffset); // 加上初始数据 
+            clearInterval(int); // 停止检测
+        }  
+    }
+       	
+});
+</script> 
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+</body>
+</html>

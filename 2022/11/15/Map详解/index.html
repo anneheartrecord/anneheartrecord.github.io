@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Map详解什么是Map基本上每种计算机语言里面都会内置一个map类型，map是一个由一组key,value组成的数据类型，并且同一个key只会出现一次。同时map支持增删改查四种操作，map的主要实现方式有两种，分别是哈希查找表(hash table)和搜索树(search tree) 哈希表：使用一个哈希函数将key分配到不同的bucket(桶，可以理解成数组中的索引)，开销主要是在哈希函数的计">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Map详解">
+<meta property="og:url" content="http://example.com/2022/11/15/Map%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="安妮的心动录的园子">
+<meta property="og:description" content="Map详解什么是Map基本上每种计算机语言里面都会内置一个map类型，map是一个由一组key,value组成的数据类型，并且同一个key只会出现一次。同时map支持增删改查四种操作，map的主要实现方式有两种，分别是哈希查找表(hash table)和搜索树(search tree) 哈希表：使用一个哈希函数将key分配到不同的bucket(桶，可以理解成数组中的索引)，开销主要是在哈希函数的计">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/11/15/Map%E8%AF%A6%E8%A7%A3/1.png">
+<meta property="article:published_time" content="2022-11-15T14:12:30.000Z">
+<meta property="article:modified_time" content="2022-11-15T14:15:37.845Z">
+<meta property="article:author" content="安妮的心动录">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/11/15/Map%E8%AF%A6%E8%A7%A3/1.png">
+
+<link rel="canonical" href="http://example.com/2022/11/15/Map%E8%AF%A6%E8%A7%A3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Map详解 | 安妮的心动录的园子</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">安妮的心动录的园子</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-resources">
+
+    <a href="/resources/" rel="section"><i class="download fa-fw"></i>资源</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/11/15/Map%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Map详解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-11-15 22:12:30 / 修改时间：22:15:37" itemprop="dateCreated datePublished" datetime="2022-11-15T22:12:30+08:00">2022-11-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Go/" itemprop="url" rel="index"><span itemprop="name">Go</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Map详解"><a href="#Map详解" class="headerlink" title="Map详解"></a>Map详解</h1><h3 id="什么是Map"><a href="#什么是Map" class="headerlink" title="什么是Map"></a>什么是Map</h3><p>基本上每种计算机语言里面都会内置一个map类型，map是一个由一组key,value组成的数据类型，并且同一个key只会出现一次。同时map支持增删改查四种操作，map的主要实现方式有两种，分别是哈希查找表(hash table)和搜索树(search tree)</p>
+<p>哈希表：使用一个哈希函数将key分配到不同的bucket(桶，可以理解成数组中的索引)，开销主要是在哈希函数的计算和数组的常数访问时间，很多场景下，我们可以简单的把哈希表的时间复杂度看成O(1)。哈希表通常还会有一个碰撞的问题，所谓的哈希碰撞就是多个key被哈希函数分配到了同一个bucket。一般有两种解决方法：链表法和开放地址法。链表法是将一个bucket实现程一个链表，落在同一个bucket中的key会插入这个链表。而开发地址法则是在发生碰撞之后，通过一定的规律，在空着的bucket里面挑选，用来放置新的key </p>
+<p>搜索树：一般使用自平衡二叉树，比如AVL树和红黑树</p>
+<p>二者的区别是，自平衡搜索树的时间复杂度最低为O(logN)，而哈希表的最差情况是O(N)，哈希表平均查找效率是O(1)。 还有一个区别是，遍历自平衡搜索树，返回的key是有序的，而哈希表则是乱序的</p>
+<h3 id="Go-Map"><a href="#Go-Map" class="headerlink" title="Go Map"></a>Go Map</h3><p>Go中的Map使用的是哈希表，并且使用链表的方式解决哈希冲突</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A header for a Go map.</span></span><br><span class="line"><span class="keyword">type</span> hmap <span class="keyword">struct</span> &#123;</span><br><span class="line">    <span class="comment">// 元素个数，调用 len(map) 时，直接返回此值</span></span><br><span class="line">	count     <span class="type">int</span></span><br><span class="line">	flags     <span class="type">uint8</span></span><br><span class="line">	<span class="comment">// buckets 的对数 log_2</span></span><br><span class="line">	B         <span class="type">uint8</span></span><br><span class="line">	<span class="comment">// overflow 的 bucket 近似数</span></span><br><span class="line">	noverflow <span class="type">uint16</span></span><br><span class="line">	<span class="comment">// 计算 key 的哈希的时候会传入哈希函数</span></span><br><span class="line">	hash0     <span class="type">uint32</span></span><br><span class="line">    <span class="comment">// 指向 buckets 数组，大小为 2^B</span></span><br><span class="line">    <span class="comment">// 如果元素个数为0，就为 nil</span></span><br><span class="line">	buckets    unsafe.Pointer</span><br><span class="line">	<span class="comment">// 等量扩容的时候，buckets 长度和 oldbuckets 相等</span></span><br><span class="line">	<span class="comment">// 双倍扩容的时候，buckets 长度会是 oldbuckets 的两倍</span></span><br><span class="line">	oldbuckets unsafe.Pointer</span><br><span class="line">	<span class="comment">// 指示扩容进度，小于此地址的 buckets 迁移完成</span></span><br><span class="line">	nevacuate  <span class="type">uintptr</span></span><br><span class="line">	extra *mapextra <span class="comment">// optional fields</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>B就是buckets数组的长度对数，也就是buckets数组长度为2^B，buckets里面存放着key-value对，buckets也是一个指针，类似于slice中指向数组的指针。</p>
+<p>buckets指向的是下面这个东西</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> bmap <span class="keyword">struct</span> &#123;</span><br><span class="line">	tophash [bucketCnt]<span class="type">uint8</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译之后就变成了</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> bmap <span class="keyword">struct</span> &#123;</span><br><span class="line">    topbits  [<span class="number">8</span>]<span class="type">uint8</span></span><br><span class="line">    keys     [<span class="number">8</span>]keytype</span><br><span class="line">    values   [<span class="number">8</span>]valuetype</span><br><span class="line">    pad      <span class="type">uintptr</span></span><br><span class="line">    overflow <span class="type">uintptr</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>其中bmap就是我们所说的哈希桶，每个桶里面最多装下8个key-value对，这些key之所以会落入同一个桶中，是因为他们经过哈希计算之后，得到的结果是一类的(哈希结果得到的后八位相同)，之后会根据key计算出来的hash值的高8位来决定key到底落入桶内的那个位置(哪个槽)</p>
+<p><img src="/2022/11/15/Map%E8%AF%A6%E8%A7%A3/1.png"></p>
+<p>其中每个bmap的key1…key8是存放在一起的，value1….value8是存放在一起的，这样的目的是为了节省因为内存对齐造成的空间浪费。</p>
+<p>每个bucket设计成最多只能存放8个key-value对，如果有第九个key-value落入当前的bucket，则需要再构建一个bucket,然后通过overflow指针连接起来。</p>
+<p><strong>创建map</strong></p>
+<p>底层调用的是makemap函数，主要做的工作就是初始化hamp结构体的各种字段，比如计算B的大小，设置哈西种子hash0等等</p>
+<p><strong>哈希函数</strong></p>
+<p>map的一个关键点在于哈希函数的选择，在程序启动时会检测cpu是否支持aes，如果支持则使用aes hash，否则使用memhash。hash函数有加密型和非加密型，加密型的一般用于加密数据、数字摘要等，典型代表就是md5 sha1 sha256 aes256这种，非加密型的就是查找，而map就是使用的查找hash函数</p>
+<p><strong>key定位过程</strong></p>
+<p>key经过哈希计算后得到哈希值，共64bit，计算它落到那个桶的时候，会用到最后B个bit位，最后B个bit位的值，就是落入桶的序号、当两个不同的key落在同一个桶中，也就是发生了哈希冲突，解决手段是链表法，从前往后找到第一个空位，这样，在查找某个key的时候先找到对应的桶，然后再去遍历bucket里的key。</p>
+<p>在槽内的查找过程：使用高八位的bit值，高八位的值就是槽位，如果在bucket中没找到，并且overflow不为空，还要继续去overflow bucket中查找，直到找到或是所有的key槽位都遍历完</p>
+<p>综上，这是一个双重循环的过程，外层循环查找所有bucket和overflow bucket，内层循环遍历单个bucket的所有槽位</p>
+<p><strong>get</strong></p>
+<p>Go中读取map有两种语法，带comma和不带comma，当要查询的key不在map里，带comma的用法会返回一个bool型变量提示key是否在map中，而不带comma的语法则会返回一个对应类型的零值</p>
+<p><strong>遍历</strong></p>
+<p>本来map的遍历过程比较简单：遍历所有的bucket以及它后面挂的overflow bucket(第一层遍历)，然后挨个遍历bucket中的所有cell(槽)，每个bucket包含8个cell，从有key的cell中取出key value </p>
+<p>但是现实并没有这么简单，因为扩容并不是一个原子的操作，每次最多只搬运两个bucket，所以如果触发了扩容操作，那么很长时间内，map状态都是处于一种中间态，有些bucket已经搬迁到新家，有些bucket还呆在老地方</p>
+<p>因此，遍历如果发生在扩容的过程中，就会涉及到遍历新老bucket的过程</p>
+<p>具体是遍历老的bucket，然后再遍历老的bucket裂变到新的bucket里的元素</p>
+<p><strong>赋值</strong></p>
+<p>调用的是mapassign函数，语法和插入key的过程一样，只不过前者的key在map在不存在，后者存在</p>
+<p>具体过程</p>
+<p>1.检查map标志位flgas,如果为1则说明其他协程在执行写操作，导致程序panic</p>
+<p>2.如果map正在扩容，那么当key定位到了某个bucket后，需要确保这个bucket对应的老bucket完成了迁移，即老bucket的key都要迁移到新的bucket中之后，才能在新的bucket中进行插入或者更新的操作</p>
+<p><strong>删除</strong></p>
+<p>调用的是底层的mapdelete函数</p>
+<p>1.检查标志位flags，如果发现标志位为1，说明其他协程在执行写操作，直接panic </p>
+<p>2.计算key的哈希，找到落入的bucket，如果正在扩容中，直接完成一次扩容</p>
+<p>3.同样是两层循环，找到key的具体位置，然后删掉</p>
+<p><strong>扩容</strong></p>
+<p>使用哈希表的目的是快速找到目标key，随着map中添加的key越来越多,key发生碰撞的概率也越来越大，当bucket中的8个cell倍塞满的时候，效率就是最低的，最理想的情况是一个bucket只装一个key，这样就能达到o1的效率，当然这样空间消耗太多了</p>
+<p>触发扩容的条件</p>
+<p>1.装载因子超过阈值6.5</p>
+<p>2.overflow的bucket数量过多，当B&lt;15如果overflow的数量大于2^B,当B&gt;&#x3D;15，如果overflow的数量大于2^15(装载因子比较小，map的插入和查找效率也很低，但是bucket的数量很多)</p>
+<p>两种扩容方式</p>
+<p>1.元素太多，bucket太少，将B+1，让bucket的数量翻倍</p>
+<p>2.元素不多，但overflow bucket很多，说明很多bucket都没满，开辟一个新的bucket空间，将老bucket中的元素移动到移动到新的bucket，是的一个bucket中的key排列更加紧密</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/11/03/Slice%E8%AF%A6%E8%A7%A3/" rel="prev" title="Slice详解">
+      <i class="fa fa-chevron-left"></i> Slice详解
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/11/15/toms%E5%88%9D%E8%AF%86/" rel="next" title="toms初识">
+      toms初识 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC81NjgwMy8zMzI2Nw=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Map%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">Map详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFMap"><span class="nav-number">1.0.1.</span> <span class="nav-text">什么是Map</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Go-Map"><span class="nav-number">1.0.2.</span> <span class="nav-text">Go Map</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="安妮的心动录"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">安妮的心动录</p>
+  <div class="site-description" itemprop="description">永远不要高估自己</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/anneheartrecord" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:chengxisheng777@gmail.com" title="E-Mail → mailto:chengxisheng777@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/2523286318" title="QQ → 2523286318"><i class="gratipay fa-fw"></i>QQ</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">安妮的心动录</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">141k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:08</span>
+</div>
+
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <span class="post-meta-divider">|</span>
+<!-- 不蒜子计数初始值纠正 -->
+<script>
+$(document).ready(function() {
+
+    var int = setInterval(fixCount, 50);  // 50ms周期检测函数
+    var countOffset = 20000;  // 初始化首次数据
+
+    function fixCount() {            
+       if (document.getElementById("busuanzi_container_site_pv").style.display != "none")
+        {
+            $("#busuanzi_value_site_pv").html(parseInt($("#busuanzi_value_site_pv").html()) + countOffset); 
+            clearInterval(int);
+        }                  
+        if ($("#busuanzi_container_site_pv").css("display") != "none")
+        {
+            $("#busuanzi_value_site_uv").html(parseInt($("#busuanzi_value_site_uv").html()) + countOffset); // 加上初始数据 
+            clearInterval(int); // 停止检测
+        }  
+    }
+       	
+});
+</script> 
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+</body>
+</html>

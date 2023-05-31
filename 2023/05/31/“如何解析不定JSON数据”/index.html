@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="博客:cbb777.fun 全平台账号:安妮的心动录 github: https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord 下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论 在开发中常常会碰到很多JSON类型的数据进行交互，而其中有很多JSON数据你是不能确定它的字段和结构的，而Go语言是一门静态强类型的语言，在进行JSON解析的时候必须要确定字段">
+<meta property="og:type" content="article">
+<meta property="og:title" content="“如何解析不定JSON数据”">
+<meta property="og:url" content="http://example.com/2023/05/31/%E2%80%9C%E5%A6%82%E4%BD%95%E8%A7%A3%E6%9E%90%E4%B8%8D%E5%AE%9AJSON%E6%95%B0%E6%8D%AE%E2%80%9D/index.html">
+<meta property="og:site_name" content="安妮的心动录的园子">
+<meta property="og:description" content="博客:cbb777.fun 全平台账号:安妮的心动录 github: https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord 下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论 在开发中常常会碰到很多JSON类型的数据进行交互，而其中有很多JSON数据你是不能确定它的字段和结构的，而Go语言是一门静态强类型的语言，在进行JSON解析的时候必须要确定字段">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-31T07:34:41.000Z">
+<meta property="article:modified_time" content="2023-05-31T07:37:43.846Z">
+<meta property="article:author" content="安妮的心动录">
+<meta property="article:tag" content="Go">
+<meta property="article:tag" content="后端">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2023/05/31/%E2%80%9C%E5%A6%82%E4%BD%95%E8%A7%A3%E6%9E%90%E4%B8%8D%E5%AE%9AJSON%E6%95%B0%E6%8D%AE%E2%80%9D/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>“如何解析不定JSON数据” | 安妮的心动录的园子</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">安妮的心动录的园子</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-resources">
+
+    <a href="/resources/" rel="section"><i class="download fa-fw"></i>资源</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/31/%E2%80%9C%E5%A6%82%E4%BD%95%E8%A7%A3%E6%9E%90%E4%B8%8D%E5%AE%9AJSON%E6%95%B0%E6%8D%AE%E2%80%9D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          “如何解析不定JSON数据”
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-05-31 15:34:41 / 修改时间：15:37:43" itemprop="dateCreated datePublished" datetime="2023-05-31T15:34:41+08:00">2023-05-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%90%8E%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">后端</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>博客:cbb777.fun</p>
+<p>全平台账号:安妮的心动录</p>
+<p>github: <a target="_blank" rel="noopener" href="https://github.com/anneheartrecord">https://github.com/anneheartrecord</a></p>
+<p>下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论</p>
+<p>在开发中常常会碰到很多JSON类型的数据进行交互，而其中有很多JSON数据你是不能确定它的字段和结构的，而Go语言是一门静态强类型的语言，在进行JSON解析的时候必须要确定字段的类型，定义出对应的结构体，然后再进行Unmarshal，那这二者之间的冲突我们该如何解决呢？</p>
+<h2 id="什么是JSON"><a href="#什么是JSON" class="headerlink" title="什么是JSON"></a>什么是JSON</h2><ul>
+<li>json是JavaScript Object Notation（JavaScript对象表示法）</li>
+<li>json是轻量级的文本数据交换格式</li>
+<li>json独立于语言</li>
+<li>json具有自我描述性，更容易理解</li>
+<li>json使用js语法来描述数据对象，但是json仍然独立于语言和平台，json解析器和json库支持许多不同的编程语言</li>
+</ul>
+<p>json是一种轻量级的数据交换格式，易于人阅读和编写，同时也易于机器解析和生成，之所以json这么流行，是因为json的结构和多级结构体（对象）刚好能对应上，而前后端交互的时候后端通常会返回给前端一个多级的结构体，于是json慢慢开始流行了，且json是跨语言和跨平台的，自身也足够轻量级。<br>json的标准格式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">一个标准的json数据</span><br><span class="line">//每个key对应的是一个value</span><br><span class="line">&#123;</span><br><span class="line">“k1&quot;: 1,</span><br><span class="line">&quot;k2&quot;: 2 //注意结尾的这个不能有逗号</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">json字符串</span><br><span class="line">&#123;</span><br><span class="line">&quot;k1&quot;: &quot;1&quot;,</span><br><span class="line">&quot;k2&quot;: &quot;2&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">json数组</span><br><span class="line">&#123;</span><br><span class="line">“k1”: [1,2],</span><br><span class="line">“k2”: [3,4]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">json对象</span><br><span class="line">&#123;</span><br><span class="line">“k1”: &#123;“1”: “haihai”&#125;,</span><br><span class="line">“k2”: &#123;“2”:”haihahai”&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">json对象数组</span><br><span class="line">&#123;</span><br><span class="line">“k1”: [</span><br><span class="line">&#123;“k11”: “hellohello”&#125;,</span><br><span class="line">&#123;“k12”: “badbad”&#125;</span><br><span class="line">]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">json数组对象</span><br><span class="line">&#123;</span><br><span class="line">“k2”: &#123;</span><br><span class="line">	“hello”: [1,2,3]</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">所有的JSON数据都是由上述几种JSON数据组合而成</span><br></pre></td></tr></table></figure>
+
+<h2 id="如何在Go中解析不确定的JSON数据"><a href="#如何在Go中解析不确定的JSON数据" class="headerlink" title="如何在Go中解析不确定的JSON数据"></a>如何在Go中解析不确定的JSON数据</h2><h3 id="通过测试、看文档的方式去确定对应的JSON数据，然后构造对应的结构体"><a href="#通过测试、看文档的方式去确定对应的JSON数据，然后构造对应的结构体" class="headerlink" title="通过测试、看文档的方式去确定对应的JSON数据，然后构造对应的结构体"></a>通过测试、看文档的方式去确定对应的JSON数据，然后构造对应的结构体</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 请求其他服务   </span><br><span class="line">jsonStr := xxx</span><br><span class="line"></span><br><span class="line">var data interface&#123;&#125;</span><br><span class="line"></span><br><span class="line">err := json.Unmarshal([]byte(jsonStr),&amp;data)</span><br><span class="line"></span><br><span class="line">fmt.Println(data)</span><br></pre></td></tr></table></figure>
+
+<p>比如可以先拿一个interface{}类型来接住JSON数据，然后看这个interface{}的值，来确定这个JSON数据哪些字段是string 哪些是object 哪些是int float等等<br>当然这也不是完全适用的，比如下面这种情况，有一个字段如下<br>type : []<br>能看出来type是一个切片类型的值，但是具体的类型你并不知道，可能是[]int 也有可能是[]string []float等等</p>
+<h3 id="map-string-interface"><a href="#map-string-interface" class="headerlink" title="map[string] interface{}"></a>map[string] interface{}</h3><p>这个类型是map键值对，值可以是任意类型，因为在go中任意类型都实现了空接口interface{}，而json数据也是key value的键值对，所以map[string] interface{}天然支持解析json类型数据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">jsonStr := xxx</span><br><span class="line">var data map[string]interface&#123;&#125; </span><br><span class="line">err := json.Unmarshal([]byte(jsonStr),&amp;data)</span><br><span class="line"></span><br><span class="line">// 你想取的字段</span><br><span class="line">fieldValue := data[&quot;field&quot;]</span><br><span class="line"></span><br><span class="line">// 类型断言</span><br><span class="line">if value,ok := data[&quot;field&quot;].(float64);ok &#123;</span><br><span class="line"></span><br><span class="line">&#125; else if vluae,ok := data[&quot;field&quot;].(int64); ok &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">理论上所有的合法的JSON数据都可以被反序列化到map[string]interface&#123;&#125;中</span><br><span class="line">但是实际应用中 可能会出现一些无法被map[string]interface&#123;&#125;解析的JSON数据</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>JSON 数据中包含了多层嵌套的数据结构。在这种情况下，如果没有使用递归或者其他方式对嵌套数据进行处理，可能会导致反序列化失败。</li>
+<li>JSON 数据中包含了数组类型，但是数组元素类型不一致或者无法转换成相应的类型。在这种情况下，可能需要手动处理数组元素或者使用其他数据类型来保存数组数据。</li>
+<li>JSON 数据中包含了自定义数据类型或者复杂的数据结构，无法使用 map[string]interface{} 类型来反序列化。在这种情况下，需要定义相应的结构体或者使用其他适合的数据类型来反序列化。</li>
+</ul>
+<h2 id="第三方库"><a href="#第三方库" class="headerlink" title="第三方库"></a>第三方库</h2><p>除了encoding&#x2F;json之外，还有很多第三方库可以用来解析不确定的JSON数据，例如gjson和jsonparser，这些库通常提供了更加灵活和高效的JSON解析方式，可以根据具体的需求选择合适的库来使用</p>
+<h2 id="json-RawMessage与json-Number"><a href="#json-RawMessage与json-Number" class="headerlink" title="json.RawMessage与json.Number"></a>json.RawMessage与json.Number</h2><ul>
+<li>json.RawMessage 是一个非常高效的数据类型，因为她不需要进行任何解析和类型转换，直接保存了未经处理的原始JSON数据，在反序列化的时候只需要将<code>json.RawMessage</code>转化为对应的数据类型即可，无需重新解析JSON数据</li>
+<li>json.Number 表示JSON中的数字类型，可以用来保存任意精度的数字。这个数字可以特别大，可能会无法用Go中的整数或者浮点数来表示</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br></pre></td><td class="code"><pre><span class="line">package main</span><br><span class="line"></span><br><span class="line">import (</span><br><span class="line">    &quot;encoding/json&quot;</span><br><span class="line">    &quot;fmt&quot;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">    jsonData := []byte(`&#123;</span><br><span class="line">        &quot;id&quot;: 12345,</span><br><span class="line">        &quot;name&quot;: &quot;John Doe&quot;,</span><br><span class="line">        &quot;age&quot;: 30,</span><br><span class="line">        &quot;score&quot;: 95.5,</span><br><span class="line">        &quot;is_student&quot;: true,</span><br><span class="line">        &quot;tags&quot;: [&quot;tag1&quot;, &quot;tag2&quot;, &quot;tag3&quot;],</span><br><span class="line">        &quot;extra&quot;: &#123;</span><br><span class="line">            &quot;field1&quot;: &quot;value1&quot;,</span><br><span class="line">            &quot;field2&quot;: 123</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;`)</span><br><span class="line"></span><br><span class="line">    var m map[string]json.RawMessage</span><br><span class="line">    err := json.Unmarshal(jsonData, &amp;m)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        panic(err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    var id int</span><br><span class="line">    err = json.Unmarshal(m[&quot;id&quot;], &amp;id)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        panic(err)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Printf(&quot;id: %d\n&quot;, id)</span><br><span class="line"></span><br><span class="line">    var name string</span><br><span class="line">    err = json.Unmarshal(m[&quot;name&quot;], &amp;name)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        panic(err)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Printf(&quot;name: %s\n&quot;, name)</span><br><span class="line"></span><br><span class="line">    var age int</span><br><span class="line">    err = json.Unmarshal(m[&quot;age&quot;], &amp;age)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        panic(err)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Printf(&quot;age: %d\n&quot;, age)</span><br><span class="line"></span><br><span class="line">    var score float64</span><br><span class="line">    err = json.Unmarshal(m[&quot;score&quot;], &amp;score)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        panic(err)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Printf(&quot;score: %f\n&quot;, score)</span><br><span class="line"></span><br><span class="line">    var isStudent bool</span><br><span class="line">    err = json.Unmarshal(m[&quot;is_student&quot;], &amp;isStudent)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        panic(err)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Printf(&quot;is_student: %v\n&quot;, isStudent)</span><br><span class="line"></span><br><span class="line">    var tags []string</span><br><span class="line">    err = json.Unmarshal(m[&quot;tags&quot;], &amp;tags)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        panic(err)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Printf(&quot;tags: %v\n&quot;, tags)</span><br><span class="line"></span><br><span class="line">    var extra map[string]json.RawMessage</span><br><span class="line">    err = json.Unmarshal(m[&quot;extra&quot;], &amp;extra)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        panic(err)</span><br><span class="line">    &#125;</span><br><span class="line">    var field1 string</span><br><span class="line">    err = json.Unmarshal(extra[&quot;field1&quot;], &amp;field1)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        panic(err)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Printf(&quot;extra.field1: %s\n&quot;, field1)</span><br><span class="line"></span><br><span class="line">    var field2 int</span><br><span class="line">    err = json.Unmarshal(extra[&quot;field2&quot;], &amp;field2)</span><br><span class="line">    if err != nil &#123;</span><br><span class="line">        panic(err)</span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Printf(&quot;extra.field2: %d\n&quot;, field2)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 不确定的类型</span><br><span class="line">data := make(map[string]interface&#123;&#125;)</span><br><span class="line">if err := json.Unmarshal(rawData, &amp;data); err != nil &#123;</span><br><span class="line">    log.Fatal(err)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if value, ok := data[&quot;age&quot;].(float64); ok &#123;</span><br><span class="line">    // 处理年龄为浮点数的情况</span><br><span class="line">&#125; else if value, ok := data[&quot;age&quot;].(int); ok &#123;</span><br><span class="line">    // 处理年龄为整数的情况</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    // 处理年龄为其他类型或不存在的情况</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是：类型断言的底层为反射，因为在运行时需要判断一个接口值的具体类型，而这个类型是在编译时无法确定的，需要在运行时动态地获取。效率比正常的代码低一到两个数量级，而且需要消耗额外的时间和内存</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+              <a href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag"># 后端</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/05/31/Go%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95/" rel="prev" title="Go模糊测试">
+      <i class="fa fa-chevron-left"></i> Go模糊测试
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC81NjgwMy8zMzI2Nw=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFJSON"><span class="nav-number">1.</span> <span class="nav-text">什么是JSON</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%9C%A8Go%E4%B8%AD%E8%A7%A3%E6%9E%90%E4%B8%8D%E7%A1%AE%E5%AE%9A%E7%9A%84JSON%E6%95%B0%E6%8D%AE"><span class="nav-number">2.</span> <span class="nav-text">如何在Go中解析不确定的JSON数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E6%B5%8B%E8%AF%95%E3%80%81%E7%9C%8B%E6%96%87%E6%A1%A3%E7%9A%84%E6%96%B9%E5%BC%8F%E5%8E%BB%E7%A1%AE%E5%AE%9A%E5%AF%B9%E5%BA%94%E7%9A%84JSON%E6%95%B0%E6%8D%AE%EF%BC%8C%E7%84%B6%E5%90%8E%E6%9E%84%E9%80%A0%E5%AF%B9%E5%BA%94%E7%9A%84%E7%BB%93%E6%9E%84%E4%BD%93"><span class="nav-number">2.1.</span> <span class="nav-text">通过测试、看文档的方式去确定对应的JSON数据，然后构造对应的结构体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#map-string-interface"><span class="nav-number">2.2.</span> <span class="nav-text">map[string] interface{}</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93"><span class="nav-number">3.</span> <span class="nav-text">第三方库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#json-RawMessage%E4%B8%8Ejson-Number"><span class="nav-number">4.</span> <span class="nav-text">json.RawMessage与json.Number</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="安妮的心动录"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">安妮的心动录</p>
+  <div class="site-description" itemprop="description">永远不要高估自己</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/anneheartrecord" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:chengxisheng777@gmail.com" title="E-Mail → mailto:chengxisheng777@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/2523286318" title="QQ → 2523286318"><i class="gratipay fa-fw"></i>QQ</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">安妮的心动录</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">141k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:08</span>
+</div>
+
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <span class="post-meta-divider">|</span>
+<!-- 不蒜子计数初始值纠正 -->
+<script>
+$(document).ready(function() {
+
+    var int = setInterval(fixCount, 50);  // 50ms周期检测函数
+    var countOffset = 20000;  // 初始化首次数据
+
+    function fixCount() {            
+       if (document.getElementById("busuanzi_container_site_pv").style.display != "none")
+        {
+            $("#busuanzi_value_site_pv").html(parseInt($("#busuanzi_value_site_pv").html()) + countOffset); 
+            clearInterval(int);
+        }                  
+        if ($("#busuanzi_container_site_pv").css("display") != "none")
+        {
+            $("#busuanzi_value_site_uv").html(parseInt($("#busuanzi_value_site_uv").html()) + countOffset); // 加上初始数据 
+            clearInterval(int); // 停止检测
+        }  
+    }
+       	
+});
+</script> 
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+</body>
+</html>

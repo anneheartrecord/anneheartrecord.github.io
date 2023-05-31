@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="博客:cbb777.fun 全平台账号:安妮的心动录 github: https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord 下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论 什么是视频资源所谓视频资源，在播放和底层存储的时候其实就是一张一张图，30帧为一秒三十张图，60帧为一秒60张图等。一连串的图片按照一定帧率播放出来，刚开始的时候没有声音，所以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="流媒体技术初识">
+<meta property="og:url" content="http://example.com/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/index.html">
+<meta property="og:site_name" content="安妮的心动录的园子">
+<meta property="og:description" content="博客:cbb777.fun 全平台账号:安妮的心动录 github: https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord 下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论 什么是视频资源所谓视频资源，在播放和底层存储的时候其实就是一张一张图，30帧为一秒三十张图，60帧为一秒60张图等。一连串的图片按照一定帧率播放出来，刚开始的时候没有声音，所以">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/1.png">
+<meta property="og:image" content="http://example.com/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/2.png">
+<meta property="og:image" content="http://example.com/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/3.png">
+<meta property="article:published_time" content="2023-05-09T00:06:36.000Z">
+<meta property="article:modified_time" content="2023-05-09T00:12:38.112Z">
+<meta property="article:author" content="安妮的心动录">
+<meta property="article:tag" content="计算机基础">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/1.png">
+
+<link rel="canonical" href="http://example.com/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>流媒体技术初识 | 安妮的心动录的园子</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">安妮的心动录的园子</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-resources">
+
+    <a href="/resources/" rel="section"><i class="download fa-fw"></i>资源</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          流媒体技术初识
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-05-09 08:06:36 / 修改时间：08:12:38" itemprop="dateCreated datePublished" datetime="2023-05-09T08:06:36+08:00">2023-05-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">计算机基础</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>博客:cbb777.fun</p>
+<p>全平台账号:安妮的心动录</p>
+<p>github: <a target="_blank" rel="noopener" href="https://github.com/anneheartrecord">https://github.com/anneheartrecord</a></p>
+<p>下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论</p>
+<h2 id="什么是视频资源"><a href="#什么是视频资源" class="headerlink" title="什么是视频资源"></a>什么是视频资源</h2><p>所谓视频资源，在播放和底层存储的时候其实就是一张一张图，30帧为一秒三十张图，60帧为一秒60张图等。一连串的图片按照一定帧率播放出来，刚开始的时候没有声音，所以音频信息就需要在各个帧进行精确设置，播放才能够音画同步。</p>
+<h2 id="流"><a href="#流" class="headerlink" title="流"></a>流</h2><p>流媒体：</p>
+<p>计算机科技在历经了文件（File）、页面（Web）时代之后，今天来到了以流（Streams）为单位的时代，而这个流的最典型的应用就是“流媒体”技术，它指的是在网络上采用流式传输技术来发布音频、视频以及其他多媒体文件。</p>
+<p>所谓的流式传输就是将音频、视频多媒体文件经过一定的算法，编码压缩成一个个很小的压缩包，流媒体服务器通过特定网络协议进行连续、实时的传送，用户端接受到压缩包后由播放软件实时解压缩实现播放的过程。而所谓的流媒体则特指一切采用这种流式传输的媒体文件。</p>
+<p>今天我们通过互联网看视频、直播、盒子看电视算如此方便，背后就有着流媒体系统的支撑。</p>
+<p>在对于音视频的传输分发上，我们会经常听到HTTP渐进式、HTTP流、文件下载、实时流式传输等等专业术语，下表总结了不同传输方式的特点</p>
+<p><img src="/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/1.png" alt="image.png"></p>
+<p>需要完成一个支撑高体验大规模的流媒体系统，需要考虑的技术层面有</p>
+<ol>
+<li><p>云计算基础服务相关技术：基于云架构的计算、网络、存储、CDN等底层基础服务已经变成了必须。硬件虚拟化、网络虚拟化能够最大程度保障音视频播放的稳定性；同时CDN内容分发网络能够有效应对高并发和徒增流量的需求，对流媒体传输的所有环节进行针对性优化，大幅度降低延时，对象存储满足了流媒体数据的大规模存储要求</p>
+</li>
+<li><p>音视频相关技术：音视频的编解码、4K、VR等音视频核心技术能力</p>
+</li>
+<li><p>场景化需求：秀场娱乐直播的实时录制，实时水印，实时鉴黄；连麦，版权保护等等</p>
+</li>
+</ol>
+<h2 id="Youtube"><a href="#Youtube" class="headerlink" title="Youtube"></a>Youtube</h2><p>Youtube是如何存储海量音视频数据的？</p>
+<p>Youtube是仅次于谷歌的第二大热门网站，在19年5月，每分钟会有500小时的视频内容上传到该平台</p>
+<p>架构</p>
+<p><img src="/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/2.png" alt="image.png"></p>
+<p>Youtube的后端微服务是由Python Java 和Go 写的，而前端是使用JS写的，主要的数据库是由Vitess支持的MySQL，另外使用Memcache实现了缓存，并使用Zookeeper进行节点的协调</p>
+<p>流行的视频通过CDN来提供，而一般的、较少播放的视频则从数据库中获取</p>
+<p>视频压缩：能够使用其他编码器一半的带宽来编码视频</p>
+<p>视频流：使用基于HTTP协议的动态自适应流，可以按照不同的速率提供给观众，客户端通过观看者的互联网速度自动适应视频渲染，从而尽可能少的减少缓冲时间</p>
+<p>Vitess的诞生</p>
+<p>随着网站越来越大，请求量越来越多，不得不对数据库进行水平拓展</p>
+<h3 id="主-从副本"><a href="#主-从副本" class="headerlink" title="主-从副本"></a>主-从副本</h3><p>副本会添加到数据库实例中，读取请求会被路由到主数据库和副本上，其中主节点可写又可读，从节点只可读。</p>
+<p>但是这种场景中，有可能会从副本中读取到陈旧的数据，如果在主节点将信息更新到副本之前，一个请求读取了副本的数据，那么观看者就会得到陈旧的数据。但是一般没什么大问题，因为在一段时间的运行后，不同节点的数据会答到最终一致</p>
+<h3 id="分片"><a href="#分片" class="headerlink" title="分片"></a>分片</h3><p>当QPS继续增大，就该对数据库进行分片了，分片并不是一个简单的过程，它大大的增加了系统的复杂性</p>
+<p>数据库分片之后，数据被分散到多台机器上，这增加了系统写入的吞吐量，不再是只有一个主节点能承担写的任务，同时，每台机器都创建了单独的副本，以实现冗余和吞吐</p>
+<h3 id="灾难管理"><a href="#灾难管理" class="headerlink" title="灾难管理"></a>灾难管理</h3><p>为了防止突然掉电、火灾等情况，需要对数据进行冗余，将用户数据备份到世界不同地理区域的数据中心。丢失用户数据和服务不可用算不允许的。同时拥有多个数据中心也有助于Youtube减少系统延迟，因为用户请求会被路由到最近的数据中心</p>
+<h2 id="Vitess"><a href="#Vitess" class="headerlink" title="Vitess"></a>Vitess</h2><p>是一个运行在MySQL之上的数据库集群方案，能够使MySQL进行水平拓展。它具有内置的分片特性，能够让开发人员拓展数据库，而不必再应用中添加任何的分片逻辑。类似于nosql的做法</p>
+<p><img src="/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/3.png" alt="image.png"></p>
+<p>vitess会自动处理故障转移与备份，除了youtube，vitess还被业界的其他知名厂商使用，如github等</p>
+<p>当你需要acid事务和强一致性的支持，同时又希望像NoSQL一样快速拓展关系型数据库的时候，Vitess就会大显身手，通过基于go编程提供的连接池，Vitess能够以很低的成本管理大量连接</p>
+<p>部署到云中：vitess是云原生的，并且容量是逐步添加到数据库中的。它可以作为一个K8S感知的云原生分布式数据库运行</p>
+<h2 id="如何存储"><a href="#如何存储" class="headerlink" title="如何存储"></a>如何存储</h2><p>视频会存储在谷歌数据中心的硬盘里，由GFS和BigTbale管理， GFS是谷歌开发的一个分布式文件系统，用于管理分布式环境中的大规模数据，而BigTable是建立在GFS上的低延迟分布式数据存储系统，用于处理分布在千万台机器上的PB级别的数据</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" rel="tag"># 计算机基础</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/05/08/%E9%80%86%E5%90%91%E5%88%9D%E8%AF%86/" rel="prev" title="逆向初识">
+      <i class="fa fa-chevron-left"></i> 逆向初识
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/05/10/%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA%E5%9F%BA%E7%A1%80/" rel="next" title="分布式理论基础">
+      分布式理论基础 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC81NjgwMy8zMzI2Nw=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%A7%86%E9%A2%91%E8%B5%84%E6%BA%90"><span class="nav-number">1.</span> <span class="nav-text">什么是视频资源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%81"><span class="nav-number">2.</span> <span class="nav-text">流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Youtube"><span class="nav-number">3.</span> <span class="nav-text">Youtube</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB-%E4%BB%8E%E5%89%AF%E6%9C%AC"><span class="nav-number">3.1.</span> <span class="nav-text">主-从副本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%89%87"><span class="nav-number">3.2.</span> <span class="nav-text">分片</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%81%BE%E9%9A%BE%E7%AE%A1%E7%90%86"><span class="nav-number">3.3.</span> <span class="nav-text">灾难管理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vitess"><span class="nav-number">4.</span> <span class="nav-text">Vitess</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%AD%98%E5%82%A8"><span class="nav-number">5.</span> <span class="nav-text">如何存储</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="安妮的心动录"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">安妮的心动录</p>
+  <div class="site-description" itemprop="description">永远不要高估自己</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/anneheartrecord" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;anneheartrecord" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:chengxisheng777@gmail.com" title="E-Mail → mailto:chengxisheng777@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/2523286318" title="QQ → 2523286318"><i class="gratipay fa-fw"></i>QQ</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">安妮的心动录</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">141k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:08</span>
+</div>
+
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+    <span id="busuanzi_container_site_pv">总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">总访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    <span class="post-meta-divider">|</span>
+<!-- 不蒜子计数初始值纠正 -->
+<script>
+$(document).ready(function() {
+
+    var int = setInterval(fixCount, 50);  // 50ms周期检测函数
+    var countOffset = 20000;  // 初始化首次数据
+
+    function fixCount() {            
+       if (document.getElementById("busuanzi_container_site_pv").style.display != "none")
+        {
+            $("#busuanzi_value_site_pv").html(parseInt($("#busuanzi_value_site_pv").html()) + countOffset); 
+            clearInterval(int);
+        }                  
+        if ($("#busuanzi_container_site_pv").css("display") != "none")
+        {
+            $("#busuanzi_value_site_uv").html(parseInt($("#busuanzi_value_site_uv").html()) + countOffset); // 加上初始数据 
+            clearInterval(int); // 停止检测
+        }  
+    }
+       	
+});
+</script> 
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+</body>
+</html>
