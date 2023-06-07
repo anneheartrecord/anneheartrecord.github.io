@@ -169,6 +169,273 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/" class="post-title-link" itemprop="url">流媒体技术初识</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-05-09 08:06:36 / 修改时间：08:12:38" itemprop="dateCreated datePublished" datetime="2023-05-09T08:06:36+08:00">2023-05-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">计算机基础</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>博客:cbb777.fun</p>
+<p>全平台账号:安妮的心动录</p>
+<p>github: <a target="_blank" rel="noopener" href="https://github.com/anneheartrecord">https://github.com/anneheartrecord</a></p>
+<p>下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论</p>
+<h2 id="什么是视频资源"><a href="#什么是视频资源" class="headerlink" title="什么是视频资源"></a>什么是视频资源</h2><p>所谓视频资源，在播放和底层存储的时候其实就是一张一张图，30帧为一秒三十张图，60帧为一秒60张图等。一连串的图片按照一定帧率播放出来，刚开始的时候没有声音，所以音频信息就需要在各个帧进行精确设置，播放才能够音画同步。</p>
+<h2 id="流"><a href="#流" class="headerlink" title="流"></a>流</h2><p>流媒体：</p>
+<p>计算机科技在历经了文件（File）、页面（Web）时代之后，今天来到了以流（Streams）为单位的时代，而这个流的最典型的应用就是“流媒体”技术，它指的是在网络上采用流式传输技术来发布音频、视频以及其他多媒体文件。</p>
+<p>所谓的流式传输就是将音频、视频多媒体文件经过一定的算法，编码压缩成一个个很小的压缩包，流媒体服务器通过特定网络协议进行连续、实时的传送，用户端接受到压缩包后由播放软件实时解压缩实现播放的过程。而所谓的流媒体则特指一切采用这种流式传输的媒体文件。</p>
+<p>今天我们通过互联网看视频、直播、盒子看电视算如此方便，背后就有着流媒体系统的支撑。</p>
+<p>在对于音视频的传输分发上，我们会经常听到HTTP渐进式、HTTP流、文件下载、实时流式传输等等专业术语，下表总结了不同传输方式的特点</p>
+<p><img src="/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/1.png" alt="image.png"></p>
+<p>需要完成一个支撑高体验大规模的流媒体系统，需要考虑的技术层面有</p>
+<ol>
+<li><p>云计算基础服务相关技术：基于云架构的计算、网络、存储、CDN等底层基础服务已经变成了必须。硬件虚拟化、网络虚拟化能够最大程度保障音视频播放的稳定性；同时CDN内容分发网络能够有效应对高并发和徒增流量的需求，对流媒体传输的所有环节进行针对性优化，大幅度降低延时，对象存储满足了流媒体数据的大规模存储要求</p>
+</li>
+<li><p>音视频相关技术：音视频的编解码、4K、VR等音视频核心技术能力</p>
+</li>
+<li><p>场景化需求：秀场娱乐直播的实时录制，实时水印，实时鉴黄；连麦，版权保护等等</p>
+</li>
+</ol>
+<h2 id="Youtube"><a href="#Youtube" class="headerlink" title="Youtube"></a>Youtube</h2><p>Youtube是如何存储海量音视频数据的？</p>
+<p>Youtube是仅次于谷歌的第二大热门网站，在19年5月，每分钟会有500小时的视频内容上传到该平台</p>
+<p>架构</p>
+<p><img src="/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/2.png" alt="image.png"></p>
+<p>Youtube的后端微服务是由Python Java 和Go 写的，而前端是使用JS写的，主要的数据库是由Vitess支持的MySQL，另外使用Memcache实现了缓存，并使用Zookeeper进行节点的协调</p>
+<p>流行的视频通过CDN来提供，而一般的、较少播放的视频则从数据库中获取</p>
+<p>视频压缩：能够使用其他编码器一半的带宽来编码视频</p>
+<p>视频流：使用基于HTTP协议的动态自适应流，可以按照不同的速率提供给观众，客户端通过观看者的互联网速度自动适应视频渲染，从而尽可能少的减少缓冲时间</p>
+<p>Vitess的诞生</p>
+<p>随着网站越来越大，请求量越来越多，不得不对数据库进行水平拓展</p>
+<h3 id="主-从副本"><a href="#主-从副本" class="headerlink" title="主-从副本"></a>主-从副本</h3><p>副本会添加到数据库实例中，读取请求会被路由到主数据库和副本上，其中主节点可写又可读，从节点只可读。</p>
+<p>但是这种场景中，有可能会从副本中读取到陈旧的数据，如果在主节点将信息更新到副本之前，一个请求读取了副本的数据，那么观看者就会得到陈旧的数据。但是一般没什么大问题，因为在一段时间的运行后，不同节点的数据会答到最终一致</p>
+<h3 id="分片"><a href="#分片" class="headerlink" title="分片"></a>分片</h3><p>当QPS继续增大，就该对数据库进行分片了，分片并不是一个简单的过程，它大大的增加了系统的复杂性</p>
+<p>数据库分片之后，数据被分散到多台机器上，这增加了系统写入的吞吐量，不再是只有一个主节点能承担写的任务，同时，每台机器都创建了单独的副本，以实现冗余和吞吐</p>
+<h3 id="灾难管理"><a href="#灾难管理" class="headerlink" title="灾难管理"></a>灾难管理</h3><p>为了防止突然掉电、火灾等情况，需要对数据进行冗余，将用户数据备份到世界不同地理区域的数据中心。丢失用户数据和服务不可用算不允许的。同时拥有多个数据中心也有助于Youtube减少系统延迟，因为用户请求会被路由到最近的数据中心</p>
+<h2 id="Vitess"><a href="#Vitess" class="headerlink" title="Vitess"></a>Vitess</h2><p>是一个运行在MySQL之上的数据库集群方案，能够使MySQL进行水平拓展。它具有内置的分片特性，能够让开发人员拓展数据库，而不必再应用中添加任何的分片逻辑。类似于nosql的做法</p>
+<p><img src="/2023/05/09/%E6%B5%81%E5%AA%92%E4%BD%93%E6%8A%80%E6%9C%AF%E5%88%9D%E8%AF%86/3.png" alt="image.png"></p>
+<p>vitess会自动处理故障转移与备份，除了youtube，vitess还被业界的其他知名厂商使用，如github等</p>
+<p>当你需要acid事务和强一致性的支持，同时又希望像NoSQL一样快速拓展关系型数据库的时候，Vitess就会大显身手，通过基于go编程提供的连接池，Vitess能够以很低的成本管理大量连接</p>
+<p>部署到云中：vitess是云原生的，并且容量是逐步添加到数据库中的。它可以作为一个K8S感知的云原生分布式数据库运行</p>
+<h2 id="如何存储"><a href="#如何存储" class="headerlink" title="如何存储"></a>如何存储</h2><p>视频会存储在谷歌数据中心的硬盘里，由GFS和BigTbale管理， GFS是谷歌开发的一个分布式文件系统，用于管理分布式环境中的大规模数据，而BigTable是建立在GFS上的低延迟分布式数据存储系统，用于处理分布在千万台机器上的PB级别的数据</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/08/%E9%80%86%E5%90%91%E5%88%9D%E8%AF%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="安妮的心动录">
+      <meta itemprop="description" content="永远不要高估自己">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="安妮的心动录的园子">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/05/08/%E9%80%86%E5%90%91%E5%88%9D%E8%AF%86/" class="post-title-link" itemprop="url">逆向初识</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-05-08 00:40:25 / 修改时间：00:59:51" itemprop="dateCreated datePublished" datetime="2023-05-08T00:40:25+08:00">2023-05-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">计算机基础</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>博客:cbb777.fun</p>
+<p>全平台账号:安妮的心动录</p>
+<p>github: <a target="_blank" rel="noopener" href="https://github.com/anneheartrecord">https://github.com/anneheartrecord</a></p>
+<p>下文中我说的可能对，也可能不对，鉴于笔者水平有限，请君自辨。有问题欢迎大家找我讨论</p>
+<h2 id="计算机启动过程"><a href="#计算机启动过程" class="headerlink" title="计算机启动过程"></a>计算机启动过程</h2><p>基本围绕着输入输出系统（Basic Input&#x2F;Onput System BIOS）展开 </p>
+<p>1.开始供电</p>
+<p>2.Power On Self Test 检测关键设备是否存在，能否正常运行。如果系统BIOS在这个过程中发现了一些致命错误，比如内存出错或者没有内存，那就会直接控制喇叭来报告错误</p>
+<p>3.BIOS选择启动盘 F12可进入选择页面，比如双系统就要这个阶段选择启动的是哪个操作系统</p>
+<h2 id="操作系统启动过程"><a href="#操作系统启动过程" class="headerlink" title="操作系统启动过程"></a>操作系统启动过程</h2><p>1.读取硬盘的前512个字节，确定操作系统在磁盘中的位置</p>
+<p>2.将操作系统载入内核中</p>
+<h2 id="程序的生成和运行"><a href="#程序的生成和运行" class="headerlink" title="程序的生成和运行"></a>程序的生成和运行</h2><p>Java程序：将源代码通过编译器编译成.class类型文件（字节码），这种文件只能通过JVM识别。</p>
+<p>运行的时候JVM从.class文件中读一行解释执行一行。Java为了实现跨平台，不同的操作系统对应不同的JVM，也就是说Java前半部分是编译，后半部分是解析，是一种混合型程序</p>
+<h2 id="一个C程序的编写到运行过程"><a href="#一个C程序的编写到运行过程" class="headerlink" title="一个C程序的编写到运行过程"></a>一个C程序的编写到运行过程</h2><ol>
+<li><p>首先使用编辑器编辑程序源文件（.c .cpp)</p>
+</li>
+<li><p>源程序经过编译器被编译为等价的汇编代码，再经过汇编器产生与目标平台CPU一致的目标代码，也就是机器码</p>
+</li>
+<li><p>尽管目标代码的指令已经可以被目标CPU执行了，但是可能还包含没有解析的名称和地址引用，因此需要连接器把目标代码文件和其他的一些库文件及资源文件连接起来，产生可执行的二进制exe文件</p>
+</li>
+<li><p>当执行.exe文件的时候，windows操作系统会解读链接器记录再可执行程序中的格式信息，然后将代码和数据“放置”在内存中，成为可以运行的内存映像，然后生成一个进程开始运行</p>
+</li>
+</ol>
+<h2 id="编译过程"><a href="#编译过程" class="headerlink" title="编译过程"></a>编译过程</h2><p>编译器（汇编器）所作的工作主要是翻译工作</p>
+<ol>
+<li><p>预处理，正式编译之前，通过文件中的预处理指令来修改源文件的内容，包括宏定义指令、条件编译指令、头文件包含指令和特殊符号替换指令等等</p>
+</li>
+<li><p>编译和优化，通过词法分析、语法分析、语义分析，将其翻译成等价汇编代码，并对其进行优化处理</p>
+</li>
+<li><p>目标代码生成，将中间代码生成符合当前机器CPU的机器码</p>
+</li>
+</ol>
+<h3 id="预处理指令"><a href="#预处理指令" class="headerlink" title="预处理指令"></a>预处理指令</h3><p>1.宏定义指令： #define，这是最常见的用法，可以定义符号常量，函数，重命名等</p>
+<p>2.条件编译指令：#if #ifndef #ifdef #elif 等等，主要进行编译时有选择的一些代码，比如#ifdef 如果宏已经定义，则编译下面代码</p>
+<p>3.头文件包含指令：#inlcude 是一种最为常见的预处理，主要是作为文件的引用组合源程序正文</p>
+<p>4.特殊符号处理：可以识别一些特殊的符号，预编译程序对于在源程序中出现的这些串将用合适的值进行替换</p>
+<h2 id="程序的链接"><a href="#程序的链接" class="headerlink" title="程序的链接"></a>程序的链接</h2><p>链接器的基本功能是：将编译器产生的多个目标文件合成为一个可以在目标平台下运行的文件，这里说的目标平台指的是程序的运行环境，CPU和操作系统等</p>
+<p>链接器按照工作模式分为静态链接和动态链接两类</p>
+<p>1.静态链接 链接器将函数的代码从其所在地（目标文件或者静态链接库）复制到最终的可执行程序中，整个过程在程序生成的时候完成，静态链接库实际上是一个目标文件的集合，其中的每个文件含有库中的一个或者一组相关函数的代码，静态链接则是将相关代码复制到源代码相关位置，参与程序的生成。也就是去静态链接库（文件库）中找代码，复制到最终的可执行程序中 </p>
+<p>2.动态链接 动态链接库在编译链接的时候只提供符号表和其他少量信息，用于保证所有符号引用都有定义，保证编译顺利通过。程序执行的时候动态链接库的全部内容将被映射到内存中，根据可执行程序中的信息找到相应的函数地址并调用执行。也就是去动态链接库中全部内容会被映射到内存中，程序通过一些符号表和其他信息找到对应的内容，并进行调用。</p>
+<h2 id="逆向分析"><a href="#逆向分析" class="headerlink" title="逆向分析"></a>逆向分析</h2><p>逆向就是在不能轻易获得必要的生产信息下，直接对成品的分析入手，推导出产品的设计原理，主要分为硬件和软件两大部分</p>
+<h3 id="动态分析"><a href="#动态分析" class="headerlink" title="动态分析"></a>动态分析</h3><p>将一个目标代码变换为易读形式的过程，一般是在调试器或者工具中加载程序，然后一边运行程序一边对程序的行为进行观察和分析，这些调试器或者调试工作包括：IDE，著名工具OllyDbg等等</p>
+<p>缺点：</p>
+<p>- 严重依赖输入</p>
+<p>- 可能因为环境原因，无法运行目标程序</p>
+<h3 id="静态分析"><a href="#静态分析" class="headerlink" title="静态分析"></a>静态分析</h3><p>不执行代码，而是通过反汇编、反编译等工具，将程序的二进制代码翻译成汇编语言，之后再进行分析。常用工具有IDA Pro，C32Asm等等</p>
+<p>缺点</p>
+<p>- 程序加壳之后无法反汇编</p>
+<p>- 代码混淆甚至于被加密处理</p>
+<h3 id="软件逆向的一般过程"><a href="#软件逆向的一般过程" class="headerlink" title="软件逆向的一般过程"></a>软件逆向的一般过程</h3><ol>
+<li><p>文件装载进行与目标文件相关的一些初步分析，包括文件格式解析、文件信息搜集和文件性质判定，分析出文件执行入口地址，初步分析文件的数据段和代码段以及文件运行所以来的其他文件信息  </p>
+</li>
+<li><p>指令解码指令解析，将指令机器码影视各位成为汇编语言</p>
+</li>
+<li><p>语义映射通过直接代码实现或者工具实现</p>
+</li>
+<li><p>相关图构造</p>
+</li>
+<li><p>过程分析</p>
+</li>
+<li><p>类型分析</p>
+</li>
+<li><p>结果输出结果输出时逆向分析的最终阶段</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2023/04/08/git%E5%AD%A6%E4%B9%A0%E4%B8%8E%E8%BF%9B%E9%98%B6%E5%91%BD%E4%BB%A4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1108,573 +1375,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/26/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="安妮的心动录">
-      <meta itemprop="description" content="永远不要高估自己">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="安妮的心动录的园子">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/02/26/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89/" class="post-title-link" itemprop="url">Go微服务与云原生学习（二）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-02-26 12:45:05" itemprop="dateCreated datePublished" datetime="2023-02-26T12:45:05+08:00">2023-02-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-02-27 22:43:12" itemprop="dateModified" datetime="2023-02-27T22:43:12+08:00">2023-02-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%90%8E%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">后端</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>15k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>13 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="gRPC"><a href="#gRPC" class="headerlink" title="gRPC"></a>gRPC</h2><p>gRPC是一种现代化开源的RPC框架，由Google进行研发，能够运行于任何环境之中，最初由谷歌进行开发，它使用HTTP&#x2F;2作为传输协议。</p>
-<p>在gRPC中，客户端可以像调用本地方法一样直接调用其他机器上的服务端应用程序的方法，帮助你更容易创建分布式应用程序和服务。gRPC是基于定义一个服务，制定一个可以远程调用的带有参数和返回类型的方法。在服务端程序中实现这个接口并且运行gRPC服务处理客户端调用，在客户端，有一个stub提供和服务端相同的方法</p>
-<p><img src="/2023/02/26/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89/1676256947622-90dcc6f3-615b-4154-a261-5a45a2beedbc.png" alt="img"></p>
-<h3 id="为什么要用gRPC"><a href="#为什么要用gRPC" class="headerlink" title="为什么要用gRPC"></a>为什么要用gRPC</h3><p>gRPC可以帮助我们一次性的在一个<code>.proto</code>文件中定义服务并使用任何支持它的语言去实现客户端和服务端，也就是说gRPC解决了<strong>不同语言以及环境间通信的复杂性</strong>。使用<code>protocol buffer</code>还能获得其他好处，包括高效的序列化，简单的IDL以及容易进行接口更新。总之，使用gRPC能够帮助我们更容易编写跨语言的分布式代码</p>
-<p>IDL（Interface description Language） 是指接口描述语言，是用来描述软件组件接口的一种计算机语言，是跨平台开发的基础。IDL通过一种中立的方式来描述接口，使得在不同平台上运行的对象和用不同语言编写的程序可以相互通信交流；比如，一个组件用C++写成，另一个组件用Go写成</p>
-<h3 id="使用gRPC进行开发的步骤"><a href="#使用gRPC进行开发的步骤" class="headerlink" title="使用gRPC进行开发的步骤"></a>使用gRPC进行开发的步骤</h3><p><strong>1.编写.proto文件定义服务</strong></p>
-<p>默认情况下gRPC使用<code>protocol buffers</code>作为接口定义语言（IDL）来描述服务接口和有效负载消息的结构</p>
-<p>在gRPC中可以定义四种类型的服务方法 	</p>
-<p>普通rpc，客户端向服务器发送一个请求，然后得到一个响应，就像普通的函数调用一样</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc SayHello(HelloRequest) returns (HelloResponse);</span><br></pre></td></tr></table></figure>
-
-<p>服务器流式rpc，其中客户端向服务器发送请求，并获得一个流来读取一系列消息。客户端从返回的流中读取，知道没有更多的消息，gRPC保证在单个RPC调用的消息是有序的</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc LotsOfReplies(HelloRequest) returns (stream HelloResponse);</span><br></pre></td></tr></table></figure>
-
-<p>客户端流式rpc，其中客户端写入一系列消息并将其发送到服务器，同样使用提供的流。一旦客户端完成了消息的写入，它就等待服务器读取消息并返回响应，同样，gRPC保证单个RPC调用中的消息是有序的</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc LostsOfGreetings(stream HelloRequest) returns(HelloResponse);</span><br></pre></td></tr></table></figure>
-
-<p>双向流式rpc，其中双方使用读写流发送一系列消息，这两个流独立运行，因此客户端和服务器可以按照自己指定的顺序读写；例如，服务器可以等待接受所有客户端消息后再写响应，或者可以交替读取消息然后写入消息，或者其他读写组合。每个流中的消息是有序的</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc StreamGreetings(stream HelloRequest) returns(stream HelloResponse);</span><br></pre></td></tr></table></figure>
-
-<p><strong>2.生成指定语言的代码（客户端一份、服务端一份）</strong></p>
-<p>在<code>.proto</code>文件中定义好服务之后，gRPC提供了生成客户端和服务端代码的protocol buffers编译器插件。</p>
-<p>我们使用这些插件可以根据需要生成<code>Java Go C++ Python</code>等语言的代码，我们通常会在客户端调用这些API，并且在服务器端实现对应的API</p>
-<ul>
-<li>在服务器端，服务器实现服务声明的方法，并运行一个gRPC服务器来处理客户端发来的调用请求。gRPC底层会对传入的请求进行编码，执行被调用的服务方法，并对服务响应进行编码</li>
-<li>在客户端，客户端有一个称为存根(stub)的本地对象，它实现了与服务相同的方法。然后，客户端可以在本地对象上调用这些方法，将调用的参数包装在适当的<code>protocol buffers</code>消息类型中–gRPC在向服务器发送请求并返回服务器的<code>protocol buffers</code>响应之后进行处理</li>
-</ul>
-<p><strong>3.编写业务逻辑代码</strong></p>
-<p>proto文件生成<code>pb.go</code>以及<code>grpc.pb.go</code>的命令</p>
-<p>不指定proto路径</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative xxx.proto</span><br></pre></td></tr></table></figure>
-
-<p>指定proto路径</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">protoc --proto_path=xx --go_out=pb --go_opt=paths=source_relative --go-grpc_out=pb --go-grpc_opt=paths=source_relative xxx.proto</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="使用grpc实现一个简单的hello服务"><a href="#使用grpc实现一个简单的hello服务" class="headerlink" title="使用grpc实现一个简单的hello服务"></a>使用grpc实现一个简单的hello服务</h3><p><strong>Server</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">type server struct &#123;</span><br><span class="line">	pb.UnimplementedGreeterServer //当没有完全实现proto中的所有方法时依旧可以运行起来</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// gRPC通过.proto文件自动生成的SayHello方法  </span><br><span class="line">func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloResponse, error) &#123;</span><br><span class="line">	reply := &quot;hello&quot; + in.GetName()</span><br><span class="line">	return &amp;pb.HelloResponse&#123;Reply: reply&#125;, nil</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	// 启动服务</span><br><span class="line">	l, err := net.Listen(&quot;tcp&quot;, &quot;:8972&quot;)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		fmt.Println(&quot;failed to listen,err:&quot;, err)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	// 注册服务</span><br><span class="line">	s := grpc.NewServer()</span><br><span class="line">	pb.RegisterGreeterServer(s, &amp;server&#123;&#125;)</span><br><span class="line">	// 启动服务</span><br><span class="line">	err = s.Serve(l)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		fmt.Println(&quot;failed to server,err:&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">syntax = &quot;proto3&quot;;  //版本声明</span><br><span class="line"></span><br><span class="line">option go_package=&quot;hello_server/pb&quot;;  // 项目中import导入生成go代码的模块</span><br><span class="line"></span><br><span class="line">package  pb;  //proto文件模块</span><br><span class="line"></span><br><span class="line">// 定义服务</span><br><span class="line">service Greeter &#123;</span><br><span class="line">  // 定义方法</span><br><span class="line">  rpc SayHello (HelloRequest) returns (HelloResponse) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 定义消息</span><br><span class="line">message HelloRequest &#123;</span><br><span class="line">  string name = 1;   //字段的序号</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message  HelloResponse &#123;</span><br><span class="line">  string reply = 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>Client</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">func main() &#123;</span><br><span class="line">	//连接server 带加密连接</span><br><span class="line">	conn, err := grpc.Dial(&quot;127.0.0.1:8972&quot;, grpc.WithTransportCredentials(insecure.NewCredentials()))</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatalf(&quot;grpc.Dial failed,err:%v&quot;, err)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	defer conn.Close()</span><br><span class="line">	//创建客户端</span><br><span class="line">	c := proto.NewGreeterClient(conn)</span><br><span class="line">	//使用context进行控制，传入background和超时时间一秒钟</span><br><span class="line">	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)</span><br><span class="line">	defer cancel()</span><br><span class="line">	name := &quot;xiaocheng&quot;</span><br><span class="line">	resp, err := c.SayHello(ctx, &amp;proto.HelloRequest&#123;Name: name&#125;)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Printf(&quot;c.SayHello failed, err:%v&quot;, err)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	// 拿到RPC响应</span><br><span class="line">	log.Printf(&quot;resp:%v&quot;, resp.GetReply())</span><br><span class="line">&#125;</span><br><span class="line">// 应该是同一份proto文件</span><br><span class="line">syntax = &quot;proto3&quot;;  //版本声明</span><br><span class="line"></span><br><span class="line">option go_package=&quot;hello_client/proto&quot;;  // 项目中import导入生成go代码的模块</span><br><span class="line"></span><br><span class="line">package  pb;  //proto文件模块 必须与server端一致</span><br><span class="line"></span><br><span class="line">// 定义服务</span><br><span class="line">service Greeter &#123;</span><br><span class="line">  // 定义方法</span><br><span class="line">  rpc SayHello (HelloRequest) returns (HelloResponse) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 定义消息</span><br><span class="line">message HelloRequest &#123;</span><br><span class="line">  string name = 1;   //字段的序号</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message  HelloResponse &#123;</span><br><span class="line">  string reply = 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="使用grpc实现一个简单的add服务"><a href="#使用grpc实现一个简单的add服务" class="headerlink" title="使用grpc实现一个简单的add服务"></a>使用grpc实现一个简单的add服务</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">type server struct &#123;</span><br><span class="line">	pb.UnimplementedAddMethodServer</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (s *server) Add(ctx context.Context, in *pb.AddRequest) (*pb.AddResponse, error) &#123;</span><br><span class="line">	reply := in.GetArgs1() + in.GetArgs2()</span><br><span class="line">	return &amp;pb.AddResponse&#123;Number: reply&#125;, nil</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	//启动服务</span><br><span class="line">	l, err := net.Listen(&quot;tcp&quot;, &quot;:9999&quot;)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		fmt.Println(&quot;net listen failed,err:&quot;, err)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	s := grpc.NewServer()</span><br><span class="line">	pb.RegisterAddMethodServer(s, &amp;server&#123;&#125;)</span><br><span class="line">	err = s.Serve(l)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		fmt.Println(&quot;failed to server,err:&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>proto文件应该在客户端和服务端都有一份</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">syntax=&quot;proto3&quot;;</span><br><span class="line">option go_package=&quot;server/pb&quot;;</span><br><span class="line">package pb;</span><br><span class="line"></span><br><span class="line">service AddMethod &#123;</span><br><span class="line">   rpc Add(AddRequest) returns (AddResponse) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message AddRequest &#123;</span><br><span class="line">  int32 args1 =1;</span><br><span class="line">  int32 args2 =2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message AddResponse &#123;</span><br><span class="line">  int32 number =1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">func main() &#123;</span><br><span class="line">	conn, err := grpc.Dial(&quot;127.0.0.1:9999&quot;, grpc.WithTransportCredentials(insecure.NewCredentials()))</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		fmt.Println(&quot;grpc dail failed,err:&quot;, err)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	defer conn.Close()</span><br><span class="line">	c := pb.NewAddMethodClient(conn)</span><br><span class="line">	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)</span><br><span class="line">	defer cancel()</span><br><span class="line">	var args1, args2 int32</span><br><span class="line">	args1 = 1</span><br><span class="line">	args2 = 2</span><br><span class="line">	resp, err := c.Add(ctx, &amp;pb.AddRequest&#123;Args1: args1, Args2: args2&#125;)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		fmt.Println(&quot;c.Add failed,err:&quot;, err)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	log.Println(&quot;Add Response:&quot;, resp)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="protobuf语法"><a href="#protobuf语法" class="headerlink" title="protobuf语法"></a>protobuf语法</h3><p><strong>protobuf为什么体积小、解析快</strong></p>
-<p>protobuf是google提出的数据交换格式，同一条消息数据，使用Protobuf序列化之后占用空间是json的1&#x2F;10，但是性能却是几十倍</p>
-<p>原因</p>
-<ul>
-<li>编解码大多采用位运算，比JSON&#x2F;XML的字符匹配效率更高</li>
-<li>pb定义了varint类型，使用变长编码压缩数值类型。值越小的数字，使用的字节数就越少</li>
-<li>采用Tag-value类型，没有冗余字符</li>
-</ul>
-<p><strong>定义一个消息类型</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">syntax=&quot;proto3&quot;;</span><br><span class="line"></span><br><span class="line">message SearchRequest &#123;</span><br><span class="line">	string query =1;</span><br><span class="line">	int32 page_number=2; </span><br><span class="line">&#125;</span><br><span class="line">//文件的第一行指定使用proto3语法，如果不这么写</span><br><span class="line">//pb的编译器默认使用proto2</span><br><span class="line"></span><br><span class="line">//SearchRequest定义了一个消息，使用了两个字段</span><br><span class="line">//每个字段需要定义类型 名字 和编号</span><br></pre></td></tr></table></figure>
-
-
-
-<p><strong>字段编号</strong></p>
-<p>消息定义中的每个字段都要有一个唯一的编号，这些编号用来在消息二进制格式中标识字段，<strong>在消息类型使用后就不能更改</strong>。在范围1到15中的字段需要一个字节进行编码，而16-2047的字段采用两个字节。所以应该为经常使用的消息元素保留数字1到15的编号，也要为将来可能添加的经常使用的元素留出一些编号</p>
-<p><strong>指定字段规则</strong></p>
-<p>消息字段可以是下列字段之一</p>
-<ul>
-<li>singular：格式正确的消息可以有这个字段的0个或者一个，默认使用singular字段</li>
-<li>repeated：该字段可以在格式正确的消息中重复任意次数（包括0次），重复值的顺序将被保留</li>
-<li>optional：该字段在传递的时候可选也可不选</li>
-</ul>
-<p><strong>保留字段</strong></p>
-<p>如果你通过完全删除字段或者将其注释来<strong>更新消息类型，</strong>那么未来的用户在对该类型进行自己的更新的时候就可以重用字段号，如果其他人以后加载旧版本的相同<code>.proto</code>文件，这可能就会导致严重的问题，比如数据损坏、隐私漏洞等等。</p>
-<p>解决方法是指定已经删除的字段的字段编号，如果将来有用户尝试使用这些字段标识符，protocol buffer编译器将发出提示</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">message Foo &#123;</span><br><span class="line">reserved 2,15,9 to 11;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p><strong>值类型</strong></p>
-<table>
-<thead>
-<tr>
-<th>.proto Type</th>
-<th>Notes</th>
-<th>C++ Type</th>
-<th>Java&#x2F;Kotlin Type[1]</th>
-<th>Python Type[3]</th>
-<th>Go Type</th>
-<th>PHP Type</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>double</td>
-<td></td>
-<td>double</td>
-<td>double</td>
-<td>float</td>
-<td>float64</td>
-<td>float</td>
-</tr>
-<tr>
-<td>float</td>
-<td></td>
-<td>float</td>
-<td>float</td>
-<td>float</td>
-<td>float32</td>
-<td>float</td>
-</tr>
-<tr>
-<td>int32</td>
-<td>使用可变长度编码。编码负数效率低下——如果你的字段可能有负值，则使用 sint32代替。</td>
-<td>int32</td>
-<td>int</td>
-<td>int</td>
-<td>int32</td>
-<td>integer</td>
-</tr>
-<tr>
-<td>int64</td>
-<td>使用可变长度编码。编码负数效率低下——如果你的字段可能有负值，则使用 sint64代替。</td>
-<td>int64</td>
-<td>long</td>
-<td>int&#x2F;long[4]</td>
-<td>int64</td>
-<td>integer&#x2F;string[6]</td>
-</tr>
-<tr>
-<td>uint32</td>
-<td>使用变长编码。</td>
-<td>uint32</td>
-<td>int[2]</td>
-<td>int&#x2F;long[4]</td>
-<td>uint32</td>
-<td>integer</td>
-</tr>
-<tr>
-<td>uint64</td>
-<td>使用变长编码。</td>
-<td>uint64</td>
-<td>long[2]</td>
-<td>int&#x2F;long[4]</td>
-<td>uint64</td>
-<td>integer&#x2F;string[6]</td>
-</tr>
-<tr>
-<td>sint32</td>
-<td>使用可变长度编码。带符号的 int 值。这些编码比普通的 int32更有效地编码负数。</td>
-<td>int32</td>
-<td>int</td>
-<td>int</td>
-<td>int32</td>
-<td>integer</td>
-</tr>
-<tr>
-<td>sint64</td>
-<td>使用可变长度编码。带符号的 int 值。这些编码比普通的 int64更有效地编码负数。</td>
-<td>int64</td>
-<td>long</td>
-<td>int&#x2F;long[4]</td>
-<td>int64</td>
-<td>integer&#x2F;string[6]</td>
-</tr>
-<tr>
-<td>fixed32</td>
-<td>总是四个字节。如果值经常大于228，则比 uint32更有效率。</td>
-<td>uint32</td>
-<td>int[2]</td>
-<td>int&#x2F;long[4]</td>
-<td>uint32</td>
-<td>integer</td>
-</tr>
-<tr>
-<td>fixed64</td>
-<td>总是8字节。如果值经常大于256，则比 uint64更有效率。</td>
-<td>uint64</td>
-<td>integer&#x2F;string[6]</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>sfixed32</td>
-<td>总是四个字节。</td>
-<td>int32</td>
-<td>int</td>
-<td>int</td>
-<td>int32</td>
-<td>integer</td>
-</tr>
-<tr>
-<td>sfixed64</td>
-<td>总是八个字节。</td>
-<td>int64</td>
-<td>integer&#x2F;string[6]</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>bool</td>
-<td></td>
-<td>bool</td>
-<td>boolean</td>
-<td>bool</td>
-<td>bool</td>
-<td>boolean</td>
-</tr>
-<tr>
-<td>string</td>
-<td>字符串必须始终包含 UTF-8编码的或7位 ASCII 文本，且不能长于232。</td>
-<td>string</td>
-<td>String</td>
-<td>str&#x2F;unicode[5]</td>
-<td>string</td>
-<td>string</td>
-</tr>
-<tr>
-<td>bytes</td>
-<td>可以包含任何不超过232字节的任意字节序列。</td>
-<td>string</td>
-<td>ByteString</td>
-<td>str (Python 2) bytes (Python 3)</td>
-<td>[]byte</td>
-<td>string</td>
-</tr>
-</tbody></table>
-<p><strong>枚举</strong></p>
-<p>在定义消息类型的时候，可能希望其中的一个字段只能是预定义的值列表中的一个值。下面是一个栗子，Conrpus字段的值只能是其中的一个</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">message SearchRequest &#123;</span><br><span class="line">string query = 1;</span><br><span class="line">  int32 page_number = 2;</span><br><span class="line">  int32 result_per_page = 3;</span><br><span class="line">  enum Corpus &#123;</span><br><span class="line">    UNIVERSAL = 0;</span><br><span class="line">    WEB = 1;</span><br><span class="line">    IMAGES = 2;</span><br><span class="line">    LOCAL = 3;</span><br><span class="line">    NEWS = 4;</span><br><span class="line">    PRODUCTS = 5;</span><br><span class="line">    VIDEO = 6;</span><br><span class="line">  &#125;</span><br><span class="line">  Corpus corpus = 4;</span><br><span class="line">&#125;</span><br><span class="line">	</span><br></pre></td></tr></table></figure>
-
-<p><strong>嵌套消息类型</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">message SearchResponse &#123;</span><br><span class="line">  repeated Result results = 1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message Result &#123;</span><br><span class="line">  string url = 1;</span><br><span class="line">  string title = 2;</span><br><span class="line">  repeated string snippets = 3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>Any</strong></p>
-<p>Any类型允许你将消息作为嵌入类型使用，使用Any类型需要导入<code>google/protobuf/any.proto</code></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">import &quot;google/protobuf/any.proto&quot;;</span><br><span class="line"></span><br><span class="line">message ErrorStatus &#123;</span><br><span class="line">  string message = 1;</span><br><span class="line">  repeated google.protobuf.Any details = 2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>oneof</strong></p>
-<p>如果你有一条包含多个字段的消息，并且同时最多设置其中的一个字段，那么可以通过oneof来实现并节省内存，可以通过<code>case()</code>或者<code>WihchOneOf()</code>来检查one  of 中的哪个值被设置（如果有）</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">message SampleMessage &#123;</span><br><span class="line">  oneof test_oneof &#123;</span><br><span class="line">    string name = 4;</span><br><span class="line">    SubMessage sub_message = 9;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"> SampleMessage message;</span><br><span class="line">  message.set_name(&quot;name&quot;);</span><br><span class="line">  CHECK(message.has_name());</span><br><span class="line">  message.mutable_sub_message();   // Will clear name field.</span><br><span class="line">  CHECK(!message.has_name());</span><br></pre></td></tr></table></figure>
-
-<p><strong>Maps</strong></p>
-<p>如果想创建一个关联映射作为数据定义的一部分，可以使用这个map</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">map&lt;key_type, value_type&gt; map_field = N;</span><br></pre></td></tr></table></figure>
-
-<h3 id="protobuf实战"><a href="#protobuf实战" class="headerlink" title="protobuf实战"></a>protobuf实战</h3><p><strong>oneof字段</strong></p>
-<p>oneof中的值只能选择其中的一个  </p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">message NoticeReaderRequest &#123;</span><br><span class="line">  string msg=1;</span><br><span class="line">  oneof notice_way&#123;</span><br><span class="line">    string email=2;</span><br><span class="line">    string phone=3;</span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>对应的服务端代码</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">func oneofDemo() &#123;</span><br><span class="line">	req := &amp;book.NoticeReaderRequest&#123;</span><br><span class="line">		Msg: &quot;here is chengxisheng&quot;,</span><br><span class="line">		NoticeWay: &amp;book.NoticeReaderRequest_Email&#123;</span><br><span class="line">			Email: &quot;xxx&quot;,</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	req2 := &amp;book.NoticeReaderRequest&#123;</span><br><span class="line">		Msg: &quot;here is xishengcheng&quot;,</span><br><span class="line">		NoticeWay: &amp;book.NoticeReaderRequest_Phone&#123;</span><br><span class="line">			Phone: &quot;1008611&quot;,</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	switch v := req.NoticeWay.(type) &#123;</span><br><span class="line">	case *book.NoticeReaderRequest_Email:</span><br><span class="line">		noticeWithEmail(v)</span><br><span class="line">	case *book.NoticeReaderRequest_Phone:</span><br><span class="line">		noticeWithPhone(v)</span><br><span class="line">	&#125;</span><br><span class="line">	switch v := req2.NoticeWay.(type) &#123;</span><br><span class="line">	case *book.NoticeReaderRequest_Email:</span><br><span class="line">		noticeWithEmail(v)</span><br><span class="line">	case *book.NoticeReaderRequest_Phone:</span><br><span class="line">		noticeWithPhone(v)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">func noticeWithEmail(in *book.NoticeReaderRequest_Email) &#123;</span><br><span class="line">	fmt.Printf(&quot;notice reader by email:%v\n&quot;, in.Email)</span><br><span class="line">&#125;</span><br><span class="line">func noticeWithPhone(in *book.NoticeReaderRequest_Phone) &#123;</span><br><span class="line">	fmt.Printf(&quot;notice reader by phone:%v\n&quot;, in.Phone)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//这里必须使用类型断言+switch case </span><br><span class="line">//来进行one of 字段的确认</span><br></pre></td></tr></table></figure>
-
-<p><strong>wrapvalue类型</strong></p>
-<p>首先让我们想一想Go中区分一个MySQL的int类型是默认值还是0值该怎么做？</p>
-<p>其实就只有以下两种方法</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">price sql.NullInt64</span><br><span class="line">price *int64</span><br><span class="line">//第一种方式是一个定义好的结构体 </span><br><span class="line">//里面有一个字段是 该结构体是否被赋值</span><br><span class="line">//第二种方式是直接用指针来做</span><br><span class="line">//对指针解引用，如果为0则赋值，如果为Nil则是默认值</span><br><span class="line">func wrapValueDemo() &#123;</span><br><span class="line">	// client</span><br><span class="line">	 book:=book.Book&#123;</span><br><span class="line">		 Title: &quot;learning go language&quot;,</span><br><span class="line">		 Price: &amp;wrapperspb.Int64Value&#123;Value: 600&#125;,</span><br><span class="line">		 Memo: &amp;wrapperspb.StringValue&#123;Value: &quot;学&quot;&#125;,</span><br><span class="line">	 &#125;</span><br><span class="line">	 // server </span><br><span class="line">	 if book.GetPrice()==nil &#123;</span><br><span class="line">		 fmt.Println(&quot;is not assigned&quot;)</span><br><span class="line">	 &#125; else &#123;</span><br><span class="line">		 fmt.Println(book.GetPrice().GetValue())</span><br><span class="line">	 &#125;</span><br><span class="line">	 if book.GetMemo()==nil &#123;</span><br><span class="line">		 fmt.Println(&quot;is not assigned&quot;)</span><br><span class="line">	 &#125; else &#123;</span><br><span class="line">		 fmt.Println(book.GetMemo().GetValue())</span><br><span class="line">	 &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>FieldMask类型</strong></p>
-<p>当我们更新的时候，定义了很多字段，不可能全部进行全量更新Book的每个字段，因为通常操作只会更新1到2个字段。</p>
-<p>当我们想知道更新操作涉及到的具体字段，就需要使用到filedmask类型</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">message UpdateBookRequest &#123;</span><br><span class="line">  // 操作人</span><br><span class="line">  string op =1;</span><br><span class="line">  // 要更新的书籍信息</span><br><span class="line">  Book book=2;</span><br><span class="line">  // 要更新的字段</span><br><span class="line">  google.protobuf.FieldMask update_mask=3;</span><br><span class="line">&#125;</span><br><span class="line">func fieldMaskDemo() &#123;</span><br><span class="line">	//client</span><br><span class="line">	paths := []string&#123;&quot;price&quot;&#125;</span><br><span class="line">	req := &amp;book.UpdateBookRequest&#123;</span><br><span class="line">		Op: &quot;chengxisheng&quot;,</span><br><span class="line">		Book: &amp;book.Book&#123;</span><br><span class="line">			Price: &amp;wrapperspb.Int64Value&#123;Value: 8800&#125;,</span><br><span class="line">		&#125;,</span><br><span class="line">		UpdateMask: &amp;fieldmaskpb.FieldMask&#123;Paths: paths&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	mask, _ := fieldmask_utils.MaskFromProtoFieldMask(req.UpdateMask, generator.CamelCase)</span><br><span class="line">	var bookDst = make(map[string]interface&#123;&#125;)</span><br><span class="line">	fieldmask_utils.StructToMap(mask, book.UpdateBookRequest&#123;&#125;.Book, bookDst)</span><br><span class="line">	fmt.Printf(&quot;bookDst:%#v\n&quot;, bookDst)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="服务端流式RPC"><a href="#服务端流式RPC" class="headerlink" title="服务端流式RPC"></a>服务端流式RPC</h3><p>对应的proto（client和server）中添加一个流式方法</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc LotsOfReplies(HelloRequest) returns (stream HelloResponse);</span><br></pre></td></tr></table></figure>
-
-
-
-<p>Server添加一个新的方法</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">func (s *server) LotsOfReplies(in *pb.HelloRequest, stream pb.Greeter_LotsOfRepliesServer) error &#123;</span><br><span class="line">	words := []string&#123;</span><br><span class="line">		&quot;你好&quot;,</span><br><span class="line">		&quot;hello&quot;,</span><br><span class="line">		&quot;こんにちは&quot;,</span><br><span class="line">		&quot;안녕하세요&quot;,</span><br><span class="line">	&#125;</span><br><span class="line">	for _, word := range words &#123;</span><br><span class="line">		data := &amp;pb.HelloResponse&#123;</span><br><span class="line">			Reply: word + in.GetName(),</span><br><span class="line">		&#125;</span><br><span class="line">		// 使用Send方法发送多个数据 每当有一个data就send一次数据</span><br><span class="line">		if err := stream.Send(data); err != nil &#123;</span><br><span class="line">			return err</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return nil</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Client端添加一个新的函数</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">func callLotsOfReplies(c proto.GreeterClient) &#123;</span><br><span class="line">	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)</span><br><span class="line">	defer cancel()</span><br><span class="line">	stream, err := c.LotsOfReplies(ctx, &amp;proto.HelloRequest&#123;Name: *name&#125;)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatalf(&quot;c.LotsOfReplies failed,err:%v&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">	for &#123;</span><br><span class="line">		//依次从流式响应中读取返回的响应数据</span><br><span class="line">		res, err := stream.Recv()</span><br><span class="line">		if err == io.EOF &#123;</span><br><span class="line">			break</span><br><span class="line">		&#125;</span><br><span class="line">		if err != nil &#123;</span><br><span class="line">			log.Fatalf(&quot;c.LotsOfReplies failed,err:%v&quot;, err)</span><br><span class="line">		&#125;</span><br><span class="line">		log.Printf(&quot;got reply: %q\n&quot;, res.GetReply())</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="客户端流式RPC"><a href="#客户端流式RPC" class="headerlink" title="客户端流式RPC"></a>客户端流式RPC</h3><p>在<code>hello.proto</code>中添加这么一个新的方法</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc LotsOfGreetings(stream HelloRequest) returns (HelloResponse);</span><br></pre></td></tr></table></figure>
-
-<p>在server端添加</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">func (s *server) LotsOfGreetings(stream pb.Greeter_LotsOfGreetingsServer) error &#123;</span><br><span class="line">   reply := &quot;你好:&quot;</span><br><span class="line">   for &#123;</span><br><span class="line">      //接受客户端发来的流式数据</span><br><span class="line">      res, err := stream.Recv()</span><br><span class="line">      if err == io.EOF &#123;</span><br><span class="line">         return stream.SendAndClose(&amp;pb.HelloResponse&#123;</span><br><span class="line">            Reply: reply,</span><br><span class="line">         &#125;)</span><br><span class="line">      &#125;</span><br><span class="line">      if err != nil &#123;</span><br><span class="line">         return err</span><br><span class="line">      &#125;</span><br><span class="line">      reply += res.GetName()</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在Client端中添加</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">func runLotsOfGreeting(c proto.GreeterClient) &#123;</span><br><span class="line">	ctx, cancel := context.WithTimeout(context.Background(), time.Second)</span><br><span class="line">	defer cancel()</span><br><span class="line">	// 客户端要流式的发送请求消息</span><br><span class="line">	stream, err := c.LotsOfGreetings(ctx)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Printf(&quot;c.LotsOfGreetings failed,err:%v\n&quot;, err)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	names := []string&#123;&quot;张三&quot;, &quot;李四&quot;, &quot;王五&quot;&#125;</span><br><span class="line">	for _, name := range names &#123;</span><br><span class="line">		stream.Send(&amp;proto.HelloRequest&#123;Name: name&#125;)</span><br><span class="line">		time.Sleep(200 * time.Millisecond)</span><br><span class="line">	&#125;</span><br><span class="line">	//关闭流</span><br><span class="line">	res, err := stream.CloseAndRecv()</span><br><span class="line">	log.Printf(&quot;res:%v\n&quot;, res)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="双向流式RPC"><a href="#双向流式RPC" class="headerlink" title="双向流式RPC"></a>双向流式RPC</h3><p>在proto中添加</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpc BidiHello(stream HelloRequest) returns(stream HelloResponse);</span><br></pre></td></tr></table></figure>
-
-<p>在client中添加</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">func (s *server) BidiHello(stream pb.Greeter_BidiHelloServer) error &#123;</span><br><span class="line">	for &#123;</span><br><span class="line">		//接受流式请求</span><br><span class="line">		in, err := stream.Recv()</span><br><span class="line">		if err == io.EOF &#123;</span><br><span class="line">			return nil</span><br><span class="line">		&#125;</span><br><span class="line">		if err != nil &#123;</span><br><span class="line">			return err</span><br><span class="line">		&#125;</span><br><span class="line">		reply := magic(in.GetName())</span><br><span class="line">		//返回流式响应</span><br><span class="line">		if err := stream.SendAndClose(&amp;pb.HelloResponse&#123;Reply: reply&#125;); err != nil &#123;</span><br><span class="line">			return err</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>在Server端中添加</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">func (s *server) BidiHello(stream pb.Greeter_BidiHelloServer) error &#123;</span><br><span class="line">	for &#123;</span><br><span class="line">		//接受流式请求</span><br><span class="line">		in, err := stream.Recv()</span><br><span class="line">		if err == io.EOF &#123;</span><br><span class="line">			return nil</span><br><span class="line">		&#125;</span><br><span class="line">		if err != nil &#123;</span><br><span class="line">			return err</span><br><span class="line">		&#125;</span><br><span class="line">		reply := magic(in.GetName())</span><br><span class="line">		//返回流式响应</span><br><span class="line">		if err := stream.SendAndClose(&amp;pb.HelloResponse&#123;Reply: reply&#125;); err != nil &#123;</span><br><span class="line">			return err</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// magic 一段价值连城的“人工智能”代码</span><br><span class="line">func magic(s string) string &#123;</span><br><span class="line">	s = strings.ReplaceAll(s, &quot;吗&quot;, &quot;&quot;)</span><br><span class="line">	s = strings.ReplaceAll(s, &quot;吧&quot;, &quot;&quot;)</span><br><span class="line">	s = strings.ReplaceAll(s, &quot;你&quot;, &quot;我&quot;)</span><br><span class="line"></span><br><span class="line">	s = strings.ReplaceAll(s, &quot;？&quot;, &quot;!&quot;)</span><br><span class="line">	s = strings.ReplaceAll(s, &quot;?&quot;, &quot;!&quot;)</span><br><span class="line">	return s</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="MetaData元数据"><a href="#MetaData元数据" class="headerlink" title="MetaData元数据"></a>MetaData元数据</h3><p>metadata是指在处理RPC请求和响应过程中需要但又不属于具体业务（例如身份验证详细信息）的信息，采用的是键值对列表 的形式，其中键是string类型，值通常是[]string类型，但也可以是二进制数据。gRPC中的metadata类似于我们在HTTP headers中的键值对，元数据可以包含认真token、请求标识和监控标签等等</p>
-<p>metadata中的键是大小写不敏感的，不能以grpc-开头，并且二进制的简明必须以-bin结尾，元数据对gRPC本身是不可见的，通常在应用程序代码或者中间件中处理元数据，我们不需要再.proto中指定元数据</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">type MD map[string][]string</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/02/24/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="安妮的心动录">
-      <meta itemprop="description" content="永远不要高估自己">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="安妮的心动录的园子">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/02/24/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/" class="post-title-link" itemprop="url">Go微服务与云原生一</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2023-02-24 12:07:13 / 修改时间：12:08:30" itemprop="dateCreated datePublished" datetime="2023-02-24T12:07:13+08:00">2023-02-24</time>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>5.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><h3 id="架构演变"><a href="#架构演变" class="headerlink" title="架构演变"></a>架构演变</h3><p>用架构历史</p>
-<p>1.单体架构 堆机子 高耦合 一改动就需要重新部署 而且编译时间很长，不容易拓展，不支持多语言技术栈 </p>
-<p>2.分层架构 典型的有MVC和MSC架构 当访问量逐渐增大，单体架构扛不住了，把单体项目进行垂直划分，耦合还是很大，项目之间的接口多为数据同步，比如不同项目之间的数据库同步。 架构简单，成本低开发周期短，经过垂直拆分之后原来的单体项目不至于太大，每一层可以用不同的技术，但还是不易拓展和维护 </p>
-<p>3.SOA面向服务架构 ：当垂直架构的应用越来越多，就会出现多个应用都依赖的业务组件，比如数据库，而且各个应用交互越来越频繁，此时就需要把部分通用的组件拆分独立处理，于是SOA面向服务架构诞生了，它带来了模块化开发、分布式拓展部署和服务接口定义等概念</p>
-<p>实时SOA需要建立企业服务总线，外部应用通过总线调用服务，有以下特征：可从企业外部访问、随时可用、标准化的服务接口等</p>
-<p><img src="/2023/02/24/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/1.png" alt="img"></p>
-<p>优点：</p>
-<ul>
-<li>已经具有微服务的影子了，将重复的功能抽离出来，提高开发效率</li>
-<li>减少接口耦合</li>
-</ul>
-<p>SOA架构适用于大型软件服务企业对外提供服务的场景，并不适合一般的业务场景，其服务的定义、注册和调用都需要繁琐的配置，业务总线的吞吐量决定了整个系统的上限，因为整个系统都是通过总线进行任务分配的。并且业务总线也容易导致系统崩掉、影响性能。</p>
-<p>4.微服务架构：</p>
-<p><img src="/2023/02/24/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/2.png" alt="img"></p>
-<p>特点</p>
-<p>1.服务层完全独立出来 并将服务层抽取为一个一个的微服务</p>
-<p>2.微服务遵循单一原则</p>
-<p>3.微服务之间采用RESTful等轻量协议通信</p>
-<p>4.微服务一般用容器技术部署 运行在自己的独立进程中</p>
-<p>微服务架构下服务的拆分粒度更细，有利于资源重复利用，提高开发效率，采用去中心化思想，更轻量级</p>
-<p>缺点：如果服务实例过多，治理成本就会很大，不利于维护；服务之间相互依赖，可能形成复杂的依赖链条，往往单个服务异常，其他服务也会受到影响，出现服务雪崩效应。</p>
-<p>微服务与SOA的区别：</p>
-<p>微服务继承了SOA的众多优点和理念</p>
-<p>SOA更适合与许多其他应用程序继承的大型复杂企业应用程序环境，小型的应用并不适合SOA，微服务则更适合于较小和良好的分割式web业务系统</p>
-<p>微服务不再强调SOA架构中比较重要的ESB企业服务总线，而是通过轻量级通信机制相互沟通</p>
-<p>SOA注重的是系统继承，而微服务关注的则是完全分离，SOA尝试采用中心化管理来确保各个应用能够协同运作，微服务则尝试部署新功能，快速有效地拓展开发团队，它着重于分散管理、代码再利用和自动化执行。</p>
-<h3 id="微服务的优势和劣势"><a href="#微服务的优势和劣势" class="headerlink" title="微服务的优势和劣势"></a>微服务的优势和劣势</h3><p>微服务的优势</p>
-<p>1.快：更注重CI&#x2F;CD 敏捷开发、持续交付</p>
-<p>2.准：服务粒度小、服务质量精准可控</p>
-<p>3.狠：适用于互联网时代、产品迭代周期更短</p>
-<p>微服务的劣势</p>
-<p>1.系统的复杂性</p>
-<p>2.服务依赖管理</p>
-<p>3.数据的一致性保障</p>
-<p>4.测试更加艰难</p>
-<p>5.对于DevOps等基础设施的高要求</p>
-<h3 id="如何划分微服务界限"><a href="#如何划分微服务界限" class="headerlink" title="如何划分微服务界限"></a>如何划分微服务界限</h3><p>如何进行服务划分？</p>
-<p>1.按照业务职能进行划分</p>
-<p>由公司内部不同部门提供的只能。例如客户服务部门提供客户服务的职能，财务部门提供财务相关的职能</p>
-<p>2.按照DDD的限界上下文划分</p>
-<p>限界上下文是DDD中用来划分不同业务边界的元素</p>
-<p>这里业务边界的含义是“解决不同业务问题”的问题域和对应的解决方案域</p>
-<p>为了解决某种类型的业务问题，贴近领域只是，也就是业务</p>
-<p>CQRS将系统中的操作划分为两类，即【命令】Command和【查询】Query</p>
-<p>命令则是对会引起数据发生变化操作的总称，即我们常说的新增、更新、删除的这些操作，都是命令。</p>
-<p>而查询则和字面意思一样，即不会对数据产生变化的操作，只是按照某些条件查询数据。</p>
-<p>CQRS的核心思想是将两类不同的操作进行分离，然后在两个独立的【服务】中实现。这里的服务一般指的是两个独立部署的应用，在某些特殊情况下，也可以部署在同一个应用内的不同接口上。 </p>
-<h3 id="微服务的迭代"><a href="#微服务的迭代" class="headerlink" title="微服务的迭代"></a>微服务的迭代</h3><p>1.第一代</p>
-<p><img src="/2023/02/24/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/3.png" alt="img"></p>
-<p>2.第二代</p>
-<p><img src="/2023/02/24/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/4.png" alt="img"></p>
-<p>把那些服务监控、服务管理作为基础服务提供给我们的业务</p>
-<p>架构分层</p>
-<p> <img src="/2023/02/24/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/5.png" alt="img"></p>
-<p>核心组件</p>
-<ul>
-<li>API网关</li>
-<li>服务注册中心</li>
-<li>配置中心</li>
-<li>服务通信</li>
-<li>服务治理</li>
-<li>服务监控</li>
-</ul>
-<h2 id="net-x2F-rpc"><a href="#net-x2F-rpc" class="headerlink" title="net&#x2F;rpc"></a>net&#x2F;rpc</h2><h3 id="RPC出现的原因"><a href="#RPC出现的原因" class="headerlink" title="RPC出现的原因"></a>RPC出现的原因</h3><p>RPC需要解决三个问题</p>
-<p>1.如何要确定要执行的函数？在本地调用中，函数主体通过函数指针函数指定，然后调用add函数，编译器你通过函数指针函数确定add函数在内存中的位置。但是在RPC中，调用不能通过函数指针完成，因为他们的内存地址可能完全不同。因此，调用方和被调用方都需要维护一个{fuction&lt;-&gt;ID}映射表，以确保调用正确的函数</p>
-<p>2.如何表达参数？本地过程调用中传递的参数是通过堆栈结构实现的，但是RPC不能直接使用内存传递参数，因此参数或返回值需要在传输期间徐丽湖儿啊并转换成字节流，反之亦然</p>
-<p>3.如何通过网络传输？函数的调用方和被调用方通常是通过网络连接的，也就是说 function ID和序列化字节流需要通过网络传输，因此，只要能够完成传输，调用方和被调用方就不受某个网络协议的限制。例如，一些RPC框架使用TCP协议，一些使用HTTP。</p>
-<p>以往实现跨服务调用的时候，我们会采用restful api的方式，被调用方会对外提供一个HTTP接口，调用方按要求发起HTTP请求并接收API接口返回的响应数据。</p>
-<p>本地调用，通过HTTP的API的方式</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">server</span><br><span class="line">//定义参数和响应  </span><br><span class="line">type addParam struct &#123;</span><br><span class="line">	X int `json:&quot;x&quot;`</span><br><span class="line">	Y int `json:&quot;y&quot;`</span><br><span class="line">&#125;</span><br><span class="line">type addResult struct &#123;</span><br><span class="line">	Code int `json:&quot;code&quot;`</span><br><span class="line">	Data int `json:&quot;data&quot;`</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func add(x, y int) int &#123;</span><br><span class="line">	return x + y</span><br><span class="line">&#125;</span><br><span class="line">// addHandler 解析参数+调用add+响应写回</span><br><span class="line">func addHandler(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">	// parse parameters</span><br><span class="line">	b, _ := ioutil.ReadAll(r.Body)</span><br><span class="line">	var param addParam</span><br><span class="line">	json.Unmarshal(b, &amp;param)</span><br><span class="line">	// use the add func</span><br><span class="line">	ret := add(param.X, param.Y)</span><br><span class="line">	// return the response</span><br><span class="line">	respBytes, _ := json.Marshal(addResult&#123;Code: 0, Data: ret&#125;)</span><br><span class="line">	w.Write(respBytes)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	http.HandleFunc(&quot;/add&quot;, addHandler)</span><br><span class="line">	log.Fatal(http.ListenAndServe(&quot;:9090&quot;, nil))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">client</span><br><span class="line">type addParam struct &#123;</span><br><span class="line">	X int `json:&quot;x&quot;`</span><br><span class="line">	Y int `json:&quot;y&quot;`</span><br><span class="line">&#125;</span><br><span class="line">type addResult struct &#123;</span><br><span class="line">	Code int `json:&quot;code&quot;`</span><br><span class="line">	Data int `json:&quot;data&quot;`</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func main() &#123;</span><br><span class="line">	url := &quot;http://127.0.0.1:9090/add&quot;</span><br><span class="line">	param := addParam&#123;</span><br><span class="line">		X: 10,</span><br><span class="line">		Y: 20,</span><br><span class="line">	&#125;</span><br><span class="line">	// marshal to json</span><br><span class="line"></span><br><span class="line">	paramBytes, _ := json.Marshal(param)</span><br><span class="line">	// call</span><br><span class="line">	resp, _ := http.Post(url, &quot;application/json&quot;, bytes.NewReader(paramBytes))</span><br><span class="line">	defer resp.Body.Close()</span><br><span class="line">	respBytes, _ := ioutil.ReadAll(resp.Body)</span><br><span class="line">	var respData addResult</span><br><span class="line">	json.Unmarshal(respBytes, &amp;respData)</span><br><span class="line">	fmt.Println(respData.Data)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>而RPC调用则不需要如此</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">service.go</span><br><span class="line">type Args struct &#123;</span><br><span class="line">	X, Y int</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">type ServiceA struct&#123;&#125;</span><br><span class="line"></span><br><span class="line">// Add is an out method</span><br><span class="line">// has two args and a return </span><br><span class="line">// two params must be out </span><br><span class="line">// and the return value must be error type </span><br><span class="line">func (s *ServiceA) Add(args *Args, reply *int) error &#123;</span><br><span class="line">	*reply = args.X + args.Y</span><br><span class="line">	return nil</span><br><span class="line">&#125;</span><br><span class="line">server.go</span><br><span class="line">func main() &#123;</span><br><span class="line">  //new service instance   </span><br><span class="line">	service := new(yunyuansheng.ServiceA)</span><br><span class="line">  //register rpc service   </span><br><span class="line">	rpc.Register(service) </span><br><span class="line">  //botton on http  </span><br><span class="line">	//rpc.HandleHTTP()      </span><br><span class="line">  //botton on tcp   </span><br><span class="line">	l, e := net.Listen(&quot;tcp&quot;, &quot;:9091&quot;)</span><br><span class="line">	if e != nil &#123;</span><br><span class="line">		log.Fatal(&quot;listen error:&quot;, e)</span><br><span class="line">	&#125;</span><br><span class="line">	//http.Serve(l, nil)</span><br><span class="line">	for &#123;</span><br><span class="line">	  // accpet the request and serve   </span><br><span class="line">		conn, _ := l.Accept()</span><br><span class="line">		rpc.ServeConn(conn)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">client.go</span><br><span class="line">func main() &#123;</span><br><span class="line">	//因为服务端是HTTP请求 所以要建立HTTP连接</span><br><span class="line">	client, err := rpc.Dial(&quot;tcp&quot;, &quot;127.0.0.1:9091&quot;)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		fmt.Println(err)</span><br><span class="line">	&#125;</span><br><span class="line">	// 同步调用 Call</span><br><span class="line">	args := &amp;yunyuansheng.Args&#123;10, 20&#125;</span><br><span class="line">	reply := new(int)</span><br><span class="line">	err = client.Call(&quot;ServiceA.Add&quot;, args, reply)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		log.Fatal(&quot;ServiceA.Add error:&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Printf(&quot;ServiceA.Add %d+%d=%d\n&quot;, args.X, args.Y, *reply)</span><br><span class="line"></span><br><span class="line">	//异步调用 Go</span><br><span class="line">	var reply2 int</span><br><span class="line">	divCall := client.Go(&quot;ServiceA.Add&quot;, args, &amp;reply2, nil)</span><br><span class="line">	replyCall := &lt;-divCall.Done //Done是一个调用结果的通知 有值了就说明调用完成了</span><br><span class="line">	fmt.Println(replyCall.Error)</span><br><span class="line">	fmt.Println(reply2)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<p><strong>RPC的最终目的：让调用远程方法更加简单，并且速度更快</strong></p>
-<p><strong>Go原生net&#x2F;rpc库需要注意的几点</strong></p>
-<p><strong>1.可以支持很多种协议，包括但不限于HTTP和TCP，如果使用HTTP的话，那么客户端就使用DialHTTP，服务端通过HandleHTTP进行HTTP连接的处理，使用TCP的话，客户端使用Dial，服务端就应该for循环处理连接</strong></p>
-<p><strong>2.客户端支持同步调用和异步调用两种方式，对应的分别是Call和Go</strong></p>
-<p><strong>3.暴露出的服务必须满足两个条件，两个参数，一个返回值，返回值必须要是error类型，第二个参数必须是指针</strong></p>
-<h3 id="RPC原理"><a href="#RPC原理" class="headerlink" title="RPC原理"></a>RPC原理</h3><p><img src="/2023/02/24/Go%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89/6.png" alt="img"></p>
-<ol>
-<li>client以本地调用方式调用服务</li>
-<li>client stub接收到调用后负责将方法、参数等组装成能够进行网络传输的消息体</li>
-<li>client stub找到服务地址，并将服务发送到服务端</li>
-<li>server 接收到消息之后，通过server stub对消息进行解码</li>
-<li>server stub根据解码的结果调用本地服务</li>
-<li>本地服务执行并把消息返回给server stub</li>
-<li>server stub将结果打包成能够进行网络传输的结构体，发送到消息方</li>
-<li>client 收到消息并进行解码，得到最终结果</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1742,7 +1446,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-count">42</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1755,7 +1459,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-count">26</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1802,12 +1506,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">141k</span>
+    <span title="站点总字数">151k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:08</span>
+    <span title="站点阅读时长">2:17</span>
 </div>
 
 
